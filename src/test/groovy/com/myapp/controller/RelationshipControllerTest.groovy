@@ -44,9 +44,8 @@ class RelationshipControllerTest extends BaseControllerTest {
 
         then:
         response.andExpect(status().isOk())
-                .andDo(MockMvcResultHandlers.print())
                 .andExpect(jsonPath('$.id').exists())
-                .andExpect(jsonPath('$.id', is(1)))
+                .andExpect(jsonPath('$.id', is((int)follower.id)))
 
         when:
         relationshipRepository.delete(relationship.id)
