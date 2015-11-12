@@ -9,7 +9,6 @@ import com.myapp.repository.UserRepository
 import com.myapp.service.SecurityContextService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 
 import static org.hamcrest.Matchers.is
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
@@ -45,7 +44,7 @@ class RelationshipControllerTest extends BaseControllerTest {
         then:
         response.andExpect(status().isOk())
                 .andExpect(jsonPath('$.id').exists())
-                .andExpect(jsonPath('$.id', is((int)follower.id)))
+                .andExpect(jsonPath('$.id', is((int) relationship.id)))
 
         when:
         relationshipRepository.delete(relationship.id)
