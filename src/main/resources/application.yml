@@ -1,0 +1,84 @@
+spring:
+  profiles:
+    active: dev
+security:
+  basic:
+    enabled: false
+endpoints:
+  enabled: false
+  health.enabled: true
+management:
+  context-path: /manage
+app:
+  jwt:
+    secret: qwerty
+---
+spring:
+  profiles: dev
+  datasource:
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:./db/dev;MODE=MySQL;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+  jpa:
+    database: H2
+    hibernate:
+      ddl-auto: update
+  thymeleaf:
+    cache: false
+logging:
+  config: classpath:logback-dev.xml
+flyway:
+  enabled: false
+app:
+  asset-host: localhost:3001/__build__
+---
+spring:
+  profiles: test
+  datasource:
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:test;MODE=MySQL;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+  jpa:
+    database: H2
+    hibernate:
+      ddl-auto: create
+logging:
+  config: classpath:logback-test.xml
+flyway:
+  enabled: false
+server:
+  port: 0
+---
+spring:
+  profiles: stg
+  datasource:
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost/springboot-angular2-tutorial
+    username: root
+    password:
+  jpa:
+    database: MYSQL
+    hibernate:
+      ddl-auto: validate
+logging:
+  config: classpath:logback-stg.xml
+app:
+  asset-host: localhost:3001/__build__
+---
+spring:
+  profiles: prod
+  datasource:
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://${RDS_HOSTNAME}:${RDS_PORT}/${RDS_DB_NAME}
+    username: ${RDS_USERNAME}
+    password: ${RDS_PASSWORD}
+  jpa:
+    database: MYSQL
+    hibernate:
+      ddl-auto: validate
+logging:
+  config: classpath:logback-prod.xml
+app:
+  asset-host: springboot-angular2-tutorial.github.io/angular2-app

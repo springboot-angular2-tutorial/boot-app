@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Spring Boot and Angular2 tutorial</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <base href="/" />
+    <style>
+        body { padding-top: 60px; }
+    </style>
+</head>
+<body>
+<app />
+<script th:src="|//${assetHost}/common.js|"></script>
+<script th:src="|//${assetHost}/angular2.js|"></script>
+<script th:src="|//${assetHost}/app.js|"></script>
+</body>
+</html>
