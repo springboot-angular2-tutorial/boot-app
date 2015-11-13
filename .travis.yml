@@ -17,5 +17,6 @@ deploy:
   region: ap-southeast-1
   access_key_id: $AWS_ACCESS_KEY_ID
   secret_access_key: $AWS_SECRET_ACCESS_KEY
+  zip_file: target/springboot-angular2-tutorial-0.1.0.war
   on:
     branch: master
