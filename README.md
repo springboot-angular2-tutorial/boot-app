@@ -1,10 +1,10 @@
-# Angular2 Tutorial
+# Spring Boot example app for Spring Boot and Angular2 Tutorial
 
 This repository is an example application for Spring Boot and Angular2 tutorial.
 
 [![Build Status][travis-image]][travis-url]
 
-[Demo](http://micropost.hana053.com/) is available here.
+You can try out [Demo page](http://micropost.hana053.com/).
 
 ## Getting Started
 
