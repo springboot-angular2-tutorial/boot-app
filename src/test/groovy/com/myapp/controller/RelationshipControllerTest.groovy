@@ -44,7 +44,7 @@ class RelationshipControllerTest extends BaseControllerTest {
         then:
         response.andExpect(status().isOk())
                 .andExpect(jsonPath('$.id').exists())
-                .andExpect(jsonPath('$.id', is((int) relationship.id)))
+                .andExpect(jsonPath('$.id', is(relationship.id.intValue())))
 
         when:
         relationshipRepository.delete(relationship.id)

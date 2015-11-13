@@ -8,3 +8,14 @@ cache:
   - $HOME/.m2
 
 script: mvn test -Dspring.profiles.active=test
+
+deploy:
+- provider: elasticbeanstalk
+  app: springboot-angular2-tutorial
+  env: prod
+  bucket_name: elasticbeanstalk-ap-southeast-1-411701860491
+  region: ap-southeast-1
+  access_key_id: $AWS_ACCESS_KEY_ID
+  secret_access_key: $AWS_SECRET_ACCESS_KEY
+  on:
+    branch: master
