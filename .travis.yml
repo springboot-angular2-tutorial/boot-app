@@ -7,8 +7,9 @@ cache:
   directories:
   - $HOME/.m2
 
-script: mvn test -Dspring.profiles.active=test
+script: mvn clean test -Dspring.profiles.active=test
 
+before_deploy: mvn package -DskipTests=true -Dmaven.javadoc.skip=true
 deploy:
 - provider: elasticbeanstalk
   app: springboot-angular2-tutorial
