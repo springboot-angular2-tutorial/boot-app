@@ -55,9 +55,15 @@ spring:
   profiles: stg
   datasource:
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost/springboot-angular2-tutorial
+    jdbcUrl: jdbc:mysql://localhost/springboot-angular2-tutorial
     username: root
     password:
+    poolName: SpringBootHikariCP
+    maximumPoolSize: 5
+    minimumIdle: 3
+    maxLifetime: 2000000
+    connectionTimeout: 30000
+    idleTimeout: 30000
   jpa:
     database: MYSQL
     hibernate:
@@ -71,9 +77,15 @@ spring:
   profiles: prod
   datasource:
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://${RDS_HOSTNAME}:${RDS_PORT}/${RDS_DB_NAME}
+    jdbcUrl: jdbc:mysql://${RDS_HOSTNAME}:${RDS_PORT}/${RDS_DB_NAME}
     username: ${RDS_USERNAME}
     password: ${RDS_PASSWORD}
+    poolName: SpringBootHikariCP
+    maximumPoolSize: 5
+    minimumIdle: 3
+    maxLifetime: 2000000
+    connectionTimeout: 30000
+    idleTimeout: 30000
   jpa:
     database: MYSQL
     hibernate:
