@@ -38,10 +38,9 @@ class FeedControllerTest extends BaseControllerTest {
 
         then:
         response.andExpect(status().isOk())
-                .andExpect(jsonPath('$.content').exists())
-                .andExpect(jsonPath('$.content', hasSize(1)))
-                .andExpect(jsonPath('$.content[0].content', is("content1")))
-                .andExpect(jsonPath('$.content[0].user.email', is("test1@test.com")))
+                .andExpect(jsonPath('$', hasSize(1)))
+                .andExpect(jsonPath('$[0].content', is("content1")))
+                .andExpect(jsonPath('$[0].user.email', is("test1@test.com")))
     }
 
     @Override
