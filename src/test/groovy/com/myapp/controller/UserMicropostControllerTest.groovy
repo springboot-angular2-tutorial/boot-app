@@ -8,7 +8,6 @@ import com.myapp.repository.RepositoryTestConfig
 import com.myapp.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 
 import static org.hamcrest.Matchers.hasSize
 import static org.hamcrest.Matchers.is
@@ -40,10 +39,8 @@ class UserMicropostControllerTest extends BaseControllerTest {
 
         then:
         response.andExpect(status().isOk())
-                .andExpect(jsonPath('$.content').exists())
-                .andExpect(jsonPath('$.content', hasSize(1)))
-                .andExpect(jsonPath('$.content[0].content', is("my content")))
-                .andDo(MockMvcResultHandlers.print())
+                .andExpect(jsonPath('$', hasSize(1)))
+                .andExpect(jsonPath('$[0].content', is("my content")))
     }
 
 }

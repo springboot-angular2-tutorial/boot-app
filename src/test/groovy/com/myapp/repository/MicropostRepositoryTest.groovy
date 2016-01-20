@@ -69,4 +69,28 @@ class MicropostRepositoryTest extends Specification {
         result.first() == post1
     }
 
+    def "can find posts by user"() {
+        given:
+        User user = userRepository.save(new User(username: "akira@test.com", password: "secret", name: "akira"))
+        Micropost post1 = micropostRepository.save(new Micropost(content: "test1", user: user))
+        Micropost post2 = micropostRepository.save(new Micropost(content: "test2", user: user))
+        Micropost post3 = micropostRepository.save(new Micropost(content: "test3", user: user))
+
+        when:
+        List<Micropost> result = micropostRepository
+                .findByUser(user, Optional.of(post2.id), Optional.empty(), null)
+
+        then:
+        result.size() == 1
+        result.first() == post3
+
+        when:
+        result = micropostRepository
+                .findByUser(user, Optional.empty(), Optional.of(post2.id), null)
+
+        then:
+        result.size() == 1
+        result.first() == post1
+    }
+
 }

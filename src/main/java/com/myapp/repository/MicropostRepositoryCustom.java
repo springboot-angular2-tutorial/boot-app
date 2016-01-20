@@ -13,4 +13,8 @@ public interface MicropostRepositoryCustom {
                                Optional<Long> maxId,
                                Integer maxSize);
 
+    List<Micropost> findByUser(User user,
+                               Optional<Long> sinceId,
+                               Optional<Long> maxId,
+                               Integer maxSize);
 }

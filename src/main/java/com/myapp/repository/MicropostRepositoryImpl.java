@@ -16,6 +16,7 @@ import java.util.Optional;
 @SuppressWarnings("unused")
 public class MicropostRepositoryImpl implements MicropostRepositoryCustom {
 
+    @SuppressWarnings("SpringJavaAutowiredMembersInspection")
     @Autowired
     EntityManager entityManager;
 
@@ -43,9 +44,32 @@ public class MicropostRepositoryImpl implements MicropostRepositoryCustom {
                         cb.equal(root.get("user"), user),
                         cb.exists(relationshipSubquery)
                 ),
-                sinceId.map(id -> cb.and(cb.greaterThan(root.get("id"), id)))
+                sinceId.map(id -> cb.greaterThan(root.get("id"), id))
                         .orElse(cb.conjunction()),
-                maxId.map(id -> cb.and(cb.lessThan(root.get("id"), id)))
+                maxId.map(id -> cb.lessThan(root.get("id"), id))
+                        .orElse(cb.conjunction())
+        );
+        query.orderBy(cb.desc(root.get("id")));
+
+        return entityManager
+                .createQuery(query)
+                .setMaxResults(Optional.ofNullable(maxSize).orElse(20))
+                .getResultList();
+    }
+
+    @Override
+    public List<Micropost> findByUser(User user,
+                                      Optional<Long> sinceId,
+                                      Optional<Long> maxId,
+                                      Integer maxSize) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Micropost> query = cb.createQuery(Micropost.class);
+        Root<Micropost> root = query.from(Micropost.class);
+        query.where(
+                cb.equal(root.get("user"), user),
+                sinceId.map(id -> cb.greaterThan(root.get("id"), id))
+                        .orElse(cb.conjunction()),
+                maxId.map(id -> cb.lessThan(root.get("id"), id))
                         .orElse(cb.conjunction())
         );
         query.orderBy(cb.desc(root.get("id")));

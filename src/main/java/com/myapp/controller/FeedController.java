@@ -16,6 +16,8 @@ import java.util.Optional;
 @RequestMapping("/api/feed")
 public class FeedController {
 
+    private static final int DEFAULT_PAGE_SIZE = 20;
+
     private final MicropostRepository micropostRepository;
     private final SecurityContextService securityContextService;
 
@@ -26,12 +28,12 @@ public class FeedController {
     }
 
     @RequestMapping
-    public List<Micropost> feed(@RequestParam("since_id") Optional<Long> sinceId,
-                                @RequestParam("max_id") Optional<Long> maxId,
+    public List<Micropost> feed(@RequestParam("sinceId") Optional<Long> sinceId,
+                                @RequestParam("maxId") Optional<Long> maxId,
                                 @RequestParam("count") Optional<Integer> count) {
         User currentUser = securityContextService.currentUser();
         return micropostRepository
-                .findAsFeed(currentUser, sinceId, maxId, count.orElse(20));
+                .findAsFeed(currentUser, sinceId, maxId, count.orElse(DEFAULT_PAGE_SIZE));
     }
 
 }

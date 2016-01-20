@@ -3,6 +3,8 @@ package com.myapp.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.myapp.domain.User;
 import lombok.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.validation.constraints.Size;
@@ -10,6 +12,8 @@ import java.util.Optional;
 
 @Value
 public class UserParams {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserParams.class);
 
     private String email;
     @Size(min = 8, max = 100)

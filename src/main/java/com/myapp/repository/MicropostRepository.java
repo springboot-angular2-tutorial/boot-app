@@ -10,6 +10,4 @@ public interface MicropostRepository extends JpaRepository<Micropost, Long>, Mic
 
     Integer countByUser(User user);
 
-    Page<Micropost> findByUser(User user, Pageable pageRequest);
-
 }
