@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -26,24 +27,22 @@ public class UserRelationshipController {
     }
 
     @RequestMapping("/followings")
-    public Page<User> followings(@PathVariable("userId") Long userId,
-                                 @RequestParam(value = "page") Optional<Integer> page,
-                                 @RequestParam(value = "size") Optional<Integer> size) {
+    public List<User> followings(@PathVariable("userId") Long userId,
+                                 @RequestParam("sinceId") Optional<Long> sinceId,
+                                 @RequestParam("maxId") Optional<Long> maxId,
+                                 @RequestParam("count") Optional<Integer> count) {
         User user = userRepository.findOne(userId);
-        Pageable pageRequest = new PageRequest(page.orElse(1) - 1,
-                size.orElse(DEFAULT_PAGE_SIZE));
-
-        return userRepository.findFollowings(user, pageRequest);
+        return userRepository
+                .findFollowings(user, sinceId, maxId, count.orElse(DEFAULT_PAGE_SIZE));
     }
 
     @RequestMapping("/followers")
-    public Page<User> followers(@PathVariable("userId") Long userId,
-                                @RequestParam(value = "page") Optional<Integer> page,
-                                @RequestParam(value = "size") Optional<Integer> size) {
+    public List<User> followers(@PathVariable("userId") Long userId,
+                                @RequestParam("sinceId") Optional<Long> sinceId,
+                                @RequestParam("maxId") Optional<Long> maxId,
+                                @RequestParam("count") Optional<Integer> count) {
         User user = userRepository.findOne(userId);
-        Pageable pageRequest = new PageRequest(page.orElse(1) - 1,
-                size.orElse(DEFAULT_PAGE_SIZE));
-
-        return userRepository.findFollowers(user, pageRequest);
+        return userRepository
+                .findFollowers(user, sinceId, maxId, count.orElse(DEFAULT_PAGE_SIZE));
     }
 }

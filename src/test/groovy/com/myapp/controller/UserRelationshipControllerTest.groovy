@@ -41,9 +41,7 @@ class UserRelationshipControllerTest extends BaseControllerTest {
         then:
         response
                 .andExpect(status().isOk())
-                .andExpect(jsonPath('$.content').exists())
-                .andExpect(jsonPath('$.content', hasSize(1)))
-                .andExpect(jsonPath('$.content[0].email', is("satoru@test.com")))
+                .andExpect(jsonPath('$[0].email', is("satoru@test.com")))
     }
 
     def "can list followers"() {
@@ -58,8 +56,6 @@ class UserRelationshipControllerTest extends BaseControllerTest {
         then:
         response
                 .andExpect(status().isOk())
-                .andExpect(jsonPath('$.content').exists())
-                .andExpect(jsonPath('$.content', hasSize(1)))
-                .andExpect(jsonPath('$.content[0].email', is("satoru@test.com")))
+                .andExpect(jsonPath('$[0].email', is("satoru@test.com")))
     }
 }

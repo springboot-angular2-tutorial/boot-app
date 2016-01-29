@@ -25,39 +25,33 @@ class UserRepositoryTest extends Specification {
     def "findFollowings"() {
         given:
         User user = userRepository.save(new User(username: "akira@test.com", password: "secret", name: "akira"))
-        3.times {
+        2.times {
             User u = userRepository.save(new User(username: "test${it}@test.com", password: "secret", name: "akira"))
             relationshipRepository.save(new Relationship(follower: user, followed: u))
         }
 
         when:
-        Page<User> result = userRepository.findFollowings(user, new PageRequest(0, 2))
+        List<User> result = userRepository.findFollowings(user, Optional.empty(), Optional.empty(), null)
 
         then:
-        result.totalElements == 3
-        result.totalPages == 2
-        result.size == 2
-        result[0].username == "test0@test.com"
-        result[1].username == "test1@test.com"
+        result[0].username == "test1@test.com"
+        result[1].username == "test0@test.com"
     }
 
     def "findFollowers"() {
         given:
         User user = userRepository.save(new User(username: "akira@test.com", password: "secret", name: "akira"))
-        3.times {
+        2.times {
             User u = userRepository.save(new User(username: "test${it}@test.com", password: "secret", name: "akira"))
             relationshipRepository.save(new Relationship(follower: u, followed: user))
         }
 
         when:
-        Page<User> result = userRepository.findFollowers(user, new PageRequest(0, 2))
+        List<User> result = userRepository.findFollowers(user, Optional.empty(), Optional.empty(), null)
 
         then:
-        result.totalElements == 3
-        result.totalPages == 2
-        result.size == 2
-        result[0].username == "test0@test.com"
-        result[1].username == "test1@test.com"
+        result[0].username == "test1@test.com"
+        result[1].username == "test0@test.com"
     }
 
 }
