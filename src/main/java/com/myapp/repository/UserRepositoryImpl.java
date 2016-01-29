@@ -1,7 +1,12 @@
 package com.myapp.repository;
 
+import com.myapp.domain.QRelationship;
+import com.myapp.domain.QUser;
 import com.myapp.domain.Relationship;
 import com.myapp.domain.User;
+import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.JPQLQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.EntityManager;
@@ -15,42 +20,34 @@ import java.util.Optional;
 @SuppressWarnings("unused")
 public class UserRepositoryImpl implements UserRepositoryCustom {
 
+    private final JPAQueryFactory queryFactory;
+
     @SuppressWarnings("SpringJavaAutowiredMembersInspection")
     @Autowired
-    EntityManager entityManager;
+    public UserRepositoryImpl(JPAQueryFactory queryFactory) {
+        this.queryFactory = queryFactory;
+    }
 
     @Override
     public List<User> findFollowings(User user,
                                      Optional<Long> sinceId,
                                      Optional<Long> maxId,
                                      Integer maxSize) {
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<User> query = cb.createQuery(User.class);
+        final QUser qUser = QUser.user;
+        final QRelationship qRelationship = QRelationship.relationship;
 
-        Root<User> root = query.from(User.class);
-        query.select(root);
-
-        Subquery<Relationship> relationshipSubquery = query.subquery(Relationship.class);
-        Root<Relationship> relationshipRoot = relationshipSubquery.from(Relationship.class);
-        relationshipSubquery.where(
-                cb.equal(relationshipRoot.get("followed"), root.get("id")),
-                cb.equal(relationshipRoot.get("follower"), user)
-        );
-        relationshipSubquery.select(relationshipRoot);
-
-        query.where(
-                cb.exists(relationshipSubquery),
-                sinceId.map(id -> cb.greaterThan(root.get("id"), id))
-                        .orElse(cb.conjunction()),
-                maxId.map(id -> cb.lessThan(root.get("id"), id))
-                        .orElse(cb.conjunction())
-        );
-        query.orderBy(cb.desc(root.get("id")));
-
-        return entityManager
-                .createQuery(query)
-                .setMaxResults(Optional.ofNullable(maxSize).orElse(20))
-                .getResultList();
+        final JPQLQuery<Relationship> relationshipSubQuery = JPAExpressions.selectFrom(qRelationship)
+                .where(qRelationship.follower.eq(user)
+                        .and(qRelationship.followed.eq(qUser))
+                );
+        return queryFactory.selectFrom(qUser)
+                .where(relationshipSubQuery.exists()
+                        .and(sinceId.map(qUser.id::gt).orElse(null))
+                        .and(maxId.map(qUser.id::lt).orElse(null))
+                )
+                .orderBy(qUser.id.desc())
+                .limit(Optional.ofNullable(maxSize).orElse(20))
+                .fetch();
     }
 
     @Override
@@ -58,33 +55,21 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                                     Optional<Long> sinceId,
                                     Optional<Long> maxId,
                                     Integer maxSize) {
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<User> query = cb.createQuery(User.class);
+        final QUser qUser = QUser.user;
+        final QRelationship qRelationship = QRelationship.relationship;
 
-        Root<User> root = query.from(User.class);
-        query.select(root);
-
-        Subquery<Relationship> relationshipSubquery = query.subquery(Relationship.class);
-        Root<Relationship> relationshipRoot = relationshipSubquery.from(Relationship.class);
-        relationshipSubquery.where(
-                cb.equal(relationshipRoot.get("followed"), user),
-                cb.equal(relationshipRoot.get("follower"), root.get("id"))
-        );
-        relationshipSubquery.select(relationshipRoot);
-
-        query.where(
-                cb.exists(relationshipSubquery),
-                sinceId.map(id -> cb.greaterThan(root.get("id"), id))
-                        .orElse(cb.conjunction()),
-                maxId.map(id -> cb.lessThan(root.get("id"), id))
-                        .orElse(cb.conjunction())
-        );
-        query.orderBy(cb.desc(root.get("id")));
-
-        return entityManager
-                .createQuery(query)
-                .setMaxResults(Optional.ofNullable(maxSize).orElse(20))
-                .getResultList();
+        final JPQLQuery<Relationship> relationshipSubQuery = JPAExpressions.selectFrom(qRelationship)
+                .where(qRelationship.follower.eq(qUser)
+                        .and(qRelationship.followed.eq(user))
+                );
+        return queryFactory.selectFrom(qUser)
+                .where(relationshipSubQuery.exists()
+                        .and(sinceId.map(qUser.id::gt).orElse(null))
+                        .and(maxId.map(qUser.id::lt).orElse(null))
+                )
+                .orderBy(qUser.id.desc())
+                .limit(Optional.ofNullable(maxSize).orElse(20))
+                .fetch();
     }
 
 }

@@ -1,6 +1,7 @@
 package com.myapp.repository
 
 import com.myapp.config.DatasourceConfig
+import com.myapp.config.QueryDSLConfig
 import com.myapp.domain.Micropost
 import com.myapp.domain.Relationship
 import com.myapp.domain.User
@@ -12,7 +13,7 @@ import spock.lang.Specification
 
 @Transactional
 @ActiveProfiles("test")
-@ContextConfiguration(classes = [RepositoryTestConfig, DatasourceConfig])
+@ContextConfiguration(classes = [RepositoryTestConfig, DatasourceConfig, QueryDSLConfig])
 class MicropostRepositoryTest extends Specification {
 
     @Autowired

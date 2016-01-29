@@ -1,60 +1,49 @@
 package com.myapp.repository;
 
-import com.myapp.domain.Micropost;
-import com.myapp.domain.Relationship;
-import com.myapp.domain.User;
+import com.myapp.domain.*;
+import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.JPQLQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 import java.util.List;
 import java.util.Optional;
 
 @SuppressWarnings("unused")
 public class MicropostRepositoryImpl implements MicropostRepositoryCustom {
 
+    private final JPAQueryFactory queryFactory;
+
     @SuppressWarnings("SpringJavaAutowiredMembersInspection")
     @Autowired
-    EntityManager entityManager;
+    public MicropostRepositoryImpl(JPAQueryFactory queryFactory) {
+        this.queryFactory = queryFactory;
+    }
 
     @Override
     public List<Micropost> findAsFeed(User user,
                                       Optional<Long> sinceId,
                                       Optional<Long> maxId,
                                       Integer maxSize) {
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Micropost> query = cb.createQuery(Micropost.class);
+        final QMicropost qMicropost = QMicropost.micropost;
+        final QUser qUser = QUser.user;
+        final QRelationship qRelationship = QRelationship.relationship;
 
-        Root<Micropost> root = query.from(Micropost.class);
-        root.fetch("user");
+        final JPQLQuery<Relationship> relationshipSubQuery = JPAExpressions.selectFrom(qRelationship)
+                .where(qRelationship.follower.eq(user)
+                        .and(qRelationship.followed.eq(qMicropost.user))
+                );
 
-        Subquery<Relationship> relationshipSubquery = query.subquery(Relationship.class);
-        Root<Relationship> relationshipRoot = relationshipSubquery.from(Relationship.class);
-        relationshipSubquery.where(
-                cb.equal(relationshipRoot.get("followed"), root.get("user")),
-                cb.equal(relationshipRoot.get("follower"), user)
-        );
-        relationshipSubquery.select(relationshipRoot);
-
-        query.where(
-                cb.or(
-                        cb.equal(root.get("user"), user),
-                        cb.exists(relationshipSubquery)
-                ),
-                sinceId.map(id -> cb.greaterThan(root.get("id"), id))
-                        .orElse(cb.conjunction()),
-                maxId.map(id -> cb.lessThan(root.get("id"), id))
-                        .orElse(cb.conjunction())
-        );
-        query.orderBy(cb.desc(root.get("id")));
-
-        return entityManager
-                .createQuery(query)
-                .setMaxResults(Optional.ofNullable(maxSize).orElse(20))
-                .getResultList();
+        return queryFactory.selectFrom(qMicropost)
+                .innerJoin(qMicropost.user)
+                .fetchJoin()
+                .where((qMicropost.user.eq(user).or(relationshipSubQuery.exists()))
+                        .and(sinceId.map(qMicropost.id::gt).orElse(null))
+                        .and(maxId.map(qMicropost.id::lt).orElse(null))
+                )
+                .orderBy(qMicropost.id.desc())
+                .limit(Optional.ofNullable(maxSize).orElse(20))
+                .fetch();
     }
 
     @Override
@@ -62,21 +51,14 @@ public class MicropostRepositoryImpl implements MicropostRepositoryCustom {
                                       Optional<Long> sinceId,
                                       Optional<Long> maxId,
                                       Integer maxSize) {
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Micropost> query = cb.createQuery(Micropost.class);
-        Root<Micropost> root = query.from(Micropost.class);
-        query.where(
-                cb.equal(root.get("user"), user),
-                sinceId.map(id -> cb.greaterThan(root.get("id"), id))
-                        .orElse(cb.conjunction()),
-                maxId.map(id -> cb.lessThan(root.get("id"), id))
-                        .orElse(cb.conjunction())
-        );
-        query.orderBy(cb.desc(root.get("id")));
-
-        return entityManager
-                .createQuery(query)
-                .setMaxResults(Optional.ofNullable(maxSize).orElse(20))
-                .getResultList();
+        final QMicropost qMicropost = QMicropost.micropost;
+        return queryFactory.selectFrom(qMicropost)
+                .where(qMicropost.user.eq(user)
+                        .and(sinceId.map(qMicropost.id::gt).orElse(null))
+                        .and(maxId.map(qMicropost.id::lt).orElse(null))
+                )
+                .orderBy(qMicropost.id.desc())
+                .limit(Optional.ofNullable(maxSize).orElse(20))
+                .fetch();
     }
 }
