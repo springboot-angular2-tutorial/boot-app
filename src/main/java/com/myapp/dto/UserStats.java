@@ -6,9 +6,8 @@ import lombok.Value;
 @Value
 @Builder
 public class UserStats {
-    private Integer micropostCnt;
-    private Integer followingCnt;
-    private Integer followerCnt;
-
+    private final int micropostCnt;
+    private final int followingCnt;
+    private final int followerCnt;
     private final boolean isFollowedByMe;
 }

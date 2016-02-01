@@ -31,7 +31,7 @@ class UserRelationshipControllerTest extends BaseControllerTest {
         given:
         User user1 = userRepository.save(new User(username: "akira@test.com", password: "secret", name: "akira"))
         User user2 = userRepository.save(new User(username: "satoru@test.com", password: "secret", name: "akira"))
-        relationshipRepository.save(new Relationship(follower: user1, followed: user2))
+        Relationship r1 = relationshipRepository.save(new Relationship(follower: user1, followed: user2))
         securityContextService.currentUser() >> userRepository.save(new User(username: "current@test.com", password: "secret", name: "akira"))
 
         when:
@@ -40,16 +40,16 @@ class UserRelationshipControllerTest extends BaseControllerTest {
         then:
         response
                 .andExpect(status().isOk())
-//                .andDo(MockMvcResultHandlers.print())
-                .andExpect(jsonPath('$[0].user.email', is("satoru@test.com")))
+                .andExpect(jsonPath('$[0].email', is("satoru@test.com")))
                 .andExpect(jsonPath('$[0].userStats').exists())
+                .andExpect(jsonPath('$[0].relationshipId', is(r1.id.intValue())))
     }
 
     def "can list followers"() {
         given:
         User user1 = userRepository.save(new User(username: "akira@test.com", password: "secret", name: "akira"))
         User user2 = userRepository.save(new User(username: "satoru@test.com", password: "secret", name: "akira"))
-        relationshipRepository.save(new Relationship(follower: user2, followed: user1))
+        Relationship r1 = relationshipRepository.save(new Relationship(follower: user2, followed: user1))
         securityContextService.currentUser() >> userRepository.save(new User(username: "current@test.com", password: "secret", name: "akira"))
 
         when:
@@ -59,7 +59,8 @@ class UserRelationshipControllerTest extends BaseControllerTest {
         response
                 .andExpect(status().isOk())
 //                .andDo(MockMvcResultHandlers.print())
-                .andExpect(jsonPath('$[0].user.email', is("satoru@test.com")))
+                .andExpect(jsonPath('$[0].email', is("satoru@test.com")))
                 .andExpect(jsonPath('$[0].userStats').exists())
+                .andExpect(jsonPath('$[0].relationshipId', is(r1.id.intValue())))
     }
 }

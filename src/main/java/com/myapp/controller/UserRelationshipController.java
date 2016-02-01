@@ -1,7 +1,7 @@
 package com.myapp.controller;
 
 import com.myapp.domain.User;
-import com.myapp.dto.UserDTO;
+import com.myapp.dto.RelatedUserDTO;
 import com.myapp.repository.UserRepository;
 import com.myapp.service.SecurityContextService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +29,10 @@ public class UserRelationshipController {
     }
 
     @RequestMapping("/followings")
-    public List<UserDTO> followings(@PathVariable("userId") Long userId,
-                                    @RequestParam("sinceId") Optional<Long> sinceId,
-                                    @RequestParam("maxId") Optional<Long> maxId,
-                                    @RequestParam("count") Optional<Integer> count) {
+    public List<RelatedUserDTO> followings(@PathVariable("userId") Long userId,
+                                           @RequestParam("sinceId") Optional<Long> sinceId,
+                                           @RequestParam("maxId") Optional<Long> maxId,
+                                           @RequestParam("count") Optional<Integer> count) {
         final User user = userRepository.findOne(userId);
         final User currentUser = securityContextService.currentUser();
         return userRepository
@@ -40,10 +40,10 @@ public class UserRelationshipController {
     }
 
     @RequestMapping("/followers")
-    public List<UserDTO> followers(@PathVariable("userId") Long userId,
-                                   @RequestParam("sinceId") Optional<Long> sinceId,
-                                   @RequestParam("maxId") Optional<Long> maxId,
-                                   @RequestParam("count") Optional<Integer> count) {
+    public List<RelatedUserDTO> followers(@PathVariable("userId") Long userId,
+                                          @RequestParam("sinceId") Optional<Long> sinceId,
+                                          @RequestParam("maxId") Optional<Long> maxId,
+                                          @RequestParam("count") Optional<Integer> count) {
         final User user = userRepository.findOne(userId);
         final User currentUser = securityContextService.currentUser();
         return userRepository
