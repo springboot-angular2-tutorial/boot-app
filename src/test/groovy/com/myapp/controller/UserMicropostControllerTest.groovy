@@ -1,13 +1,10 @@
 package com.myapp.controller
 
-import com.myapp.config.DatasourceConfig
 import com.myapp.domain.Micropost
 import com.myapp.domain.User
 import com.myapp.repository.MicropostRepository
-import com.myapp.repository.RepositoryTestConfig
 import com.myapp.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.test.context.ContextConfiguration
 
 import static org.hamcrest.Matchers.hasSize
 import static org.hamcrest.Matchers.is
@@ -15,7 +12,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
-@ContextConfiguration(classes = [RepositoryTestConfig, DatasourceConfig])
 class UserMicropostControllerTest extends BaseControllerTest {
 
     @Autowired

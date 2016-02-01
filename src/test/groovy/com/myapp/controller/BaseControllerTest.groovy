@@ -1,8 +1,12 @@
 package com.myapp.controller
 
+import com.myapp.config.DatasourceConfig
+import com.myapp.config.QueryDSLConfig
+import com.myapp.repository.RepositoryTestConfig
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.web.WebAppConfiguration
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.RequestBuilder
@@ -15,6 +19,7 @@ import spock.lang.Specification
 @WebAppConfiguration
 @Transactional
 @ActiveProfiles("test")
+@ContextConfiguration(classes = [RepositoryTestConfig, DatasourceConfig, QueryDSLConfig])
 abstract class BaseControllerTest extends Specification {
 
     @SuppressWarnings("GroovyUnusedDeclaration")

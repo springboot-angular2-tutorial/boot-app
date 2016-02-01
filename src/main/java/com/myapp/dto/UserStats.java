@@ -9,4 +9,6 @@ public class UserStats {
     private Integer micropostCnt;
     private Integer followingCnt;
     private Integer followerCnt;
+
+    private final boolean isFollowedByMe;
 }

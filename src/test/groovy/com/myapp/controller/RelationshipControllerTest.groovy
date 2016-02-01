@@ -1,21 +1,17 @@
 package com.myapp.controller
 
-import com.myapp.config.DatasourceConfig
 import com.myapp.domain.Relationship
 import com.myapp.domain.User
 import com.myapp.repository.RelationshipRepository
-import com.myapp.repository.RepositoryTestConfig
 import com.myapp.repository.UserRepository
 import com.myapp.service.SecurityContextService
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.test.context.ContextConfiguration
 
 import static org.hamcrest.Matchers.is
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
-@ContextConfiguration(classes = [RepositoryTestConfig, DatasourceConfig])
 class RelationshipControllerTest extends BaseControllerTest {
 
     @Autowired

@@ -46,6 +46,14 @@ public class User implements UserDetails {
     @JsonIgnore
     private List<Micropost> microposts;
 
+    @OneToMany(mappedBy = "follower", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<Relationship> followerRelations;
+
+    @OneToMany(mappedBy = "followed", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<Relationship> followedRelations;
+
     @Override
     @JsonProperty("email")
     public String getUsername() {

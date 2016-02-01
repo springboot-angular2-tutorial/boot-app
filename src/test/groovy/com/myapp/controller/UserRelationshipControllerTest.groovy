@@ -1,21 +1,17 @@
 package com.myapp.controller
 
-import com.myapp.config.DatasourceConfig
 import com.myapp.domain.Relationship
 import com.myapp.domain.User
 import com.myapp.repository.RelationshipRepository
-import com.myapp.repository.RepositoryTestConfig
 import com.myapp.repository.UserRepository
+import com.myapp.service.SecurityContextService
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.test.context.ContextConfiguration
 
-import static org.hamcrest.Matchers.hasSize
 import static org.hamcrest.Matchers.is
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
-@ContextConfiguration(classes = [RepositoryTestConfig, DatasourceConfig])
 class UserRelationshipControllerTest extends BaseControllerTest {
 
     @Autowired
@@ -24,9 +20,11 @@ class UserRelationshipControllerTest extends BaseControllerTest {
     @Autowired
     RelationshipRepository relationshipRepository
 
+    SecurityContextService securityContextService = Mock(SecurityContextService);
+
     @Override
     def controllers() {
-        return new UserRelationshipController(userRepository)
+        return new UserRelationshipController(userRepository, securityContextService)
     }
 
     def "can list followings"() {
@@ -34,6 +32,7 @@ class UserRelationshipControllerTest extends BaseControllerTest {
         User user1 = userRepository.save(new User(username: "akira@test.com", password: "secret", name: "akira"))
         User user2 = userRepository.save(new User(username: "satoru@test.com", password: "secret", name: "akira"))
         relationshipRepository.save(new Relationship(follower: user1, followed: user2))
+        securityContextService.currentUser() >> userRepository.save(new User(username: "current@test.com", password: "secret", name: "akira"))
 
         when:
         def response = perform(get("/api/users/${user1.id}/followings"))
@@ -41,7 +40,9 @@ class UserRelationshipControllerTest extends BaseControllerTest {
         then:
         response
                 .andExpect(status().isOk())
-                .andExpect(jsonPath('$[0].email', is("satoru@test.com")))
+//                .andDo(MockMvcResultHandlers.print())
+                .andExpect(jsonPath('$[0].user.email', is("satoru@test.com")))
+                .andExpect(jsonPath('$[0].userStats').exists())
     }
 
     def "can list followers"() {
@@ -49,6 +50,7 @@ class UserRelationshipControllerTest extends BaseControllerTest {
         User user1 = userRepository.save(new User(username: "akira@test.com", password: "secret", name: "akira"))
         User user2 = userRepository.save(new User(username: "satoru@test.com", password: "secret", name: "akira"))
         relationshipRepository.save(new Relationship(follower: user2, followed: user1))
+        securityContextService.currentUser() >> userRepository.save(new User(username: "current@test.com", password: "secret", name: "akira"))
 
         when:
         def response = perform(get("/api/users/${user1.id}/followers"))
@@ -56,6 +58,8 @@ class UserRelationshipControllerTest extends BaseControllerTest {
         then:
         response
                 .andExpect(status().isOk())
-                .andExpect(jsonPath('$[0].email', is("satoru@test.com")))
+//                .andDo(MockMvcResultHandlers.print())
+                .andExpect(jsonPath('$[0].user.email', is("satoru@test.com")))
+                .andExpect(jsonPath('$[0].userStats').exists())
     }
 }

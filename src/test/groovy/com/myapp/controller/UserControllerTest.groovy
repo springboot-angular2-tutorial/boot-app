@@ -1,20 +1,17 @@
 package com.myapp.controller
 
 import com.myapp.auth.TokenHandler
-import com.myapp.config.DatasourceConfig
 import com.myapp.domain.Micropost
 import com.myapp.domain.Relationship
 import com.myapp.domain.User
 import com.myapp.repository.MicropostRepository
 import com.myapp.repository.RelationshipRepository
-import com.myapp.repository.RepositoryTestConfig
 import com.myapp.repository.UserRepository
 import com.myapp.service.SecurityContextService
 import com.myapp.service.UserService
 import com.myapp.service.UserServiceImpl
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
-import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 
 import static groovy.json.JsonOutput.toJson
@@ -22,7 +19,6 @@ import static org.hamcrest.Matchers.*
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 
-@ContextConfiguration(classes = [RepositoryTestConfig, DatasourceConfig])
 class UserControllerTest extends BaseControllerTest {
 
     @Autowired
