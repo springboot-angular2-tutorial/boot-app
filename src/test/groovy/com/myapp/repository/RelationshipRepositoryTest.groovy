@@ -1,18 +1,10 @@
 package com.myapp.repository
 
-import com.myapp.config.DatasourceConfig
 import com.myapp.domain.Relationship
 import com.myapp.domain.User
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.ContextConfiguration
-import org.springframework.transaction.annotation.Transactional
-import spock.lang.Specification
 
-@Transactional
-@ActiveProfiles("test")
-@ContextConfiguration(classes = [RepositoryTestConfig, DatasourceConfig])
-class RelationshipRepositoryTest extends Specification {
+class RelationshipRepositoryTest extends BaseRepositoryTest {
 
     @Autowired
     RelationshipRepository relationshipRepository

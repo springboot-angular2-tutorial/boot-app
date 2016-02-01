@@ -1,20 +1,11 @@
 package com.myapp.repository
 
-import com.myapp.config.DatasourceConfig
-import com.myapp.config.QueryDSLConfig
 import com.myapp.domain.Micropost
 import com.myapp.domain.Relationship
 import com.myapp.domain.User
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.ContextConfiguration
-import org.springframework.transaction.annotation.Transactional
-import spock.lang.Specification
 
-@Transactional
-@ActiveProfiles("test")
-@ContextConfiguration(classes = [RepositoryTestConfig, DatasourceConfig, QueryDSLConfig])
-class MicropostRepositoryTest extends Specification {
+class MicropostRepositoryTest extends BaseRepositoryTest {
 
     @Autowired
     MicropostRepository micropostRepository
