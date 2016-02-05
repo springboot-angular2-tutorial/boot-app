@@ -29,10 +29,10 @@ class UserRepositoryTest extends BaseRepositoryTest {
         List<RelatedUserDTO> result = userRepository.findFollowings(user, currentUser, Optional.empty(), Optional.empty(), null)
 
         then:
-        result[0].user.username == "test2@test.com"
+        result[0].email == "test2@test.com"
         !result[0].userStats.isFollowedByMe()
         result[0].relationshipId == r2.id
-        result[1].user.username == "test1@test.com"
+        result[1].email == "test1@test.com"
         result[1].userStats.isFollowedByMe()
         result[1].relationshipId == r1.id
     }
@@ -53,10 +53,10 @@ class UserRepositoryTest extends BaseRepositoryTest {
         List<RelatedUserDTO> result = userRepository.findFollowers(user, currentUser, Optional.empty(), Optional.empty(), null)
 
         then:
-        result[0].user.username == "test2@test.com"
+        result[0].email == "test2@test.com"
         !result[0].userStats.isFollowedByMe()
         result[0].relationshipId == r2.id
-        result[1].user.username == "test1@test.com"
+        result[1].email == "test1@test.com"
         result[1].userStats.isFollowedByMe()
         result[1].relationshipId == r1.id
     }

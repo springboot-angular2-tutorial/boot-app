@@ -5,16 +5,15 @@ import com.myapp.domain.QUser;
 import com.myapp.domain.User;
 import com.myapp.dto.RelatedUserDTO;
 import com.myapp.dto.UserStats;
+import com.myapp.repository.helper.UserStatsQueryHelper;
 import com.querydsl.core.Tuple;
-import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.JPQLQuery;
+import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 
 @SuppressWarnings("unused")
 public class UserRepositoryImpl implements UserRepositoryCustom {
@@ -23,13 +22,6 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 
     private final QUser qUser = QUser.user;
     private final QRelationship qRelationship = QRelationship.relationship;
-    private final Function<User, JPQLQuery<Long>> isFollowedByUserQuery = (User u) ->
-            JPAExpressions
-                    .select(qRelationship.count())
-                    .from(qRelationship)
-                    .where(qRelationship.follower.eq(u)
-                            .and(qRelationship.followed.eq(qUser))
-                    );
 
     @SuppressWarnings("SpringJavaAutowiredMembersInspection")
     @Autowired
@@ -43,9 +35,10 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                                                Optional<Long> sinceId,
                                                Optional<Long> maxId,
                                                Integer maxSize) {
-        final JPQLQuery<Long> isFollowedByMeQuery = isFollowedByUserQuery.apply(currentUser);
+        final ConstructorExpression<UserStats> userStatsExpression =
+                UserStatsQueryHelper.userStatsExpression(qUser, currentUser);
         final List<Tuple> followings = queryFactory
-                .select(qUser, qRelationship, isFollowedByMeQuery)
+                .select(qUser, qRelationship, userStatsExpression)
                 .from(qUser)
                 .innerJoin(qUser.followedRelations, qRelationship)
                 .where(qRelationship.follower.eq(user)
@@ -56,7 +49,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                 .limit(Optional.ofNullable(maxSize).orElse(20))
                 .fetch();
 
-        return getUserDTOs(isFollowedByMeQuery, followings);
+        return getRelatedUserDTOs(userStatsExpression, followings);
     }
 
     @Override
@@ -65,9 +58,10 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                                               Optional<Long> sinceId,
                                               Optional<Long> maxId,
                                               Integer maxSize) {
-        final JPQLQuery<Long> isFollowedByMeQuery = isFollowedByUserQuery.apply(currentUser);
+        final ConstructorExpression<UserStats> userStatsExpression =
+                UserStatsQueryHelper.userStatsExpression(qUser, currentUser);
         final List<Tuple> followers = queryFactory
-                .select(qUser, qRelationship, isFollowedByMeQuery)
+                .select(qUser, qRelationship, userStatsExpression)
                 .from(qUser)
                 .innerJoin(qUser.followerRelations, qRelationship)
                 .where(qRelationship.followed.eq(user)
@@ -78,21 +72,16 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                 .limit(Optional.ofNullable(maxSize).orElse(20))
                 .fetch();
 
-        return getUserDTOs(isFollowedByMeQuery, followers);
+        return getRelatedUserDTOs(userStatsExpression, followers);
     }
 
-    private List<RelatedUserDTO> getUserDTOs(JPQLQuery<Long> isFollowedByMeQuery, List<Tuple> followings) {
+    private List<RelatedUserDTO> getRelatedUserDTOs(ConstructorExpression<UserStats> userStatsExpression, List<Tuple> followings) {
         final List<RelatedUserDTO> list = new ArrayList<>();
         for (Tuple row : followings) {
-            @SuppressWarnings("ConstantConditions")
-            final boolean isFollowedByMe = row.get(isFollowedByMeQuery) == 1;
-            final UserStats userStats = UserStats.builder()
-                    .isFollowedByMe(isFollowedByMe)
-                    .build();
             final RelatedUserDTO relatedUserDTO = RelatedUserDTO.builder()
                     .user(row.get(qUser))
                     .relationship(row.get(qRelationship))
-                    .userStats(userStats)
+                    .userStats(row.get(userStatsExpression))
                     .build();
             list.add(relatedUserDTO);
         }
