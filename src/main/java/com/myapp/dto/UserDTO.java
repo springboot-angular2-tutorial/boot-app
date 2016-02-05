@@ -1,15 +1,20 @@
 package com.myapp.dto;
 
-import com.myapp.domain.Relationship;
 import com.myapp.domain.User;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 
 @Builder
-public class RelatedUserDTO {
+@ToString
+@EqualsAndHashCode
+public class UserDTO {
 
     private final User user;
+
+    @Getter
     private final UserStats userStats;
-    private final Relationship relationship;
 
     public long getId() {
         return user.getId();
@@ -23,12 +28,5 @@ public class RelatedUserDTO {
         return user.getName();
     }
 
-    public UserStats getUserStats() {
-        return userStats;
-    }
-
-    public Long getRelationshipId() {
-        return relationship.getId();
-    }
 
 }

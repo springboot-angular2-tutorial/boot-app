@@ -34,6 +34,7 @@ class FeedControllerTest extends BaseControllerTest {
 
         then:
         response.andExpect(status().isOk())
+//                .andDo(MockMvcResultHandlers.print())
                 .andExpect(jsonPath('$', hasSize(1)))
                 .andExpect(jsonPath('$[0].content', is("content1")))
                 .andExpect(jsonPath('$[0].user.email', is("test1@test.com")))

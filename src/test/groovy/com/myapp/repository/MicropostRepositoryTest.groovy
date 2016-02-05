@@ -3,6 +3,7 @@ package com.myapp.repository
 import com.myapp.domain.Micropost
 import com.myapp.domain.Relationship
 import com.myapp.domain.User
+import com.myapp.dto.PostDTO
 import org.springframework.beans.factory.annotation.Autowired
 
 class MicropostRepositoryTest extends BaseRepositoryTest {
@@ -28,13 +29,13 @@ class MicropostRepositoryTest extends BaseRepositoryTest {
         }
 
         when:
-        List<Micropost> result = micropostRepository
+        List<PostDTO> result = micropostRepository
                 .findAsFeed(follower, Optional.empty(), Optional.empty(), null)
 
         then:
         result.size() == 4
-        result.first().user == followed
-        result.last().user == follower
+        result.first().user.id == followed.id
+        result.last().user.id == follower.id
     }
 
     def "can find feed by since_id or max_id"() {
@@ -45,12 +46,12 @@ class MicropostRepositoryTest extends BaseRepositoryTest {
         Micropost post3 = micropostRepository.save(new Micropost(content: "test3", user: user))
 
         when:
-        List<Micropost> result = micropostRepository
+        List<PostDTO> result = micropostRepository
                 .findAsFeed(user, Optional.of(post2.id), Optional.empty(), null)
 
         then:
         result.size() == 1
-        result.first() == post3
+        result.first().id == post3.id
 
         when:
         result = micropostRepository
@@ -58,7 +59,7 @@ class MicropostRepositoryTest extends BaseRepositoryTest {
 
         then:
         result.size() == 1
-        result.first() == post1
+        result.first().id == post1.id
     }
 
     def "can find posts by user"() {
