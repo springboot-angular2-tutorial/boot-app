@@ -4,6 +4,7 @@ import com.myapp.domain.QRelationship;
 import com.myapp.domain.QUser;
 import com.myapp.domain.User;
 import com.myapp.dto.RelatedUserDTO;
+import com.myapp.dto.UserDTO;
 import com.myapp.dto.UserStats;
 import com.myapp.repository.helper.UserStatsQueryHelper;
 import com.querydsl.core.Tuple;
@@ -73,6 +74,21 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                 .fetch();
 
         return getRelatedUserDTOs(userStatsExpression, followers);
+    }
+
+    @Override
+    public UserDTO findOne(Long userId, User currentUser) {
+        final ConstructorExpression<UserStats> userStatsExpression =
+                UserStatsQueryHelper.userStatsExpression(qUser, currentUser);
+        final Tuple row = queryFactory.select(qUser, userStatsExpression)
+                .from(qUser)
+                .where(qUser.id.eq(userId))
+                .fetchOne();
+        if (row == null) return null;
+        return UserDTO.builder()
+                .user(row.get(qUser))
+                .userStats(row.get(userStatsExpression))
+                .build();
     }
 
     private List<RelatedUserDTO> getRelatedUserDTOs(ConstructorExpression<UserStats> userStatsExpression, List<Tuple> followings) {

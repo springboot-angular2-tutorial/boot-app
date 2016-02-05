@@ -1,15 +1,14 @@
 package com.myapp.controller;
 
-import com.myapp.domain.User;
-import com.myapp.service.SecurityContextService;
 import com.myapp.auth.TokenHandler;
+import com.myapp.domain.User;
 import com.myapp.dto.ErrorResponse;
+import com.myapp.dto.UserDTO;
 import com.myapp.dto.UserOptionalParams;
 import com.myapp.dto.UserParams;
-import com.myapp.dto.UserStats;
 import com.myapp.repository.UserRepository;
+import com.myapp.service.SecurityContextService;
 import com.myapp.service.UserService;
-import lombok.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -53,19 +52,15 @@ public class UserController {
     }
 
     @RequestMapping(value = "{id:\\d+}")
-    public UserResponse show(@PathVariable("id") Long id) {
-        User user = userRepository.findOne(id);
-        UserStats userStats = userService.getStats(user);
-
-        return new UserResponse(user, userStats);
+    public UserDTO show(@PathVariable("id") Long id) {
+        User currentUser = securityContextService.currentUser();
+        return userRepository.findOne(id, currentUser);
     }
 
     @RequestMapping("/me")
-    public UserResponse showMe() {
+    public UserDTO showMe() {
         User user = securityContextService.currentUser();
-        UserStats userStats = userService.getStats(user);
-
-        return new UserResponse(user, userStats);
+        return userRepository.findOne(user.getId(), user);
     }
 
     @RequestMapping(value = "/me", method = RequestMethod.PATCH)
@@ -79,12 +74,6 @@ public class UserController {
         headers.add("X-AUTH-TOKEN", tokenHandler.createTokenForUser(user));
 
         return new ResponseEntity(headers, HttpStatus.OK);
-    }
-
-    @Value
-    private static class UserResponse {
-        private User user;
-        private UserStats userStats;
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

@@ -106,10 +106,9 @@ class UserControllerTest extends BaseControllerTest {
 
         then:
         response
-                .andDo(MockMvcResultHandlers.print())
+//                .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath('$.user').exists())
-                .andExpect(jsonPath('$.user.name', is(user.name)))
+                .andExpect(jsonPath('$.name', is(user.name)))
                 .andExpect(jsonPath('$.userStats').exists())
                 .andExpect(jsonPath('$.userStats.micropostCnt', is(3)))
                 .andExpect(jsonPath('$.userStats.followingCnt', is(2)))
@@ -128,8 +127,7 @@ class UserControllerTest extends BaseControllerTest {
 
         then:
         response.andExpect(status().isOk())
-                .andExpect(jsonPath('$.user').exists())
-                .andExpect(jsonPath('$.user.name', is(user.name)))
+                .andExpect(jsonPath('$.name', is(user.name)))
                 .andExpect(jsonPath('$.userStats').exists())
                 .andExpect(jsonPath('$.userStats.micropostCnt', is(3)))
                 .andExpect(jsonPath('$.userStats.followingCnt', is(2)))

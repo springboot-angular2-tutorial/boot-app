@@ -10,6 +10,8 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
 
+import java.util.Optional;
+
 public class UserStatsQueryHelper {
 
     public static ConstructorExpression<UserStats> userStatsExpression(QUser qUser, User currentUser) {
@@ -26,7 +28,11 @@ public class UserStatsQueryHelper {
         return JPAExpressions.select(qRelationship.count())
                 .from(qRelationship)
                 .where(qRelationship.followed.eq(qUser)
-                        .and(qRelationship.follower.eq(currentUser)));
+                        .and(Optional.ofNullable(currentUser)
+                                .map(qRelationship.follower::eq)
+                                .orElse(qRelationship.ne(qRelationship)) // make it always false
+                        )
+                );
     }
 
     private static JPQLQuery<Long> cntFollowersQuery(QUser qUser) {
