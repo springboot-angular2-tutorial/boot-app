@@ -7,9 +7,8 @@ import com.myapp.repository.UserRepository
 import com.myapp.service.SecurityContextService
 import org.springframework.beans.factory.annotation.Autowired
 
-import static org.hamcrest.Matchers.is
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 class RelationshipControllerTest extends BaseControllerTest {
@@ -25,29 +24,6 @@ class RelationshipControllerTest extends BaseControllerTest {
     @Override
     def controllers() {
         return new RelationshipController(userRepository, relationshipRepository, securityContextService)
-    }
-
-    def "can show following"() {
-        given:
-        User follower = userRepository.save(new User(username: "test1@test.com", password: "secret", name: "test"))
-        User followed = userRepository.save(new User(username: "test2@test.com", password: "secret", name: "test"))
-        securityContextService.currentUser() >> follower
-        Relationship relationship = relationshipRepository.save(new Relationship(follower: follower, followed: followed))
-
-        when:
-        def response = perform(get("/api/relationships/to/${followed.id}"))
-
-        then:
-        response.andExpect(status().isOk())
-                .andExpect(jsonPath('$.id').exists())
-                .andExpect(jsonPath('$.id', is(relationship.id.intValue())))
-
-        when:
-        relationshipRepository.delete(relationship.id)
-        response = perform(get("/api/relationships/to/${followed.id}"))
-
-        then:
-        response.andExpect(status().isNotFound())
     }
 
     def "can follow another user"() {

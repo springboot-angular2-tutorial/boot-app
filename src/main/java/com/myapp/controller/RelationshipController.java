@@ -26,16 +26,6 @@ public class RelationshipController {
         this.securityContextService = securityContextService;
     }
 
-    @RequestMapping(value = "/to/{followedId}")
-    public Relationship following(@PathVariable("followedId") Long followedId) {
-        final User followed = userRepository.findOne(followedId);
-        final User currentUser = securityContextService.currentUser();
-
-        return relationshipRepository
-                .findOneByFollowerAndFollowed(currentUser, followed)
-                .orElseThrow(RelationshipNotFoundException::new);
-    }
-
     @RequestMapping(value = "/to/{followedId}", method = RequestMethod.POST)
     public void follow(@PathVariable("followedId") Long followedId) {
         final User followed = userRepository.findOne(followedId);
