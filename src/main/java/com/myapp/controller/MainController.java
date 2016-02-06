@@ -14,8 +14,12 @@ public class MainController {
     @SuppressWarnings("UnusedDeclaration")
     private static final Logger logger = LoggerFactory.getLogger(MainController.class);
 
+    private final AppConfig appConfig;
+
     @Autowired
-    private AppConfig appConfig;
+    public MainController(AppConfig appConfig) {
+        this.appConfig = appConfig;
+    }
 
     @RequestMapping({"/**"})
     public String index(Model model) {

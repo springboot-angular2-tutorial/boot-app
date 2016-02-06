@@ -15,10 +15,10 @@ public class UserParams {
 
     private static final Logger logger = LoggerFactory.getLogger(UserParams.class);
 
-    private String email;
+    private final String email;
     @Size(min = 8, max = 100)
-    private String password;
-    private String name;
+    private final String password;
+    private final String name;
 
     public UserParams(@JsonProperty("email") String email,
                       @JsonProperty("password") String password,
