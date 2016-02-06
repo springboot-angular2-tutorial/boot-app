@@ -12,7 +12,6 @@ import com.myapp.service.UserService
 import com.myapp.service.UserServiceImpl
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 
 import static groovy.json.JsonOutput.toJson
 import static org.hamcrest.Matchers.*
@@ -38,7 +37,7 @@ class UserControllerTest extends BaseControllerTest {
 
     @Override
     def controllers() {
-        userService = new UserServiceImpl(userRepository, micropostRepository, relationshipRepository)
+        userService = new UserServiceImpl(userRepository)
         tokenHandler = new TokenHandler("secret", userService)
         return new UserController(userRepository, userService, securityContextService, tokenHandler)
     }
@@ -55,7 +54,9 @@ class UserControllerTest extends BaseControllerTest {
         )
 
         then:
-        response.andDo(MockMvcResultHandlers.print()).andExpect(status().isOk())
+        response
+//                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
         userRepository.count() == 1
         userRepository.findAll().get(0).username == email
     }

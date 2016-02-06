@@ -2,10 +2,7 @@ package com.myapp.service;
 
 import com.myapp.domain.User;
 import com.myapp.dto.UserOptionalParams;
-import com.myapp.repository.MicropostRepository;
 import com.myapp.repository.UserRepository;
-import com.myapp.dto.UserStats;
-import com.myapp.repository.RelationshipRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,26 +16,10 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final MicropostRepository micropostRepository;
-    private final RelationshipRepository relationshipRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, MicropostRepository micropostRepository, RelationshipRepository relationshipRepository) {
+    public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.micropostRepository = micropostRepository;
-        this.relationshipRepository = relationshipRepository;
-    }
-
-    @Override
-    public UserStats getStats(User user) {
-        Integer micropostCnt = micropostRepository.countByUser(user);
-        Integer followingCnt = relationshipRepository.countByFollower(user);
-        Integer followerCnt = relationshipRepository.countByFollowed(user);
-        return UserStats.builder()
-                .micropostCnt(micropostCnt)
-                .followerCnt(followerCnt)
-                .followingCnt(followingCnt)
-                .build();
     }
 
     @Override
