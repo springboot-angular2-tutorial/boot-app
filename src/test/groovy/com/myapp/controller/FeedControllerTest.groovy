@@ -6,6 +6,7 @@ import com.myapp.repository.MicropostRepository
 import com.myapp.repository.UserRepository
 import com.myapp.service.SecurityContextService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 
 import static org.hamcrest.Matchers.hasSize
 import static org.hamcrest.Matchers.is
@@ -37,6 +38,7 @@ class FeedControllerTest extends BaseControllerTest {
 //                .andDo(MockMvcResultHandlers.print())
                 .andExpect(jsonPath('$', hasSize(1)))
                 .andExpect(jsonPath('$[0].content', is("content1")))
+                .andExpect(jsonPath('$[0].createdAt').exists())
                 .andExpect(jsonPath('$[0].user.email', is("test1@test.com")))
     }
 

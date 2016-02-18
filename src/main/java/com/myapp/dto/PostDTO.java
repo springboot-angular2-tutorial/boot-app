@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import java.util.Date;
+
 @Builder
 @ToString
 @EqualsAndHashCode
@@ -21,6 +23,10 @@ public class PostDTO {
 
     public String getContent() {
         return micropost.getContent();
+    }
+
+    public Date getCreatedAt() {
+        return micropost.getCreatedAt();
     }
 
     public UserDTO getUser() {
