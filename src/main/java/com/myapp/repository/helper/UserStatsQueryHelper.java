@@ -4,6 +4,7 @@ import com.myapp.domain.*;
 import com.myapp.dto.UserStats;
 import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
 
@@ -34,8 +35,12 @@ public class UserStatsQueryHelper {
     }
 
     private static JPQLQuery<Boolean> isMyselfQuery(QUser qUser, User currentUser) {
-        return JPAExpressions.select(qUser.eq(currentUser))
-                .from(QDual.dual);
+        final BooleanExpression expr = Optional.ofNullable(currentUser)
+                .map(qUser::eq)
+                .orElse(qUser.ne(qUser)); // make it always false when no current user
+        return JPAExpressions.select(expr)
+                .from(QDual.dual)
+                ;
     }
 
     private static JPQLQuery<Long> cntFollowersQuery(QUser qUser) {
