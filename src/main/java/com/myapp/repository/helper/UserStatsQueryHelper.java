@@ -1,9 +1,6 @@
 package com.myapp.repository.helper;
 
-import com.myapp.domain.QMicropost;
-import com.myapp.domain.QRelationship;
-import com.myapp.domain.QUser;
-import com.myapp.domain.User;
+import com.myapp.domain.*;
 import com.myapp.dto.UserStats;
 import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.core.types.Projections;
@@ -19,20 +16,26 @@ public class UserStatsQueryHelper {
                 cntPostsQuery(qUser),
                 cntFollowingsQuery(qUser),
                 cntFollowersQuery(qUser),
-                isFollowedByMeQuery(qUser, currentUser)
+                isFollowedByMeQuery(qUser, currentUser),
+                isMyselfQuery(qUser, currentUser)
         );
     }
 
-    private static JPQLQuery<Long> isFollowedByMeQuery(QUser qUser, User currentUser) {
+    private static JPQLQuery<Boolean> isFollowedByMeQuery(QUser qUser, User currentUser) {
         final QRelationship qRelationship = new QRelationship("relationship_is_followed_by_me");
-        return JPAExpressions.select(qRelationship.count())
+        return JPAExpressions.select(qRelationship.count().eq(1L))
                 .from(qRelationship)
                 .where(qRelationship.followed.eq(qUser)
                         .and(Optional.ofNullable(currentUser)
                                 .map(qRelationship.follower::eq)
-                                .orElse(qRelationship.ne(qRelationship)) // make it always false
+                                .orElse(qRelationship.ne(qRelationship)) // make it always false when no current user
                         )
                 );
+    }
+
+    private static JPQLQuery<Boolean> isMyselfQuery(QUser qUser, User currentUser) {
+        return JPAExpressions.select(qUser.eq(currentUser))
+                .from(QDual.dual);
     }
 
     private static JPQLQuery<Long> cntFollowersQuery(QUser qUser) {
