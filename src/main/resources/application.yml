@@ -77,7 +77,7 @@ spring:
   jpa:
     database: MYSQL
     hibernate:
-      ddl-auto: validate
+      ddl-auto: none
 logging:
   config: classpath:logback-prod.xml
 app:
