@@ -5,10 +5,10 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-@Entity(name = "Dual")
-@Table(name = "DUAL")
+@Entity
+@Table(name = "dummy")
 public class Dual {
     @Id
-    @Column(name = "DUMMY")
+    @Column(name = "dummy")
     private String dummy;
 }

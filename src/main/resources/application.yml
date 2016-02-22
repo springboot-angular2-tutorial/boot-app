@@ -61,7 +61,7 @@ spring:
   jpa:
     database: MYSQL
     hibernate:
-      ddl-auto: none
+      ddl-auto: validate
 logging:
   config: classpath:logback-stg.xml
 app:
@@ -77,7 +77,7 @@ spring:
   jpa:
     database: MYSQL
     hibernate:
-      ddl-auto: none
+      ddl-auto: validate
 logging:
   config: classpath:logback-prod.xml
 app:
