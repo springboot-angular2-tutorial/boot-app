@@ -1,13 +1,10 @@
 package com.myapp.dto;
 
 import com.myapp.domain.User;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 @Builder
-@ToString
+@ToString(exclude = {"user"})
 @EqualsAndHashCode
 public class UserDTO {
 
@@ -15,6 +12,10 @@ public class UserDTO {
 
     @Getter
     private final UserStats userStats;
+
+    @Getter
+    @Setter
+    private Boolean isMyself = null;
 
     public long getId() {
         return user.getId();

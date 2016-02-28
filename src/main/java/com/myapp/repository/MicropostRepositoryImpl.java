@@ -4,7 +4,6 @@ import com.myapp.domain.*;
 import com.myapp.dto.PostDTO;
 import com.myapp.dto.UserStats;
 import com.myapp.repository.helper.UserStatsQueryHelper;
-import com.querydsl.core.Tuple;
 import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
@@ -13,12 +12,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
-public class MicropostRepositoryImpl implements MicropostRepositoryCustom {
+class MicropostRepositoryImpl implements MicropostRepositoryCustom {
 
     @SuppressWarnings("UnusedDeclaration")
     private static final Logger logger = LoggerFactory.getLogger(MicropostRepositoryImpl.class);
@@ -46,8 +45,7 @@ public class MicropostRepositoryImpl implements MicropostRepositoryCustom {
                 .where(qRelationship.follower.eq(user)
                         .and(qRelationship.followed.eq(qMicropost.user))
                 );
-        final List<Tuple> intermediatePosts = queryFactory
-                .select(qMicropost, qMicropost.user, userStatsExpression)
+        return queryFactory.select(qMicropost, qMicropost.user, userStatsExpression)
                 .from(qMicropost)
                 .innerJoin(qMicropost.user)
                 .where((qMicropost.user.eq(user).or(relationshipSubQuery.exists()))
@@ -56,19 +54,16 @@ public class MicropostRepositoryImpl implements MicropostRepositoryCustom {
                 )
                 .orderBy(qMicropost.id.desc())
                 .limit(Optional.ofNullable(maxSize).orElse(20))
-                .fetch();
+                .fetch()
+                .stream()
+                .map(row -> PostDTO.builder()
+                        .micropost(row.get(qMicropost))
+                        .user(row.get(qMicropost.user))
+                        .userStats(row.get(userStatsExpression))
+                        .build()
+                )
+                .collect(Collectors.toList());
 
-        final List<PostDTO> posts = new ArrayList<>();
-        for (Tuple row : intermediatePosts) {
-            PostDTO post = PostDTO.builder()
-                    .micropost(row.get(qMicropost))
-                    .user(row.get(qMicropost.user))
-                    .userStats(row.get(userStatsExpression))
-                    .build();
-            posts.add(post);
-        }
-
-        return posts;
     }
 
     @Override

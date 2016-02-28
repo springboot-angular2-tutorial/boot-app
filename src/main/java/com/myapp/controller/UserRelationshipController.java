@@ -3,7 +3,7 @@ package com.myapp.controller;
 import com.myapp.domain.User;
 import com.myapp.dto.RelatedUserDTO;
 import com.myapp.repository.UserRepository;
-import com.myapp.service.SecurityContextService;
+import com.myapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,12 +20,12 @@ public class UserRelationshipController {
     private static final Integer DEFAULT_PAGE_SIZE = 5;
 
     private final UserRepository userRepository;
-    private final SecurityContextService securityContextService;
+    private final UserService userService;
 
     @Autowired
-    public UserRelationshipController(UserRepository userRepository, SecurityContextService securityContextService) {
+    public UserRelationshipController(UserRepository userRepository, UserService userService) {
         this.userRepository = userRepository;
-        this.securityContextService = securityContextService;
+        this.userService = userService;
     }
 
     @RequestMapping("/followings")
@@ -34,9 +34,7 @@ public class UserRelationshipController {
                                            @RequestParam("maxId") Optional<Long> maxId,
                                            @RequestParam("count") Optional<Integer> count) {
         final User user = userRepository.findOne(userId);
-        final User currentUser = securityContextService.currentUser();
-        return userRepository
-                .findFollowings(user, currentUser, sinceId, maxId, count.orElse(DEFAULT_PAGE_SIZE));
+        return userService.findFollowings(user, sinceId, maxId, count.orElse(DEFAULT_PAGE_SIZE));
     }
 
     @RequestMapping("/followers")
@@ -45,8 +43,6 @@ public class UserRelationshipController {
                                           @RequestParam("maxId") Optional<Long> maxId,
                                           @RequestParam("count") Optional<Integer> count) {
         final User user = userRepository.findOne(userId);
-        final User currentUser = securityContextService.currentUser();
-        return userRepository
-                .findFollowers(user, currentUser, sinceId, maxId, count.orElse(DEFAULT_PAGE_SIZE));
+        return userService.findFollowers(user, sinceId, maxId, count.orElse(DEFAULT_PAGE_SIZE));
     }
 }

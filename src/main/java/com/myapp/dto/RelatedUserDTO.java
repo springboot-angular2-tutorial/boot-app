@@ -2,13 +2,10 @@ package com.myapp.dto;
 
 import com.myapp.domain.Relationship;
 import com.myapp.domain.User;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 @Builder
-@ToString
+@ToString(exclude = {"user", "relationship"})
 @EqualsAndHashCode
 public class RelatedUserDTO {
 
@@ -18,6 +15,10 @@ public class RelatedUserDTO {
     private final UserStats userStats;
 
     private final Relationship relationship;
+
+    @Getter
+    @Setter
+    private Boolean isMyself = null;
 
     public long getId() {
         return user.getId();

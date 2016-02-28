@@ -1,6 +1,8 @@
 package com.myapp.service;
 
 import com.myapp.domain.User;
+import com.myapp.dto.RelatedUserDTO;
+import com.myapp.dto.UserDTO;
 import com.myapp.dto.UserOptionalParams;
 import com.myapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,16 +12,19 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final SecurityContextService securityContextService;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, SecurityContextService securityContextService) {
         this.userRepository = userRepository;
+        this.securityContextService = securityContextService;
     }
 
     @Override
@@ -28,6 +33,38 @@ public class UserServiceImpl implements UserService {
         params.getPassword().ifPresent(p -> user.setPassword(new BCryptPasswordEncoder().encode(p)));
         params.getName().ifPresent(user::setName);
         return userRepository.save(user);
+    }
+
+    @Override
+    public List<RelatedUserDTO> findFollowings(User user, Optional<Long> sinceId, Optional<Long> maxId, Integer maxSize) {
+        final User currentUser = securityContextService.currentUser();
+        final List<RelatedUserDTO> followings = userRepository.findFollowings(user, currentUser, sinceId, maxId, maxSize);
+        followings.forEach(f -> {
+            if (currentUser == null) return;
+            f.setIsMyself(f.getId() == currentUser.getId());
+        });
+        return followings;
+    }
+
+    @Override
+    public List<RelatedUserDTO> findFollowers(User user, Optional<Long> sinceId, Optional<Long> maxId, Integer maxSize) {
+        final User currentUser = securityContextService.currentUser();
+        final List<RelatedUserDTO> followers = userRepository.findFollowers(user, currentUser, sinceId, maxId, maxSize);
+        followers.forEach(f -> {
+            if (currentUser == null) return;
+            f.setIsMyself(f.getId() == currentUser.getId());
+        });
+        return followers;
+    }
+
+    @Override
+    public UserDTO findOne(Long id) {
+        final User currentUser = securityContextService.currentUser();
+        final UserDTO user = userRepository.findOne(id, currentUser);
+        if (currentUser != null) {
+            user.setIsMyself(user.getId() == currentUser.getId());
+        }
+        return user;
     }
 
     @Override

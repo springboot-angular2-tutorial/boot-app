@@ -1,10 +1,14 @@
 package com.myapp.service;
 
-import com.myapp.domain.User;
-import com.myapp.repository.MicropostRepository;
 import com.myapp.domain.Micropost;
+import com.myapp.domain.User;
+import com.myapp.dto.PostDTO;
+import com.myapp.repository.MicropostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MicropostServiceImpl implements MicropostService {
@@ -26,4 +30,13 @@ public class MicropostServiceImpl implements MicropostService {
             throw new NotPermittedException("no permission to delete this post");
         micropostRepository.delete(id);
     }
+
+    @Override
+    public List<PostDTO> findAsFeed(Optional<Long> sinceId, Optional<Long> maxId, Integer count) {
+        final User currentUser = securityContextService.currentUser();
+        final List<PostDTO> feed = micropostRepository.findAsFeed(currentUser, sinceId, maxId, count);
+        feed.forEach(p -> p.setIsMyPost(p.getUser().getId() == currentUser.getId()));
+        return feed;
+    }
+
 }

@@ -2,20 +2,22 @@ package com.myapp.dto;
 
 import com.myapp.domain.Micropost;
 import com.myapp.domain.User;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.Date;
 
 @Builder
-@ToString
+@ToString(exclude = {"micropost", "user"})
 @EqualsAndHashCode
 public class PostDTO {
 
     private final Micropost micropost;
     private final User user;
     private final UserStats userStats;
+
+    @Setter
+    @Getter
+    private Boolean isMyPost = null;
 
     public long getId() {
         return micropost.getId();

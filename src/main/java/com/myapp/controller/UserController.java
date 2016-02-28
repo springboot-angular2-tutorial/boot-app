@@ -54,7 +54,7 @@ public class UserController {
     @RequestMapping(value = "{id:\\d+}")
     public UserDTO show(@PathVariable("id") Long id) {
         User currentUser = securityContextService.currentUser();
-        return userRepository.findOne(id, currentUser);
+        return userService.findOne(id);
     }
 
     @RequestMapping("/me")
