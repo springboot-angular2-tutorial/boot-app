@@ -12,7 +12,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.3.3.RELEASE</version>
+        <version>1.3.0.RELEASE</version>
         <relativePath/>
     </parent>
 
@@ -72,6 +72,11 @@
         <dependency>
             <groupId>com.querydsl</groupId>
             <artifactId>querydsl-sql-spring</artifactId>
+            <version>${querydsl.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.querydsl</groupId>
+            <artifactId>querydsl-apt</artifactId>
             <version>${querydsl.version}</version>
         </dependency>
 
@@ -196,13 +201,6 @@
                         </configuration>
                     </execution>
                 </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.querydsl</groupId>
-                        <artifactId>querydsl-apt</artifactId>
-                        <version>${querydsl.version}</version>
-                    </dependency>
-                </dependencies>
             </plugin>
         </plugins>
     </build>
