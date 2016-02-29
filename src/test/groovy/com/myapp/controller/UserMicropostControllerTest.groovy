@@ -4,10 +4,12 @@ import com.myapp.domain.Micropost
 import com.myapp.domain.User
 import com.myapp.repository.MicropostRepository
 import com.myapp.repository.UserRepository
+import com.myapp.service.MicropostService
+import com.myapp.service.MicropostServiceImpl
+import com.myapp.service.SecurityContextService
 import org.springframework.beans.factory.annotation.Autowired
 
-import static org.hamcrest.Matchers.hasSize
-import static org.hamcrest.Matchers.is
+import static org.hamcrest.Matchers.*
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -20,9 +22,12 @@ class UserMicropostControllerTest extends BaseControllerTest {
     @Autowired
     private MicropostRepository micropostRepository
 
+    SecurityContextService securityContextService = Mock(SecurityContextService)
+
     @Override
     def controllers() {
-        return new UserMicropostController(userRepository, micropostRepository)
+        final MicropostService micropostService = new MicropostServiceImpl(micropostRepository, securityContextService);
+        return new UserMicropostController(userRepository, micropostService)
     }
 
     def "can list microposts"() {
@@ -34,9 +39,12 @@ class UserMicropostControllerTest extends BaseControllerTest {
         def response = perform(get("/api/users/${user.id}/microposts/"))
 
         then:
-        response.andExpect(status().isOk())
+        response
+//                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
                 .andExpect(jsonPath('$', hasSize(1)))
                 .andExpect(jsonPath('$[0].content', is("my content")))
+                .andExpect(jsonPath('$[0].isMyPost', nullValue()))
     }
 
 }

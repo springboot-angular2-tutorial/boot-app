@@ -4,6 +4,7 @@ import com.myapp.domain.Micropost
 import com.myapp.domain.Relationship
 import com.myapp.domain.User
 import com.myapp.dto.PageParams
+import com.myapp.dto.PostDTO
 import com.myapp.repository.MicropostRepository
 import com.myapp.repository.RelationshipRepository
 import com.myapp.repository.UserRepository
@@ -68,11 +69,45 @@ class MicropostServiceTest extends BaseServiceTest {
         micropostRepository.save(new Micropost(user: followed, content: "follower content"))
 
         when:
-        def posts = micropostService.findAsFeed(new PageParams())
+        List<PostDTO> posts = micropostService.findAsFeed(new PageParams())
 
         then:
         posts.first().content == 'follower content'
         posts.first().isMyPost == false
         posts.last().isMyPost == true
+    }
+
+    def "can find posts by user when not signed in"() {
+        given:
+        User user = userRepository.save(new User(username: "akira@test.com", password: "secret", name: "akira"))
+        micropostRepository.save(new Micropost(user: user, content: "my content"))
+
+        when:
+        List<PostDTO> posts = micropostService.findByUser(user, new PageParams())
+
+        then:
+        posts.first().isMyPost == null;
+    }
+
+    @SuppressWarnings("GroovyPointlessBoolean")
+    def "can find posts by user when signed in"() {
+        given:
+        User user = userRepository.save(new User(username: "akira@test.com", password: "secret", name: "akira"))
+        securityContextService.currentUser() >> user
+
+        when:
+        micropostRepository.save(new Micropost(user: user, content: "my content"))
+        List<PostDTO> posts = micropostService.findByUser(user, new PageParams())
+
+        then:
+        posts.first().isMyPost == true;
+
+        when:
+        User anotherUser = userRepository.save(new User(username: "satoru@test.com", password: "secret", name: "satoru"))
+        micropostRepository.save(new Micropost(user: anotherUser, content: "my content"))
+        List<PostDTO> anotherPosts = micropostService.findByUser(anotherUser, new PageParams())
+
+        then:
+        anotherPosts.first().isMyPost == false;
     }
 }
