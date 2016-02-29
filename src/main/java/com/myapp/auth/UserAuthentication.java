@@ -6,12 +6,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
-public class UserAuthentication implements Authentication {
+class UserAuthentication implements Authentication {
 
     private final UserDetails user;
     private boolean authenticated = true;
 
-    public UserAuthentication(UserDetails user) {
+    UserAuthentication(UserDetails user) {
         this.user = user;
     }
 
