@@ -2,12 +2,12 @@ package com.myapp.service;
 
 import com.myapp.domain.Micropost;
 import com.myapp.domain.User;
+import com.myapp.dto.PageParams;
 import com.myapp.dto.PostDTO;
 import com.myapp.repository.MicropostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 @Service
@@ -32,9 +32,9 @@ public class MicropostServiceImpl implements MicropostService {
     }
 
     @Override
-    public List<PostDTO> findAsFeed(@Nullable Long sinceId, @Nullable Long maxId, @Nullable Integer maxSize) {
+    public List<PostDTO> findAsFeed(PageParams pageParams) {
         final User currentUser = securityContextService.currentUser();
-        final List<PostDTO> feed = micropostRepository.findAsFeed(currentUser, sinceId, maxId, maxSize);
+        final List<PostDTO> feed = micropostRepository.findAsFeed(currentUser, pageParams);
         feed.forEach(p -> p.setIsMyPost(p.getUser().getId() == currentUser.getId()));
         return feed;
     }

@@ -1,6 +1,7 @@
 package com.myapp.service;
 
 import com.myapp.domain.User;
+import com.myapp.dto.PageParams;
 import com.myapp.dto.RelatedUserDTO;
 import com.myapp.dto.UserDTO;
 import com.myapp.dto.UserOptionalParams;
@@ -37,9 +38,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<RelatedUserDTO> findFollowings(User user, @Nullable Long sinceId, @Nullable Long maxId, @Nullable Integer maxSize) {
+    public List<RelatedUserDTO> findFollowings(User user, PageParams pageParams) {
         final User currentUser = securityContextService.currentUser();
-        final List<RelatedUserDTO> followings = userRepository.findFollowings(user, currentUser, sinceId, maxId, maxSize);
+        final List<RelatedUserDTO> followings = userRepository.findFollowings(user, currentUser, pageParams);
         followings.forEach(f -> {
             if (currentUser == null) return;
             f.setIsMyself(f.getId() == currentUser.getId());
@@ -48,9 +49,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<RelatedUserDTO> findFollowers(User user, @Nullable Long sinceId, @Nullable Long maxId, @Nullable Integer maxSize) {
+    public List<RelatedUserDTO> findFollowers(User user, PageParams pageParams) {
         final User currentUser = securityContextService.currentUser();
-        final List<RelatedUserDTO> followers = userRepository.findFollowers(user, currentUser, sinceId, maxId, maxSize);
+        final List<RelatedUserDTO> followers = userRepository.findFollowers(user, currentUser, pageParams);
         followers.forEach(f -> {
             if (currentUser == null) return;
             f.setIsMyself(f.getId() == currentUser.getId());

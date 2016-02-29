@@ -1,6 +1,7 @@
 package com.myapp.repository;
 
 import com.myapp.domain.*;
+import com.myapp.dto.PageParams;
 import com.myapp.dto.PostDTO;
 import com.myapp.dto.UserStats;
 import com.myapp.repository.helper.UserStatsQueryHelper;
@@ -12,9 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
@@ -32,10 +31,7 @@ class MicropostRepositoryImpl implements MicropostRepositoryCustom {
     }
 
     @Override
-    public List<PostDTO> findAsFeed(User user,
-                                    @Nullable Long sinceId,
-                                    @Nullable Long maxId,
-                                    @Nullable Integer maxSize) {
+    public List<PostDTO> findAsFeed(User user, PageParams pageParams) {
         final QMicropost qMicropost = QMicropost.micropost;
         final QRelationship qRelationship = QRelationship.relationship;
 
@@ -50,11 +46,11 @@ class MicropostRepositoryImpl implements MicropostRepositoryCustom {
                 .from(qMicropost)
                 .innerJoin(qMicropost.user)
                 .where((qMicropost.user.eq(user).or(relationshipSubQuery.exists()))
-                        .and(Optional.ofNullable(sinceId).map(qMicropost.id::gt).orElse(null))
-                        .and(Optional.ofNullable(maxId).map(qMicropost.id::lt).orElse(null))
+                        .and(pageParams.getSinceId().map(qMicropost.id::gt).orElse(null))
+                        .and(pageParams.getMaxId().map(qMicropost.id::lt).orElse(null))
                 )
                 .orderBy(qMicropost.id.desc())
-                .limit(Optional.ofNullable(maxSize).orElse(20))
+                .limit(pageParams.getCount())
                 .fetch()
                 .stream()
                 .map(row -> PostDTO.builder()
@@ -67,18 +63,15 @@ class MicropostRepositoryImpl implements MicropostRepositoryCustom {
     }
 
     @Override
-    public List<Micropost> findByUser(User user,
-                                      @Nullable Long sinceId,
-                                      @Nullable Long maxId,
-                                      @Nullable Integer maxSize) {
+    public List<Micropost> findByUser(User user, PageParams pageParams) {
         final QMicropost qMicropost = QMicropost.micropost;
         return queryFactory.selectFrom(qMicropost)
                 .where(qMicropost.user.eq(user)
-                        .and(Optional.ofNullable(sinceId).map(qMicropost.id::gt).orElse(null))
-                        .and(Optional.ofNullable(maxId).map(qMicropost.id::lt).orElse(null))
+                        .and(pageParams.getSinceId().map(qMicropost.id::gt).orElse(null))
+                        .and(pageParams.getMaxId().map(qMicropost.id::lt).orElse(null))
                 )
                 .orderBy(qMicropost.id.desc())
-                .limit(Optional.ofNullable(maxSize).orElse(20))
+                .limit(pageParams.getCount())
                 .fetch();
     }
 }

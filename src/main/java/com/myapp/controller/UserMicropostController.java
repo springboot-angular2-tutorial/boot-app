@@ -2,6 +2,7 @@ package com.myapp.controller;
 
 import com.myapp.domain.Micropost;
 import com.myapp.domain.User;
+import com.myapp.dto.PageParams;
 import com.myapp.repository.MicropostRepository;
 import com.myapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
+
+import static com.myapp.domain.QUser.user;
+import static com.querydsl.core.types.dsl.Wildcard.count;
 
 @RestController
 @RequestMapping("/api/users/{userId}/microposts")
@@ -30,12 +34,8 @@ public class UserMicropostController {
     }
 
     @RequestMapping
-    public List<Micropost> list(@PathVariable("userId") Long userId,
-                                @RequestParam(value = "sinceId", required = false) @Nullable Long sinceId,
-                                @RequestParam(value = "maxId", required = false) @Nullable Long maxId,
-                                @RequestParam(value = "count", required = false) @Nullable Integer count) {
+    public List<Micropost> list(@PathVariable("userId") Long userId, PageParams pageParams) {
         final User user = userRepository.findOne(userId);
-        final Integer maxSize = Optional.ofNullable(count).orElse(DEFAULT_PAGE_SIZE);
-        return micropostRepository.findByUser(user, sinceId, maxId, maxSize);
+        return micropostRepository.findByUser(user, pageParams);
     }
 }

@@ -1,5 +1,6 @@
 package com.myapp.service;
 
+import com.myapp.dto.PageParams;
 import com.myapp.dto.PostDTO;
 
 import javax.annotation.Nullable;
@@ -9,7 +10,5 @@ public interface MicropostService {
 
     void delete(Long id);
 
-    List<PostDTO> findAsFeed(@Nullable Long sinceId,
-                             @Nullable Long maxId,
-                             @Nullable Integer maxSize);
+    List<PostDTO> findAsFeed(PageParams pageParams);
 }

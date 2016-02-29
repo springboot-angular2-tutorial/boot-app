@@ -1,6 +1,7 @@
 package com.myapp.service;
 
 import com.myapp.domain.User;
+import com.myapp.dto.PageParams;
 import com.myapp.dto.RelatedUserDTO;
 import com.myapp.dto.UserDTO;
 import com.myapp.dto.UserOptionalParams;
@@ -12,15 +13,9 @@ public interface UserService extends org.springframework.security.core.userdetai
 
     User update(User user, UserOptionalParams params);
 
-    List<RelatedUserDTO> findFollowings(User user,
-                                        @Nullable Long sinceId,
-                                        @Nullable Long maxId,
-                                        @Nullable Integer maxSize);
+    List<RelatedUserDTO> findFollowings(User user, PageParams pageParams);
 
-    List<RelatedUserDTO> findFollowers(User user,
-                                       @Nullable Long sinceId,
-                                       @Nullable Long maxId,
-                                       @Nullable Integer maxSize);
+    List<RelatedUserDTO> findFollowers(User user, PageParams pageParams);
 
     UserDTO findOne(Long id);
 }
