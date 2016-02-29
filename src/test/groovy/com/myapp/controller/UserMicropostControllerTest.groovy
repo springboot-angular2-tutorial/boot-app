@@ -27,7 +27,7 @@ class UserMicropostControllerTest extends BaseControllerTest {
     @Override
     def controllers() {
         final MicropostService micropostService = new MicropostServiceImpl(micropostRepository, securityContextService);
-        return new UserMicropostController(userRepository, micropostService)
+        return new UserMicropostController(userRepository, micropostService, securityContextService)
     }
 
     def "can list microposts"() {
@@ -45,6 +45,24 @@ class UserMicropostControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath('$', hasSize(1)))
                 .andExpect(jsonPath('$[0].content', is("my content")))
                 .andExpect(jsonPath('$[0].isMyPost', nullValue()))
+    }
+
+    def "can list my microposts"() {
+        given:
+        User user = userRepository.save(new User(username: "akira@test.com", password: "secret", name: "akira"))
+        micropostRepository.save(new Micropost(user: user, content: "my content"))
+        securityContextService.currentUser() >> user
+
+        when:
+        def response = perform(get("/api/users/me/microposts/"))
+
+        then:
+        response
+//                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath('$', hasSize(1)))
+                .andExpect(jsonPath('$[0].content', is("my content")))
+                .andExpect(jsonPath('$[0].isMyPost', is(true)))
     }
 
 }
