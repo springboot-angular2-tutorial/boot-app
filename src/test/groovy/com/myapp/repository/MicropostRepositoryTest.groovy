@@ -3,6 +3,7 @@ package com.myapp.repository
 import com.myapp.domain.Micropost
 import com.myapp.domain.Relationship
 import com.myapp.domain.User
+import com.myapp.dto.PageParams
 import com.myapp.dto.PostDTO
 import org.springframework.beans.factory.annotation.Autowired
 
@@ -29,8 +30,7 @@ class MicropostRepositoryTest extends BaseRepositoryTest {
         }
 
         when:
-        List<PostDTO> result = micropostRepository
-                .findAsFeed(follower, null, null, null)
+        List<PostDTO> result = micropostRepository.findAsFeed(follower, new PageParams())
 
         then:
         result.size() == 4
@@ -46,16 +46,14 @@ class MicropostRepositoryTest extends BaseRepositoryTest {
         Micropost post3 = micropostRepository.save(new Micropost(content: "test3", user: user))
 
         when:
-        List<PostDTO> result = micropostRepository
-                .findAsFeed(user, post2.id, null, null)
+        List<PostDTO> result = micropostRepository.findAsFeed(user, new PageParams(sinceId: post2.id))
 
         then:
         result.size() == 1
         result.first().id == post3.id
 
         when:
-        result = micropostRepository
-                .findAsFeed(user, null, post2.id, null)
+        result = micropostRepository.findAsFeed(user, new PageParams(maxId: post2.id))
 
         then:
         result.size() == 1
@@ -70,16 +68,14 @@ class MicropostRepositoryTest extends BaseRepositoryTest {
         Micropost post3 = micropostRepository.save(new Micropost(content: "test3", user: user))
 
         when:
-        List<Micropost> result = micropostRepository
-                .findByUser(user, post2.id, null, null)
+        List<Micropost> result = micropostRepository.findByUser(user, new PageParams(sinceId: post2.id))
 
         then:
         result.size() == 1
         result.first() == post3
 
         when:
-        result = micropostRepository
-                .findByUser(user, null, post2.id, null)
+        result = micropostRepository.findByUser(user, new PageParams(maxId: post2.id))
 
         then:
         result.size() == 1

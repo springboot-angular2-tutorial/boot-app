@@ -3,6 +3,7 @@ package com.myapp.service
 import com.myapp.domain.Micropost
 import com.myapp.domain.Relationship
 import com.myapp.domain.User
+import com.myapp.dto.PageParams
 import com.myapp.repository.MicropostRepository
 import com.myapp.repository.RelationshipRepository
 import com.myapp.repository.UserRepository
@@ -67,7 +68,7 @@ class MicropostServiceTest extends BaseServiceTest {
         micropostRepository.save(new Micropost(user: followed, content: "follower content"))
 
         when:
-        def posts = micropostService.findAsFeed(null, null, null)
+        def posts = micropostService.findAsFeed(new PageParams())
 
         then:
         posts.first().content == 'follower content'

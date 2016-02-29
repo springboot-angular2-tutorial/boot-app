@@ -2,6 +2,7 @@ package com.myapp.service
 
 import com.myapp.domain.Relationship
 import com.myapp.domain.User
+import com.myapp.dto.PageParams
 import com.myapp.dto.UserDTO
 import com.myapp.repository.RelationshipRepository
 import com.myapp.repository.UserRepository
@@ -31,7 +32,7 @@ class UserServiceTest extends BaseServiceTest {
         relationshipRepository.save(new Relationship(follower: follower, followed: followed))
 
         when:
-        def followings = userService.findFollowings(follower, null, null, null)
+        def followings = userService.findFollowings(follower, new PageParams())
 
         then:
         followings.first().isMyself == null
@@ -47,7 +48,7 @@ class UserServiceTest extends BaseServiceTest {
         securityContextService.currentUser() >> followed1
 
         when:
-        def followings = userService.findFollowings(follower, null, null, null)
+        def followings = userService.findFollowings(follower, new PageParams())
 
         then:
         followings.first().email == "followed2@test.com"
@@ -62,7 +63,7 @@ class UserServiceTest extends BaseServiceTest {
         relationshipRepository.save(new Relationship(follower: follower, followed: followed))
 
         when:
-        def followers = userService.findFollowers(followed, null, null, null)
+        def followers = userService.findFollowers(followed, new PageParams())
 
         then:
         followers.first().isMyself == null
@@ -78,7 +79,7 @@ class UserServiceTest extends BaseServiceTest {
         securityContextService.currentUser() >> follower1
 
         when:
-        def followers = userService.findFollowers(followed, null, null, null)
+        def followers = userService.findFollowers(followed, new PageParams())
 
         then:
         followers.first().email == "follower2@test.com"
