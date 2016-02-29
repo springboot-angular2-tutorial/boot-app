@@ -1,6 +1,5 @@
 package com.myapp.auth;
 
-import com.myapp.domain.User;
 import com.myapp.service.UserService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -23,7 +22,7 @@ public final class TokenHandler {
         this.userService = userService;
     }
 
-    public Optional<UserDetails> parseUserFromToken(String token) {
+    Optional<UserDetails> parseUserFromToken(String token) {
         String username = Jwts.parser()
                 .setSigningKey(secret)
                 .parseClaimsJws(token)
@@ -35,7 +34,6 @@ public final class TokenHandler {
     public String createTokenForUser(UserDetails user) {
         return Jwts.builder()
                 .setSubject(user.getUsername())
-                .claim("userId", ((User) user).getId())
                 .signWith(SignatureAlgorithm.HS512, secret)
                 .compact();
     }

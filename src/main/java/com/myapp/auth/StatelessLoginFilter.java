@@ -17,15 +17,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter {
+class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter {
 
     private final TokenAuthenticationService tokenAuthenticationService;
     private final UserService userService;
 
-    protected StatelessLoginFilter(String urlMapping,
-                                   TokenAuthenticationService tokenAuthenticationService,
-                                   UserService userService,
-                                   AuthenticationManager authenticationManager) {
+    StatelessLoginFilter(String urlMapping,
+                         TokenAuthenticationService tokenAuthenticationService,
+                         UserService userService,
+                         AuthenticationManager authenticationManager) {
         super(urlMapping);
         this.tokenAuthenticationService = tokenAuthenticationService;
         this.userService = userService;
