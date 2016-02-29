@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,7 +37,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<RelatedUserDTO> findFollowings(User user, Optional<Long> sinceId, Optional<Long> maxId, Integer maxSize) {
+    public List<RelatedUserDTO> findFollowings(User user, @Nullable Long sinceId, @Nullable Long maxId, @Nullable Integer maxSize) {
         final User currentUser = securityContextService.currentUser();
         final List<RelatedUserDTO> followings = userRepository.findFollowings(user, currentUser, sinceId, maxId, maxSize);
         followings.forEach(f -> {
@@ -47,7 +48,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<RelatedUserDTO> findFollowers(User user, Optional<Long> sinceId, Optional<Long> maxId, Integer maxSize) {
+    public List<RelatedUserDTO> findFollowers(User user, @Nullable Long sinceId, @Nullable Long maxId, @Nullable Integer maxSize) {
         final User currentUser = securityContextService.currentUser();
         final List<RelatedUserDTO> followers = userRepository.findFollowers(user, currentUser, sinceId, maxId, maxSize);
         followers.forEach(f -> {

@@ -7,8 +7,8 @@ import com.myapp.repository.MicropostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class MicropostServiceImpl implements MicropostService {
@@ -32,9 +32,9 @@ public class MicropostServiceImpl implements MicropostService {
     }
 
     @Override
-    public List<PostDTO> findAsFeed(Optional<Long> sinceId, Optional<Long> maxId, Integer count) {
+    public List<PostDTO> findAsFeed(@Nullable Long sinceId, @Nullable Long maxId, @Nullable Integer maxSize) {
         final User currentUser = securityContextService.currentUser();
-        final List<PostDTO> feed = micropostRepository.findAsFeed(currentUser, sinceId, maxId, count);
+        final List<PostDTO> feed = micropostRepository.findAsFeed(currentUser, sinceId, maxId, maxSize);
         feed.forEach(p -> p.setIsMyPost(p.getUser().getId() == currentUser.getId()));
         return feed;
     }

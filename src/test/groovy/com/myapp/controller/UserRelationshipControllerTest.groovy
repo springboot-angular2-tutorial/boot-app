@@ -5,6 +5,8 @@ import com.myapp.domain.User
 import com.myapp.repository.RelationshipRepository
 import com.myapp.repository.UserRepository
 import com.myapp.service.SecurityContextService
+import com.myapp.service.UserService
+import com.myapp.service.UserServiceImpl
 import org.springframework.beans.factory.annotation.Autowired
 
 import static org.hamcrest.Matchers.is
@@ -24,7 +26,8 @@ class UserRelationshipControllerTest extends BaseControllerTest {
 
     @Override
     def controllers() {
-        return new UserRelationshipController(userRepository, securityContextService)
+        final UserService userService = new UserServiceImpl(userRepository, securityContextService)
+        return new UserRelationshipController(userRepository, userService)
     }
 
     def "can list followings"() {
@@ -39,8 +42,10 @@ class UserRelationshipControllerTest extends BaseControllerTest {
 
         then:
         response
+//                .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath('$[0].email', is("satoru@test.com")))
+                .andExpect(jsonPath('$[0].isMyself', is(false)))
                 .andExpect(jsonPath('$[0].userStats').exists())
                 .andExpect(jsonPath('$[0].relationshipId', is(r1.id.intValue())))
     }
@@ -57,9 +62,10 @@ class UserRelationshipControllerTest extends BaseControllerTest {
 
         then:
         response
-                .andExpect(status().isOk())
 //                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
                 .andExpect(jsonPath('$[0].email', is("satoru@test.com")))
+                .andExpect(jsonPath('$[0].isMyself', is(false)))
                 .andExpect(jsonPath('$[0].userStats').exists())
                 .andExpect(jsonPath('$[0].relationshipId', is(r1.id.intValue())))
     }

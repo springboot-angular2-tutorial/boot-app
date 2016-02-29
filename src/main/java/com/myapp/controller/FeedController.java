@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,11 +30,11 @@ public class FeedController {
     }
 
     @RequestMapping
-    public List<PostDTO> feed(@RequestParam("sinceId") Optional<Long> sinceId,
-                              @RequestParam("maxId") Optional<Long> maxId,
-                              @RequestParam("count") Optional<Integer> count) {
-        return micropostService.findAsFeed(sinceId, maxId, count.orElse(DEFAULT_PAGE_SIZE));
-
+    public List<PostDTO> feed(@RequestParam(value = "sinceId", required = false) @Nullable Long sinceId,
+                              @RequestParam(value = "maxId", required = false) @Nullable Long maxId,
+                              @RequestParam(value = "count", required = false) @Nullable Integer count) {
+        final Integer maxSize = Optional.ofNullable(count).orElse(DEFAULT_PAGE_SIZE);
+        return micropostService.findAsFeed(sinceId, maxId, maxSize);
     }
 
 }

@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Nullable;
 import javax.validation.Valid;
 import java.util.Optional;
 
@@ -41,9 +42,12 @@ public class UserController {
     }
 
     @RequestMapping
-    public Page<User> list(@RequestParam(value = "page") Optional<Integer> page,
-                           @RequestParam(value = "size") Optional<Integer> size) {
-        return userRepository.findAll(new PageRequest(page.orElse(1) - 1, size.orElse(DEFAULT_PAGE_SIZE)));
+    public Page<User> list(@RequestParam(value = "page", required = false) @Nullable Integer page,
+                           @RequestParam(value = "size", required = false) @Nullable Integer size) {
+        final PageRequest pageable = new PageRequest(
+                Optional.ofNullable(page).orElse(1) - 1,
+                Optional.ofNullable(size).orElse(DEFAULT_PAGE_SIZE));
+        return userRepository.findAll(pageable);
     }
 
     @RequestMapping(method = RequestMethod.POST)
@@ -53,7 +57,6 @@ public class UserController {
 
     @RequestMapping(value = "{id:\\d+}")
     public UserDTO show(@PathVariable("id") Long id) {
-        User currentUser = securityContextService.currentUser();
         return userService.findOne(id);
     }
 

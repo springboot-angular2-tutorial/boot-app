@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,11 +31,11 @@ public class UserMicropostController {
 
     @RequestMapping
     public List<Micropost> list(@PathVariable("userId") Long userId,
-                                @RequestParam("sinceId") Optional<Long> sinceId,
-                                @RequestParam("maxId") Optional<Long> maxId,
-                                @RequestParam("count") Optional<Integer> count) {
-        User user = userRepository.findOne(userId);
-        return micropostRepository
-                .findByUser(user, sinceId, maxId, count.orElse(DEFAULT_PAGE_SIZE));
+                                @RequestParam(value = "sinceId", required = false) @Nullable Long sinceId,
+                                @RequestParam(value = "maxId", required = false) @Nullable Long maxId,
+                                @RequestParam(value = "count", required = false) @Nullable Integer count) {
+        final User user = userRepository.findOne(userId);
+        final Integer maxSize = Optional.ofNullable(count).orElse(DEFAULT_PAGE_SIZE);
+        return micropostRepository.findByUser(user, sinceId, maxId, maxSize);
     }
 }

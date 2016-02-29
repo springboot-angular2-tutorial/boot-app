@@ -30,7 +30,7 @@ class MicropostRepositoryTest extends BaseRepositoryTest {
 
         when:
         List<PostDTO> result = micropostRepository
-                .findAsFeed(follower, Optional.empty(), Optional.empty(), null)
+                .findAsFeed(follower, null, null, null)
 
         then:
         result.size() == 4
@@ -47,7 +47,7 @@ class MicropostRepositoryTest extends BaseRepositoryTest {
 
         when:
         List<PostDTO> result = micropostRepository
-                .findAsFeed(user, Optional.of(post2.id), Optional.empty(), null)
+                .findAsFeed(user, post2.id, null, null)
 
         then:
         result.size() == 1
@@ -55,7 +55,7 @@ class MicropostRepositoryTest extends BaseRepositoryTest {
 
         when:
         result = micropostRepository
-                .findAsFeed(user, Optional.empty(), Optional.of(post2.id), null)
+                .findAsFeed(user, null, post2.id, null)
 
         then:
         result.size() == 1
@@ -71,7 +71,7 @@ class MicropostRepositoryTest extends BaseRepositoryTest {
 
         when:
         List<Micropost> result = micropostRepository
-                .findByUser(user, Optional.of(post2.id), Optional.empty(), null)
+                .findByUser(user, post2.id, null, null)
 
         then:
         result.size() == 1
@@ -79,7 +79,7 @@ class MicropostRepositoryTest extends BaseRepositoryTest {
 
         when:
         result = micropostRepository
-                .findByUser(user, Optional.empty(), Optional.of(post2.id), null)
+                .findByUser(user, null, post2.id, null)
 
         then:
         result.size() == 1

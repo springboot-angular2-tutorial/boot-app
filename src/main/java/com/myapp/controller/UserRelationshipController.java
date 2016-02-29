@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,19 +31,21 @@ public class UserRelationshipController {
 
     @RequestMapping("/followings")
     public List<RelatedUserDTO> followings(@PathVariable("userId") Long userId,
-                                           @RequestParam("sinceId") Optional<Long> sinceId,
-                                           @RequestParam("maxId") Optional<Long> maxId,
-                                           @RequestParam("count") Optional<Integer> count) {
+                                           @RequestParam(value = "sinceId", required = false) @Nullable Long sinceId,
+                                           @RequestParam(value = "maxId", required = false) @Nullable Long maxId,
+                                           @RequestParam(value = "count", required = false) @Nullable Integer count) {
         final User user = userRepository.findOne(userId);
-        return userService.findFollowings(user, sinceId, maxId, count.orElse(DEFAULT_PAGE_SIZE));
+        final Integer maxSize = Optional.ofNullable(count).orElse(DEFAULT_PAGE_SIZE);
+        return userService.findFollowings(user, sinceId, maxId, maxSize);
     }
 
     @RequestMapping("/followers")
     public List<RelatedUserDTO> followers(@PathVariable("userId") Long userId,
-                                          @RequestParam("sinceId") Optional<Long> sinceId,
-                                          @RequestParam("maxId") Optional<Long> maxId,
-                                          @RequestParam("count") Optional<Integer> count) {
+                                          @RequestParam(value = "sinceId", required = false) @Nullable Long sinceId,
+                                          @RequestParam(value = "maxId", required = false) @Nullable Long maxId,
+                                          @RequestParam(value = "count", required = false) @Nullable Integer count) {
         final User user = userRepository.findOne(userId);
-        return userService.findFollowers(user, sinceId, maxId, count.orElse(DEFAULT_PAGE_SIZE));
+        final Integer maxSize = Optional.ofNullable(count).orElse(DEFAULT_PAGE_SIZE);
+        return userService.findFollowers(user, sinceId, maxId, maxSize);
     }
 }

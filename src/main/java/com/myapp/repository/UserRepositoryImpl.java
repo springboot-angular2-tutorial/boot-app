@@ -12,6 +12,7 @@ import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,9 +34,9 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
     @Override
     public List<RelatedUserDTO> findFollowings(User user,
                                                User currentUser,
-                                               Optional<Long> sinceId,
-                                               Optional<Long> maxId,
-                                               Integer maxSize) {
+                                               @Nullable Long sinceId,
+                                               @Nullable Long maxId,
+                                               @Nullable Integer maxSize) {
         final ConstructorExpression<UserStats> userStatsExpression =
                 UserStatsQueryHelper.userStatsExpression(qUser, currentUser);
 
@@ -43,8 +44,8 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                 .from(qUser)
                 .innerJoin(qUser.followedRelations, qRelationship)
                 .where(qRelationship.follower.eq(user)
-                        .and(sinceId.map(qRelationship.id::gt).orElse(null))
-                        .and(maxId.map(qRelationship.id::lt).orElse(null))
+                        .and(Optional.ofNullable(sinceId).map(qRelationship.id::gt).orElse(null))
+                        .and(Optional.ofNullable(maxId).map(qRelationship.id::lt).orElse(null))
                 )
                 .orderBy(qRelationship.id.desc())
                 .limit(Optional.ofNullable(maxSize).orElse(20))
@@ -61,9 +62,9 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
     @Override
     public List<RelatedUserDTO> findFollowers(User user,
                                               User currentUser,
-                                              Optional<Long> sinceId,
-                                              Optional<Long> maxId,
-                                              Integer maxSize) {
+                                              @Nullable Long sinceId,
+                                              @Nullable Long maxId,
+                                              @Nullable Integer maxSize) {
         final ConstructorExpression<UserStats> userStatsExpression =
                 UserStatsQueryHelper.userStatsExpression(qUser, currentUser);
 
@@ -71,8 +72,8 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                 .from(qUser)
                 .innerJoin(qUser.followerRelations, qRelationship)
                 .where(qRelationship.followed.eq(user)
-                        .and(sinceId.map(qRelationship.id::gt).orElse(null))
-                        .and(maxId.map(qRelationship.id::lt).orElse(null))
+                        .and(Optional.ofNullable(sinceId).map(qRelationship.id::gt).orElse(null))
+                        .and(Optional.ofNullable(maxId).map(qRelationship.id::lt).orElse(null))
                 )
                 .orderBy(qRelationship.id.desc())
                 .limit(Optional.ofNullable(maxSize).orElse(20))

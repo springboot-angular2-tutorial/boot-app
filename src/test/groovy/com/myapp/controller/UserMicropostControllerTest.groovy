@@ -15,10 +15,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class UserMicropostControllerTest extends BaseControllerTest {
 
     @Autowired
-    private final UserRepository userRepository
+    private UserRepository userRepository
 
     @Autowired
-    private final MicropostRepository micropostRepository
+    private MicropostRepository micropostRepository
 
     @Override
     def controllers() {

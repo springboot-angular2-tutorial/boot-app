@@ -2,12 +2,14 @@ package com.myapp.service;
 
 import com.myapp.dto.PostDTO;
 
+import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Optional;
 
 public interface MicropostService {
 
     void delete(Long id);
 
-    List<PostDTO> findAsFeed(Optional<Long> sinceId, Optional<Long> maxId, Integer integer);
+    List<PostDTO> findAsFeed(@Nullable Long sinceId,
+                             @Nullable Long maxId,
+                             @Nullable Integer maxSize);
 }

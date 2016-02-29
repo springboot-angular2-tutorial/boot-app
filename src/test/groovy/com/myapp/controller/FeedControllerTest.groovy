@@ -4,9 +4,10 @@ import com.myapp.domain.Micropost
 import com.myapp.domain.User
 import com.myapp.repository.MicropostRepository
 import com.myapp.repository.UserRepository
+import com.myapp.service.MicropostService
+import com.myapp.service.MicropostServiceImpl
 import com.myapp.service.SecurityContextService
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 
 import static org.hamcrest.Matchers.hasSize
 import static org.hamcrest.Matchers.is
@@ -34,16 +35,19 @@ class FeedControllerTest extends BaseControllerTest {
         def response = perform(get("/api/feed"))
 
         then:
-        response.andExpect(status().isOk())
+        response
 //                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
                 .andExpect(jsonPath('$', hasSize(1)))
                 .andExpect(jsonPath('$[0].content', is("content1")))
+                .andExpect(jsonPath('$[0].isMyPost', is(true)))
                 .andExpect(jsonPath('$[0].createdAt').exists())
                 .andExpect(jsonPath('$[0].user.email', is("test1@test.com")))
     }
 
     @Override
     def controllers() {
-        return new FeedController(micropostRepository, securityContextService)
+        MicropostService micropostService = new MicropostServiceImpl(micropostRepository, securityContextService)
+        return new FeedController(micropostService)
     }
 }

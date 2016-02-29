@@ -15,8 +15,8 @@ public class PostDTO {
     private final User user;
     private final UserStats userStats;
 
-    @Setter
     @Getter
+    @Setter
     private Boolean isMyPost = null;
 
     public long getId() {
@@ -35,6 +35,8 @@ public class PostDTO {
         return UserDTO.builder()
                 .user(user)
                 .userStats(userStats)
+                .isMyself(isMyPost)
                 .build();
     }
+
 }

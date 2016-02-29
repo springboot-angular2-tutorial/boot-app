@@ -27,7 +27,7 @@ class UserRepositoryTest extends BaseRepositoryTest {
         Relationship r2 = relationshipRepository.save(new Relationship(follower: user, followed: u2))
 
         when:
-        List<RelatedUserDTO> result = userRepository.findFollowings(user, currentUser, Optional.empty(), Optional.empty(), null)
+        List<RelatedUserDTO> result = userRepository.findFollowings(user, currentUser, null, null, null)
 
         then:
         result[0].email == "test2@test.com"
@@ -51,7 +51,7 @@ class UserRepositoryTest extends BaseRepositoryTest {
         Relationship r2 = relationshipRepository.save(new Relationship(followed: user, follower: u2))
 
         when:
-        List<RelatedUserDTO> result = userRepository.findFollowers(user, currentUser, Optional.empty(), Optional.empty(), null)
+        List<RelatedUserDTO> result = userRepository.findFollowers(user, currentUser, null, null, null)
 
         then:
         result[0].email == "test2@test.com"
