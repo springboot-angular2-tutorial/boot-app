@@ -2,17 +2,21 @@ package com.myapp.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.myapp.domain.User;
-import lombok.Value;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.validation.constraints.Size;
 import java.util.Optional;
 
-@Value
-public class UserParams {
+@ToString
+@EqualsAndHashCode
+public final class UserParams {
 
+    @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(UserParams.class);
 
     private final String email;
@@ -28,20 +32,28 @@ public class UserParams {
         this.name = name;
     }
 
+    public Optional<String> getEmail() {
+        return Optional.ofNullable(email);
+    }
+
+    public Optional<String> getEncodedPassword() {
+        return Optional.ofNullable(password).map(p -> new BCryptPasswordEncoder().encode(p));
+    }
+
+    public Optional<String> getName() {
+        return Optional.ofNullable(name);
+    }
+
     public User toUser() {
         User user = new User();
-        user.setUsername(this.email);
+        user.setUsername(email);
         user.setPassword(new BCryptPasswordEncoder().encode(password));
         user.setName(name);
         return user;
     }
 
-    public UserOptionalParams toOptionalParams() {
-        return new UserOptionalParams(
-                Optional.ofNullable(email),
-                Optional.ofNullable(password),
-                Optional.ofNullable(name)
-        );
+    public UsernamePasswordAuthenticationToken toAuthenticationToken() {
+        return new UsernamePasswordAuthenticationToken(email, password);
     }
 
 }

@@ -4,7 +4,6 @@ import com.myapp.auth.TokenHandler;
 import com.myapp.domain.User;
 import com.myapp.dto.ErrorResponse;
 import com.myapp.dto.UserDTO;
-import com.myapp.dto.UserOptionalParams;
 import com.myapp.dto.UserParams;
 import com.myapp.repository.UserRepository;
 import com.myapp.service.SecurityContextService;
@@ -69,8 +68,7 @@ public class UserController {
     @RequestMapping(value = "/me", method = RequestMethod.PATCH)
     public ResponseEntity updateMe(@Valid @RequestBody UserParams params) {
         User user = securityContextService.currentUser();
-        UserOptionalParams optionalParams = params.toOptionalParams();
-        userService.update(user, optionalParams);
+        userService.update(user, params);
 
         // when username was changed, re-issue jwt.
         HttpHeaders headers = new HttpHeaders();

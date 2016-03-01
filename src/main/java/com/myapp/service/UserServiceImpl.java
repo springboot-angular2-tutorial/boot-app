@@ -1,10 +1,7 @@
 package com.myapp.service;
 
 import com.myapp.domain.User;
-import com.myapp.dto.PageParams;
-import com.myapp.dto.RelatedUserDTO;
-import com.myapp.dto.UserDTO;
-import com.myapp.dto.UserOptionalParams;
+import com.myapp.dto.*;
 import com.myapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
@@ -29,9 +26,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User update(User user, UserOptionalParams params) {
+    public User update(User user, UserParams params) {
         params.getEmail().ifPresent(user::setUsername);
-        params.getPassword().ifPresent(p -> user.setPassword(new BCryptPasswordEncoder().encode(p)));
+        params.getEncodedPassword().ifPresent(user::setPassword);
         params.getName().ifPresent(user::setName);
         return userRepository.save(user);
     }
