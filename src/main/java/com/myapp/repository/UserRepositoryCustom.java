@@ -5,7 +5,6 @@ import com.myapp.dto.PageParams;
 import com.myapp.dto.RelatedUserDTO;
 import com.myapp.dto.UserDTO;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 public interface UserRepositoryCustom {
