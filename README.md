@@ -1,10 +1,8 @@
-# Spring Boot example app for Spring Boot and Angular2 Tutorial
+# Spring Boot example app for Spring Boot and Angular2 Tutorial [![Build Status][travis-image]][travis-url]
 
 This repository is an example application for Spring Boot and Angular2 tutorial.
 
-[![Build Status][travis-image]][travis-url]
-
-You can try out [Demo page](http://micropost.hana053.com/).
+[Demo](http://micropost.hana053.com/).
 
 ## Getting Started
 
@@ -30,6 +28,11 @@ mvn test
 ## Tutorial
 
 Under construction...
+
+## Related Projects
+
+* [Angular2 app](https://github.com/springboot-angular2-tutorial/angular2-app)
+* [Android app](https://github.com/springboot-angular2-tutorial/android-app)
 
 ## Credits
 
