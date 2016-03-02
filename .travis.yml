@@ -14,9 +14,9 @@ deploy:
 - provider: elasticbeanstalk
   app: springboot-angular2-tutorial
   env: prod
-  bucket_name: elasticbeanstalk-ap-southeast-1-411701860491
+  bucket_name: elasticbeanstalk-us-east-1-411701860491
   bucket_path: springboot-angular2-tutorial
-  region: ap-southeast-1
+  region: us-east-1
   access_key_id: $AWS_ACCESS_KEY_ID
   secret_access_key: $AWS_SECRET_ACCESS_KEY
   zip_file: target/springboot-angular2-tutorial-0.1.0.war
