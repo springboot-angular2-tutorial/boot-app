@@ -6,12 +6,13 @@ import com.myapp.dto.RelatedUserDTO;
 import com.myapp.dto.UserDTO;
 
 import java.util.List;
+import java.util.Optional;
 
-public interface UserRepositoryCustom {
+interface UserRepositoryCustom {
 
     List<RelatedUserDTO> findFollowings(User user, User currentUser, PageParams pageParams);
 
     List<RelatedUserDTO> findFollowers(User user, User currentUser, PageParams pageParams);
 
-    UserDTO findOne(Long userId, User currentUser);
+    Optional<UserDTO> findOne(Long userId, User currentUser);
 }

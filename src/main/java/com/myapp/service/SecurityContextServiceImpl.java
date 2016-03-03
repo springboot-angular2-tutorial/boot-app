@@ -23,6 +23,7 @@ public class SecurityContextServiceImpl implements SecurityContextService {
     public User currentUser() {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         final Optional<User> currentUser = userRepository.findOneByUsername(authentication.getName());
+        // TODO It may be better to return optional.
         return currentUser.orElse(null);
     }
 }

@@ -56,13 +56,12 @@ public class UserController {
 
     @RequestMapping(value = "{id:\\d+}")
     public UserDTO show(@PathVariable("id") Long id) {
-        return userService.findOne(id);
+        return userService.findOne(id).orElseThrow(UserNotFoundException::new);
     }
 
     @RequestMapping("/me")
     public UserDTO showMe() {
-        User user = securityContextService.currentUser();
-        return userRepository.findOne(user.getId(), user);
+        return userService.findMe().orElseThrow(UserNotFoundException::new);
     }
 
     @RequestMapping(value = "/me", method = RequestMethod.PATCH)
@@ -81,5 +80,9 @@ public class UserController {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ErrorResponse handleValidationException(DataIntegrityViolationException e) {
         return new ErrorResponse("email_already_taken", "This email is already taken.");
+    }
+
+    @ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "No user")
+    private class UserNotFoundException extends RuntimeException {
     }
 }

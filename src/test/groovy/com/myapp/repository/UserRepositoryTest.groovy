@@ -69,7 +69,7 @@ class UserRepositoryTest extends BaseRepositoryTest {
         User currentUser = userRepository.save(new User(username: "current@test.com", password: "secret", name: "current"))
 
         when:
-        UserDTO result = userRepository.findOne(user.id, currentUser);
+        UserDTO result = userRepository.findOne(user.id, currentUser).get();
 
         then:
         result.id == user.id

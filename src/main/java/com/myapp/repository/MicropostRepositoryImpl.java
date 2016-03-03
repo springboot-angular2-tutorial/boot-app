@@ -24,7 +24,6 @@ class MicropostRepositoryImpl implements MicropostRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
-    @SuppressWarnings("SpringJavaAutowiredMembersInspection")
     @Autowired
     public MicropostRepositoryImpl(JPAQueryFactory queryFactory) {
         this.queryFactory = queryFactory;

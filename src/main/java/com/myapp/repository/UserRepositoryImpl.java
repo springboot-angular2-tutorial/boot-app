@@ -14,17 +14,17 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
-public class UserRepositoryImpl implements UserRepositoryCustom {
+class UserRepositoryImpl implements UserRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
     private final QUser qUser = QUser.user;
     private final QRelationship qRelationship = QRelationship.relationship;
 
-    @SuppressWarnings("SpringJavaAutowiredMembersInspection")
     @Autowired
     public UserRepositoryImpl(JPAQueryFactory queryFactory) {
         this.queryFactory = queryFactory;
@@ -79,18 +79,18 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
     }
 
     @Override
-    public UserDTO findOne(Long userId, User currentUser) {
+    public Optional<UserDTO> findOne(Long userId, User currentUser) {
         final ConstructorExpression<UserStats> userStatsExpression =
                 UserStatsQueryHelper.userStatsExpression(qUser, currentUser);
         final Tuple row = queryFactory.select(qUser, userStatsExpression)
                 .from(qUser)
                 .where(qUser.id.eq(userId))
                 .fetchOne();
-        if (row == null) return null;
-        return UserDTO.builder()
-                .user(row.get(qUser))
-                .userStats(row.get(userStatsExpression))
-                .build();
+        return Optional.ofNullable(row)
+                .map(r -> UserDTO.builder()
+                        .user(r.get(qUser))
+                        .userStats(r.get(userStatsExpression))
+                        .build());
     }
 
 }

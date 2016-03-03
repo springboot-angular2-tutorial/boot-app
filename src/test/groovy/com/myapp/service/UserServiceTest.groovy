@@ -92,7 +92,7 @@ class UserServiceTest extends BaseServiceTest {
         User user = userRepository.save(new User(username: "akira@test.com", password: "secret", name: "akira"))
 
         when:
-        UserDTO userDTO = userService.findOne(user.id)
+        UserDTO userDTO = userService.findOne(user.id).get()
 
         then:
         userDTO.isMyself == null
@@ -104,14 +104,14 @@ class UserServiceTest extends BaseServiceTest {
         securityContextService.currentUser() >> user
 
         when:
-        UserDTO userDTO = userService.findOne(user.id)
+        UserDTO userDTO = userService.findOne(user.id).get()
 
         then:
         userDTO.isMyself == true
 
         when:
         User anotherUser = userRepository.save(new User(username: "another@test.com", password: "secret", name: "another"))
-        userDTO = userService.findOne(anotherUser.id)
+        userDTO = userService.findOne(anotherUser.id).get()
 
         then:
         userDTO.isMyself == false

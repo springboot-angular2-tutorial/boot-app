@@ -7,7 +7,7 @@ import com.myapp.dto.PostDTO;
 
 import java.util.List;
 
-public interface MicropostRepositoryCustom {
+interface MicropostRepositoryCustom {
 
     List<PostDTO> findAsFeed(User user, PageParams pageParams);
 
