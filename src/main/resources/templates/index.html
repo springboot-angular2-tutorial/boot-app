@@ -10,8 +10,8 @@
 </head>
 <body>
 <app />
-<script th:src="|//${assetHost}/polyfills.js|"></script>
-<script th:src="|//${assetHost}/main.js|"></script>
+<script th:src="|//${assetHost}/${manifest.get('polyfills.js')}|"></script>
+<script th:src="|//${assetHost}/${manifest.get('main.js')}|"></script>
 <!-- Google Analytics: change UA-74585747-1 to be your site's ID -->
 <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){

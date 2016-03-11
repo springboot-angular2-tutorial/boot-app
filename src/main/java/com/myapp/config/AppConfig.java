@@ -14,4 +14,5 @@ public class AppConfig {
     public static final String PREFIX = "app";
 
     private String assetHost;
+    private String assetManifestUrl;
 }
