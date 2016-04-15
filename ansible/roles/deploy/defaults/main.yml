@@ -1,0 +1,6 @@
+---
+app_name: micropost
+
+# These default values are just for testing.
+app_jar: ../target/demo-0.0.1-SNAPSHOT.jar
+app_application_yml: application.yml

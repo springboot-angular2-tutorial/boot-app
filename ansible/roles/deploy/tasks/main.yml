@@ -1,0 +1,61 @@
+---
+- name: Create group
+  group: name=deploy state=present
+  tags: [deploy]
+
+- name: Ensure sudoers.d is enabled
+  lineinfile: dest=/etc/sudoers state=present backup=yes regexp='^#includedir /etc/sudoers.d' line='#includedir /etc/sudoers.d'
+  tags: [deploy]
+
+- name: Set up password-less sudo for user
+  copy: content="%deploy ALL=(ALL) NOPASSWD:ALL" dest="/etc/sudoers.d/deploy" owner=root group=root mode=0440
+  tags: [deploy]
+
+- name: Create user
+  user: name=deploy state=present group=deploy shell=/usr/sbin/nologin
+  tags: [deploy]
+
+- name: Create app dir
+  file: path=/var/{{ app_name }} state=directory owner=deploy group=deploy mode=0755
+  tags: [deploy]
+
+- name: Deploy jar
+  copy:
+    src: "{{ app_jar }}"
+    dest: /var/{{ app_name }}/{{ app_name }}.jar
+    owner: deploy
+    group: deploy
+    mode: 0500
+  tags: [deploy]
+  notify: Restart app
+
+- name: Deploy config
+  template:
+    src: app.conf.j2
+    dest: /var/{{ app_name }}/{{ app_name }}.conf
+    owner: root
+    group: root
+    mode: 0400
+  tags: [deploy]
+  notify: Restart app
+
+- name: Deploy applicaton.yml
+  copy:
+    src: "{{ app_application_yml }}"
+    dest: /var/{{ app_name }}/application.yml
+    owner: deploy
+    group: deploy
+    mode: 0400
+  tags: [deploy]
+  notify: Restart app
+
+- name: Link jar to init.d
+  file:
+    src: /var/{{ app_name }}/{{ app_name }}.jar
+    dest: /etc/init.d/{{ app_name }}
+    state: link
+  tags: [deploy]
+
+- name: Run and enable app
+  service: name={{ app_name }} state=started enabled=yes
+  tags: [deploy]

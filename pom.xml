@@ -7,7 +7,7 @@
     <groupId>com.myapp</groupId>
     <artifactId>springboot-angular2-tutorial</artifactId>
     <version>0.1.0</version>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -104,18 +104,6 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- required for building war and run on IDEA. See https://github.com/spring-projects/spring-boot/issues/1194 -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-tomcat</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.tomcat.embed</groupId>
-            <artifactId>tomcat-embed-jasper</artifactId>
-            <scope>compile</scope>
-        </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -153,6 +141,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <mainClass>com.myapp.Application</mainClass>
+                    <executable>true</executable>
                 </configuration>
             </plugin>
             <plugin>

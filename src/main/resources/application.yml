@@ -1,4 +1,6 @@
 spring:
+  main:
+    banner-mode: 'OFF'
   profiles:
     active: dev
 security:
@@ -53,11 +55,11 @@ server:
 ---
 spring:
   profiles: stg
+  redis:
+    host: ${REDIS_ENDPOINT}
   datasource:
     driverClassName: com.mysql.jdbc.Driver
-    jdbcUrl: jdbc:mysql://localhost/springboot-angular2-tutorial
-    username: root
-    password:
+    jdbcUrl: jdbc:mysql://${RDS_ENDPOINT}/ebdb
   jpa:
     database: MYSQL
     hibernate:

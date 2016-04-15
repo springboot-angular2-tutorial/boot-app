@@ -1,0 +1,10 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /var/deploy/app
+hooks:
+  ApplicationStart:
+    - location: application_start.sh
+      timeout: 300
+      runas: root
