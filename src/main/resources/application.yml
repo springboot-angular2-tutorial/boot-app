@@ -66,6 +66,9 @@ spring:
       ddl-auto: validate
 logging:
   config: classpath:logback-stg.xml
+app:
+  asset-host: cdn.hana053.com
+  asset-manifest-url: https://s3.amazonaws.com/cdn.hana053.com/manifest.json
 ---
 spring:
   profiles: prod
