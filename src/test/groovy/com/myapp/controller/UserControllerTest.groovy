@@ -152,7 +152,7 @@ class UserControllerTest extends BaseControllerTest {
         then:
         response
                 .andExpect(status().isOk())
-                .andExpect(header().string("X-AUTH-TOKEN", not(isEmptyOrNullString())))
+                .andExpect(header().string("x-auth-token", not(isEmptyOrNullString())))
         user.getUsername() == email
         user.getName() == name
     }

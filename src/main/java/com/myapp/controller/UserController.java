@@ -71,7 +71,7 @@ public class UserController {
 
         // when username was changed, re-issue jwt.
         HttpHeaders headers = new HttpHeaders();
-        headers.add("X-AUTH-TOKEN", tokenHandler.createTokenForUser(user));
+        headers.add("x-auth-token", tokenHandler.createTokenForUser(user));
 
         return new ResponseEntity(headers, HttpStatus.OK);
     }
