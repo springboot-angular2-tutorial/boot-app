@@ -9,17 +9,26 @@ cache:
 
 script: mvn clean test -Dspring.profiles.active=test
 
-before_deploy: mvn package -DskipTests=true -Dmaven.javadoc.skip=true
+before_deploy:
+  - sudo apt-get -y install python-pip
+  - sudo pip install awscli
+  - export ENV=$(echo "${TRAVIS_BRANCH}" | perl -ne "print $& if /(?<=deploy\/).*/")
+  - scripts/create_codedeploy_archive.sh
 deploy:
-- provider: elasticbeanstalk
-  app: micropost
-  env: prod
-  bucket_name: elasticbeanstalk-us-east-1-411701860491
-  bucket_path: springboot-angular2-tutorial
-  region: us-east-1
-  access_key_id: $AWS_ACCESS_KEY_ID
-  secret_access_key: $AWS_SECRET_ACCESS_KEY
-  zip_file: target/springboot-angular2-tutorial-0.1.0.war
-  skip_cleanup: true
-  on:
-    branch: master
+  - provider: s3
+    bucket: web-condedeploy-${ENV}.hana053.com
+    region: ${AWS_DEFAULT_REGION}
+    local_dir: .deploy
+    skip_cleanup: true
+    on:
+      branch: deploy/*
+  - provider: codedeploy
+    bucket: web-condedeploy-${ENV}.hana053.com
+    region: ${AWS_DEFAULT_REGION}
+    key: micropost-${TRAVIS_COMMIT}.tar.gz
+    application: micropost-${ENV}
+    deployment_group: web
+    bundle_type: tgz
+    on:
+      branch: deploy/*
+
