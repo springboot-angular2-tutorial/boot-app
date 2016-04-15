@@ -59,7 +59,7 @@ spring:
     host: ${REDIS_ENDPOINT}
   datasource:
     driverClassName: com.mysql.jdbc.Driver
-    jdbcUrl: jdbc:mysql://${RDS_ENDPOINT}/ebdb
+    jdbcUrl: jdbc:mysql://${RDS_ENDPOINT}/ebdb?useSSL=false
   jpa:
     database: MYSQL
     hibernate:
