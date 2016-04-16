@@ -25,7 +25,7 @@ public class AssetManifestSubscriber {
 
 
     @RequestMapping(method = RequestMethod.POST)
-    public void handleNotificationMessage(@RequestBody String body) {
+    public void handleNotificationMessage(@RequestBody(required = false) String body) {
         logger.info(body);
         assetManifestService.invalidateCache();
     }
