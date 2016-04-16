@@ -72,11 +72,11 @@ app:
 ---
 spring:
   profiles: prod
+  redis:
+    host: ${REDIS_ENDPOINT}
   datasource:
     driverClassName: com.mysql.jdbc.Driver
-    jdbcUrl: jdbc:mysql://${RDS_HOSTNAME}:${RDS_PORT}/${RDS_DB_NAME}
-    username: ${RDS_USERNAME}
-    password: ${RDS_PASSWORD}
+    jdbcUrl: jdbc:mysql://${RDS_ENDPOINT}/ebdb?useSSL=false
   jpa:
     database: MYSQL
     hibernate:
