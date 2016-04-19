@@ -1,5 +1,6 @@
 package com.myapp.auth;
 
+import io.jsonwebtoken.JwtException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,7 +29,7 @@ class StatelessAuthenticationFilter extends GenericFilterBean {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             chain.doFilter(req, res);
             SecurityContextHolder.getContext().setAuthentication(null);
-        } catch (AuthenticationException e) {
+        } catch (AuthenticationException | JwtException e) {
             SecurityContextHolder.clearContext();
             ((HttpServletResponse) res).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
