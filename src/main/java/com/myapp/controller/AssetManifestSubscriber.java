@@ -23,7 +23,6 @@ public class AssetManifestSubscriber {
         this.assetManifestService = assetManifestService;
     }
 
-
     @RequestMapping(method = RequestMethod.POST)
     public void handleNotificationMessage(@RequestBody(required = false) String body) {
         logger.info(body);
