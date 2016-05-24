@@ -1,6 +1,5 @@
 package com.myapp.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.myapp.config.AppConfig;
 import com.myapp.dto.AssetManifest;
 import okhttp3.OkHttpClient;
@@ -37,7 +36,7 @@ public class AssetManifestService {
         try {
             final Response response = client.newCall(request).execute();
             final String jsonStr = response.body().string();
-            return new ObjectMapper().readValue(jsonStr, AssetManifest.class);
+            return AssetManifest.newInstance(jsonStr);
         } catch (IOException e) {
             logger.info("manifest does not exist. fallback to default assets.");
             return new AssetManifest(); // fallback
