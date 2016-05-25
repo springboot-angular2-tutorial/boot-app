@@ -26,6 +26,16 @@ Testing.
 mvn test
 ```
 
+### Important note
+
+Before you open this project from Intellij IDEA, you need to build project once. Or else, generated source by annotation processor won't be recognized correctly by IDEA.
+
+```
+# It will generate target directory
+mvn clean package -DskipTests=true -Dmaven.javadoc.skip=true
+# After that, open this project from Intellij IDEA.
+```
+
 ## Tutorial
 
 Under construction...
