@@ -22,13 +22,13 @@ public class DatasourceConfig {
 
     @SuppressWarnings("ContextJavaBeanUnresolvedMethodsInspection")
     @Bean(destroyMethod = "close")
-    @ConfigurationProperties(prefix = DataSourceProperties.PREFIX)
+    @ConfigurationProperties(prefix = "spring.datasource")
     DataSource realDataSource() {
         return DataSourceBuilder
                 .create(this.dataSourceProperties.getClassLoader())
-                .url(this.dataSourceProperties.getUrl())
-                .username(this.dataSourceProperties.getUsername())
-                .password(this.dataSourceProperties.getPassword())
+                .url(this.dataSourceProperties.determineUrl())
+                .username(this.dataSourceProperties.determineUsername())
+                .password(this.dataSourceProperties.determineUsername())
                 .build();
     }
 

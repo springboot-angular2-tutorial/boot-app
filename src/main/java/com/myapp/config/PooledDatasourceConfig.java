@@ -13,7 +13,7 @@ import java.sql.SQLException;
 
 @Configuration
 @Profile({"stg", "prod"})
-@ConfigurationProperties(prefix = DataSourceProperties.PREFIX)
+@ConfigurationProperties(prefix = "spring.datasource")
 public class PooledDatasourceConfig extends HikariConfig {
 
     @Bean
