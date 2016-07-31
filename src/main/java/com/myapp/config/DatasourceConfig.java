@@ -16,12 +16,14 @@ import javax.sql.DataSource;
 @Profile({"dev", "test"})
 public class DatasourceConfig {
 
-    @SuppressWarnings("SpringJavaAutowiringInspection")
-    @Autowired
-    DataSourceProperties dataSourceProperties;
+    private final DataSourceProperties dataSourceProperties;
 
-    @SuppressWarnings("ContextJavaBeanUnresolvedMethodsInspection")
-    @Bean(destroyMethod = "close")
+    @Autowired
+    public DatasourceConfig(DataSourceProperties dataSourceProperties) {
+        this.dataSourceProperties = dataSourceProperties;
+    }
+
+    @Bean
     @ConfigurationProperties(prefix = "spring.datasource")
     DataSource realDataSource() {
         return DataSourceBuilder
