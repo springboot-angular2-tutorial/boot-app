@@ -20,14 +20,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Order(1)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private UserService userService;
+    final private UserService userService;
+
+    final private TokenAuthenticationService tokenAuthenticationService;
 
     @Autowired
-    private TokenAuthenticationService tokenAuthenticationService;
-
-    public SecurityConfig() {
+    public SecurityConfig(UserService userService, TokenAuthenticationService tokenAuthenticationService) {
         super(true);
+        this.userService = userService;
+        this.tokenAuthenticationService = tokenAuthenticationService;
     }
 
     @Override
