@@ -25,13 +25,13 @@ deploy:
     on:
       branch: deploy/*
   # deploy by using codedeploy
-  - provider: codedeploy
-    bucket: deploy-${ENV}.hana053.com
-    region: ${AWS_DEFAULT_REGION}
-    key: micropost/codedeploy.tar.gz
-    application: micropost-${ENV}
-    deployment_group: web
-    bundle_type: tgz
-    on:
-      branch: deploy/*
+#  - provider: codedeploy
+#    bucket: deploy-${ENV}.hana053.com
+#    region: ${AWS_DEFAULT_REGION}
+#    key: micropost/codedeploy.tar.gz
+#    application: micropost-${ENV}
+#    deployment_group: web
+#    bundle_type: tgz
+#    on:
+#      branch: deploy/*
 
