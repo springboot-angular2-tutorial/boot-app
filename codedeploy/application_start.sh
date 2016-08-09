@@ -1,10 +1,14 @@
 #!/bin/sh
 
-. $(dirname $0)/common_variables.sh
+. /opt/micropost/env.sh
 
-ansible-playbook -i "${DST_PATH}/ansible/inventories/local"  \
-  -e "app_jar=${DST_PATH}/app.jar" \
-  -e "app_application_yml=${DST_PATH}/application.yml" \
-  --connection=local \
-  --tags "deploy" \
-  ${DST_PATH}/ansible/site.yml
+(
+cd /opt/provisioning
+
+cat << EOF > inventory
+[deploy]
+localhost
+EOF
+
+ansible-playbook -i inventory --connection=local -e "deploy_bucket=${S3_DEPLOY_BUCKET}" site.yml
+)

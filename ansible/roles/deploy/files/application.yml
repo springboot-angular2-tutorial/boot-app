@@ -1,4 +1,0 @@
----
-spring.profiles: stg
----
-spring.profiles: prod
