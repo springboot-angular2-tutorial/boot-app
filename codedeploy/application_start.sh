@@ -11,9 +11,9 @@ fi
 cd /opt/provisioning
 
 cat << EOF > inventory
-[deploy]
+[webservers]
 localhost
 EOF
 
-ansible-playbook -i inventory --connection=local -e "deploy_bucket=${S3_DEPLOY_BUCKET}" site.yml
+ansible-playbook -i inventory --connection=local -e "deploy_bucket=${S3_DEPLOY_BUCKET}" site.yml --tags deploy
 )
