@@ -38,7 +38,7 @@ deploy:
     bucket: deploy-${ENV}.hana053.com
     region: ${AWS_DEFAULT_REGION}
     key: micropost/codedeploy.tar.gz
-    application: micropost-${ENV}
+    application: micropost
     deployment_group: web
     bundle_type: tgz
     on:
