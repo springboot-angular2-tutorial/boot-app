@@ -7,16 +7,20 @@ cache:
   directories:
   - '$HOME/.m2/repository'
 
-script: mvn clean test -Dspring.profiles.active=test
-
-before_deploy:
+install:
   # install aws cli
   - sudo apt-get -y install python-pip
   - sudo pip install awscli
+
+script: mvn clean test -Dspring.profiles.active=test
+
+after_success:
   # Parse branch name and determine an environment to deploy
   - export ENV=$(echo "${TRAVIS_BRANCH}" | perl -ne "print $& if /(?<=deploy\/).*/")
   # Switch AWS Role when ENV is prod
   - test "${ENV}" = "prod" && source scripts/switch-production-role.sh
+
+before_deploy:
   # Create an archive to deploy
   - scripts/create-archives.sh
 deploy:
