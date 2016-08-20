@@ -15,5 +15,5 @@ cat << EOF > inventory
 localhost
 EOF
 
-ansible-playbook -i inventory --connection=local -e "deploy_bucket=${S3_DEPLOY_BUCKET}" site.yml --tags deploy
+ansible-playbook -i inventory -c local -e "deploy_bucket=${S3_DEPLOY_BUCKET}" site.yml --tags deploy
 )
