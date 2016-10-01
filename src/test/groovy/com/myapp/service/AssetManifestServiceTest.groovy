@@ -16,7 +16,7 @@ class AssetManifestServiceTest extends BaseServiceTest {
     @Configuration
     static class TestConfig {
         @Bean
-        public AssetManifestService assetManifestService(AppConfig appConfig) {
+        AssetManifestService assetManifestService(AppConfig appConfig) {
             return new AssetManifestServiceImpl(appConfig);
         }
     }

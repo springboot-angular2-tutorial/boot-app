@@ -36,7 +36,7 @@ flyway:
 spring:
   profiles: dev2
   datasource:
-    driverClassName: com.mysql.jdbc.Driver
+    driverClassName: org.mariadb.jdbc.Driver
     jdbcUrl: jdbc:mysql://localhost:3306/springboot-angular2-tutorial?useSSL=false
     username: root
     password:
@@ -68,7 +68,7 @@ spring:
   redis:
     host: ${REDIS_ENDPOINT}
   datasource:
-    driverClassName: com.mysql.jdbc.Driver
+    driverClassName: org.mariadb.jdbc.Driver
     jdbcUrl: jdbc:mysql://${RDS_ENDPOINT}/ebdb?useSSL=false
   jpa:
     database: MYSQL
@@ -85,7 +85,7 @@ spring:
   redis:
     host: ${REDIS_ENDPOINT}
   datasource:
-    driverClassName: com.mysql.jdbc.Driver
+    driverClassName: org.mariadb.jdbc.Driver
     jdbcUrl: jdbc:mysql://${RDS_ENDPOINT}/ebdb?useSSL=false
   jpa:
     database: MYSQL
