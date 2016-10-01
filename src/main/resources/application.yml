@@ -20,8 +20,8 @@ app:
 spring:
   profiles: dev
   datasource:
-    driverClassName: org.h2.Driver
-    url: jdbc:h2:./db/dev;MODE=MySQL;DB_CLOSE_ON_EXIT=FALSE
+    driverClassName: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+    url: jdbc:log4jdbc:h2:./db/dev;MODE=MySQL;DB_CLOSE_ON_EXIT=FALSE
     username: sa
     password:
   jpa:
@@ -30,24 +30,34 @@ spring:
       ddl-auto: update
   thymeleaf:
     cache: false
-logging:
-  config: classpath:logback-dev.xml
 flyway:
   enabled: false
 ---
 spring:
+  profiles: dev2
+  datasource:
+    driverClassName: com.mysql.jdbc.Driver
+    jdbcUrl: jdbc:mysql://localhost:3306/springboot-angular2-tutorial?useSSL=false
+    username: root
+    password:
+  jpa:
+    database: MYSQL
+    hibernate:
+      ddl-auto: validate
+logging:
+  config: classpath:logback-prod.xml
+---
+spring:
   profiles: test
   datasource:
-    driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:test;MODE=MySQL;DB_CLOSE_ON_EXIT=FALSE
+    driverClassName: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+    url: jdbc:log4jdbc:h2:mem:test;MODE=MySQL;DB_CLOSE_ON_EXIT=FALSE
     username: sa
     password:
   jpa:
     database: H2
     hibernate:
       ddl-auto: create
-logging:
-  config: classpath:logback-test.xml
 flyway:
   enabled: false
 server:
@@ -65,7 +75,7 @@ spring:
     hibernate:
       ddl-auto: validate
 logging:
-  config: classpath:logback-stg.xml
+  config: classpath:logback-prod.xml
 app:
   asset-host: cdn.hana053.com
   asset-manifest-url: https://s3.amazonaws.com/cdn.hana053.com/manifest.json
