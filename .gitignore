@@ -18,3 +18,5 @@ db/**/*.db
 !.elasticbeanstalk/*.global.yml
 
 .deploy
+
+.envrc
