@@ -9,7 +9,6 @@ This repository is an example application for Spring Boot and Angular2 tutorial.
 Run Spring Boot.
 
 ```
-redis-server /usr/local/etc/redis.conf # use redis as cache storage
 mvn spring-boot:run
 ```
 
