@@ -14,7 +14,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -24,16 +23,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserService userService;
 
     private final TokenAuthenticationService tokenAuthenticationService;
-    private final CorsFilter corsFilter;
 
     @Autowired
     public SecurityConfig(UserService userService,
-                          TokenAuthenticationService tokenAuthenticationService,
-                          CorsFilter corsFilter) {
+                          TokenAuthenticationService tokenAuthenticationService) {
         super(true);
         this.userService = userService;
         this.tokenAuthenticationService = tokenAuthenticationService;
-        this.corsFilter = corsFilter;
     }
 
     @Override
@@ -57,16 +53,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/api/relationships/**").hasRole("USER")
                 .antMatchers(HttpMethod.DELETE, "/api/relationships/**").hasRole("USER")
                 .antMatchers(HttpMethod.GET, "/api/feed").hasRole("USER")
-                .antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
         ;
 
-        http.addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(
-                new StatelessLoginFilter(
-                        "/api/login",
-                        tokenAuthenticationService,
-                        userService,
-                        authenticationManager()),
+                new StatelessLoginFilter("/api/login", tokenAuthenticationService, userService, authenticationManager()),
                 UsernamePasswordAuthenticationFilter.class);
 
         http.addFilterBefore(
