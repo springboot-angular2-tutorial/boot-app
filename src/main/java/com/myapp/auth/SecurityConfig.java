@@ -32,6 +32,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         this.tokenAuthenticationService = tokenAuthenticationService;
     }
 
+    @Bean
+    public StatelessAuthenticationFilter authenticationTokenFilterBean() throws Exception {
+        StatelessAuthenticationFilter authenticationTokenFilter = new StatelessAuthenticationFilter(tokenAuthenticationService);
+        return authenticationTokenFilter;
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         // we use jwt so that we can disable csrf protection
@@ -55,12 +61,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/api/feed").hasRole("USER")
         ;
 
-        http.addFilterBefore(
-                new StatelessLoginFilter("/api/login", tokenAuthenticationService, userService, authenticationManager()),
-                UsernamePasswordAuthenticationFilter.class);
-
-        http.addFilterBefore(
-                new StatelessAuthenticationFilter(tokenAuthenticationService),
+        http.addFilterBefore(authenticationTokenFilterBean(),
                 UsernamePasswordAuthenticationFilter.class);
     }
 
