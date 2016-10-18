@@ -32,7 +32,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         this.tokenAuthenticationService = tokenAuthenticationService;
     }
 
-    @Bean
+
     public StatelessAuthenticationFilter authenticationTokenFilterBean() throws Exception {
         StatelessAuthenticationFilter authenticationTokenFilter = new StatelessAuthenticationFilter(tokenAuthenticationService);
         return authenticationTokenFilter;
