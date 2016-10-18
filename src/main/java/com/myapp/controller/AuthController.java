@@ -1,6 +1,5 @@
 package com.myapp.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.myapp.auth.TokenHandler;
 import com.myapp.dto.UserParams;
 import org.springframework.beans.factory.annotation.Autowired;
