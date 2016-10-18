@@ -1,7 +1,10 @@
 package com.myapp.service;
 
 import com.myapp.domain.User;
-import com.myapp.dto.*;
+import com.myapp.dto.PageParams;
+import com.myapp.dto.RelatedUserDTO;
+import com.myapp.dto.UserDTO;
+import com.myapp.dto.UserParams;
 
 import java.util.List;
 import java.util.Optional;
