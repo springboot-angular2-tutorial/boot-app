@@ -20,12 +20,6 @@ class TokenAuthenticationService {
         this.tokenHandler = tokenHandler;
     }
 
-    void addAuthentication(HttpServletResponse response,
-                           UserAuthentication authentication) {
-        final UserDetails user = authentication.getDetails();
-        response.addHeader(AUTH_HEADER_NAME, tokenHandler.createTokenForUser(user));
-    }
-
     Authentication getAuthentication(HttpServletRequest request) {
         final String token = request.getHeader(AUTH_HEADER_NAME);
         if (token == null || token.isEmpty()) return null;
