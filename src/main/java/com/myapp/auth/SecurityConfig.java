@@ -21,22 +21,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserService userService;
-
-    private final TokenAuthenticationService tokenAuthenticationService;
+    private final StatelessAuthenticationFilter statelessAuthenticationFilter;
 
     @Autowired
-    public SecurityConfig(UserService userService,
-                          TokenAuthenticationService tokenAuthenticationService) {
+    public SecurityConfig(UserService userService, StatelessAuthenticationFilter statelessAuthenticationFilter) {
         super(true);
         this.userService = userService;
-        this.tokenAuthenticationService = tokenAuthenticationService;
+        this.statelessAuthenticationFilter = statelessAuthenticationFilter;
     }
 
-    @Bean
-    public StatelessAuthenticationFilter authenticationTokenFilterBean() throws Exception {
-        StatelessAuthenticationFilter authenticationTokenFilter = new StatelessAuthenticationFilter(tokenAuthenticationService);
-        return authenticationTokenFilter;
-    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -61,8 +54,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/api/feed").hasRole("USER")
         ;
 
-        http.addFilterBefore(authenticationTokenFilterBean(),
-                UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(statelessAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
     @Bean
