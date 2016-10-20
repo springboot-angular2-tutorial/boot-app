@@ -43,7 +43,7 @@ Under construction...
 
 * [Angular2 app](https://github.com/springboot-angular2-tutorial/angular2-app)
 * [Android app](https://github.com/springboot-angular2-tutorial/android-app)
-* [Server provisioning by Ansible](https://github.com/springboot-angular2-tutorial/micropost-provisionings)
+* [Server provisioning by Ansible and Packer](https://github.com/springboot-angular2-tutorial/micropost-provisionings)
 * [Infrastructure by Terraform](https://github.com/springboot-angular2-tutorial/micropost-formation)
 
 ## Credits
