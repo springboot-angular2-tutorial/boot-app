@@ -2,6 +2,7 @@ package com.myapp.auth;
 
 import com.myapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -29,7 +30,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         this.userService = userService;
         this.statelessAuthenticationFilter = statelessAuthenticationFilter;
     }
-
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -63,6 +63,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
+    /**
+     * Prevent StatelessAuthenticationFilter will be added to Spring Boot filter chain.
+     * Only Spring Security must use it.
+     */
+    @Bean
+    public FilterRegistrationBean registration(StatelessAuthenticationFilter filter) {
+        FilterRegistrationBean registration = new FilterRegistrationBean(filter);
+        registration.setEnabled(false);
+        return registration;
+    }
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userService).passwordEncoder(new BCryptPasswordEncoder());
@@ -72,6 +83,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected UserDetailsService userDetailsService() {
         return userService;
     }
+
 }
 
 
