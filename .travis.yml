@@ -5,7 +5,8 @@ jdk:
 - oraclejdk8
 cache:
   directories:
-  - '$HOME/.m2/repository'
+  - $HOME/.m2/repository
+  - $HOME/.cache/pip
 
 install:
   # install aws cli
@@ -15,11 +16,9 @@ install:
 
 script: mvn clean test -Dspring.profiles.active=test
 
-after_success:
+before_deploy:
   # Parse branch name and determine an environment to deploy
   - export ENV=$(echo "${TRAVIS_BRANCH}" | perl -ne "print $& if /(?<=deploy\/).*/")
-  # Switch AWS Role when ENV is prod
-  - test "${ENV}" = "prod" && source scripts/switch-production-role.sh
 
 deploy:
   - provider: script

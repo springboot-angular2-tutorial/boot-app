@@ -5,23 +5,17 @@ if [ -z "${ENV}" ]; then
   exit 1
 fi
 
-# prepare tmp directory to deploy
-TMP_DIR=.deploy
+# Switch AWS Role when ENV is prod
+if [ "${ENV}" = "prod" ]; then
+  source scripts/switch-production-role.sh
+fi
 
-rm -rf ${TMP_DIR}
-mkdir ${TMP_DIR}
-
-# create jar
+# create and upload jar
 mvn clean package -DskipTests=true -Dmaven.javadoc.skip=true
-cp ./target/springboot-angular2-tutorial-0.1.0.jar ${TMP_DIR}/app.jar
+aws s3 cp ./target/springboot-angular2-tutorial-0.1.0.jar s3://deploy-${ENV}.hana053.com/micropost/app.jar
 
-# create codedeploy archive
-tar cvzf ${TMP_DIR}/codedeploy.tar.gz -C codedeploy .
+# Publish to SNS Topic
+account_number=$(aws sts get-caller-identity --output text --query 'Account')
+aws sns publish --topic-arn "arn:aws:sns:${AWS_DEFAULT_REGION}:${account_number}:backend_app_updated" \
+   --message "{\"asgName\": \"web\"}"
 
-# upload archives
-aws s3 sync .deploy s3://deploy-${ENV}.hana053.com/micropost
-
-# deploy
-aws deploy create-deployment --application-name micropost \
-  --s3-location bucket=deploy-${ENV}.hana053.com,key=micropost/codedeploy.tar.gz,bundleType=tgz \
-  --deployment-group-name web
