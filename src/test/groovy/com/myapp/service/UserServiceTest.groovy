@@ -22,7 +22,7 @@ class UserServiceTest extends BaseServiceTest {
     UserService userService
 
     def setup() {
-        userService = new UserServiceImpl(userRepository, securityContextService)
+        userService = new UserServiceImpl(userRepository, userDTORepository, securityContextService)
     }
 
     def "can find followings when not signed in"() {

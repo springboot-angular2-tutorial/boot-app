@@ -12,13 +12,15 @@ import com.querydsl.core.Tuple;
 import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @SuppressWarnings({"unused", "SpringJavaAutowiredMembersInspection"})
-class UserRepositoryImpl implements UserRepositoryCustom {
+@Repository
+class UserDTORepositoryImpl implements UserDTORepository {
 
     private final JPAQueryFactory queryFactory;
 
@@ -26,7 +28,7 @@ class UserRepositoryImpl implements UserRepositoryCustom {
     private final QRelationship qRelationship = QRelationship.relationship;
 
     @Autowired
-    public UserRepositoryImpl(JPAQueryFactory queryFactory) {
+    public UserDTORepositoryImpl(JPAQueryFactory queryFactory) {
         this.queryFactory = queryFactory;
     }
 

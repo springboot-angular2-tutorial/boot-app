@@ -37,7 +37,7 @@ class UserControllerTest extends BaseControllerTest {
 
     @Override
     def controllers() {
-        userService = new UserServiceImpl(userRepository, securityContextService)
+        userService = new UserServiceImpl(userRepository, userDTORepository, securityContextService)
         tokenHandler = new TokenHandler("secret", userService)
         return new UserController(userRepository, userService, securityContextService, tokenHandler)
     }

@@ -5,6 +5,7 @@ import com.myapp.dto.PageParams;
 import com.myapp.dto.RelatedUserDTO;
 import com.myapp.dto.UserDTO;
 import com.myapp.dto.UserParams;
+import com.myapp.repository.UserDTORepository;
 import com.myapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,11 +24,15 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final UserDTORepository userDTORepository;
     private final SecurityContextService securityContextService;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, SecurityContextService securityContextService) {
+    public UserServiceImpl(UserRepository userRepository,
+                           UserDTORepository userDTORepository,
+                           SecurityContextService securityContextService) {
         this.userRepository = userRepository;
+        this.userDTORepository = userDTORepository;
         this.securityContextService = securityContextService;
     }
 
@@ -42,7 +47,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<RelatedUserDTO> findFollowings(User user, PageParams pageParams) {
         final User currentUser = securityContextService.currentUser();
-        final List<RelatedUserDTO> followings = userRepository.findFollowings(user, currentUser, pageParams);
+//        final List<RelatedUserDTO> followings = userRepository.findFollowings(user, currentUser, pageParams);
+        final List<RelatedUserDTO> followings = userDTORepository.findFollowings(user, currentUser, pageParams);
         followings.forEach(f -> {
             if (currentUser == null) return;
             f.setIsMyself(f.getId() == currentUser.getId());
@@ -53,7 +59,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<RelatedUserDTO> findFollowers(User user, PageParams pageParams) {
         final User currentUser = securityContextService.currentUser();
-        final List<RelatedUserDTO> followers = userRepository.findFollowers(user, currentUser, pageParams);
+//        final List<RelatedUserDTO> followers = userRepository.findFollowers(user, currentUser, pageParams);
+        final List<RelatedUserDTO> followers = userDTORepository.findFollowers(user, currentUser, pageParams);
         followers.forEach(f -> {
             if (currentUser == null) return;
             f.setIsMyself(f.getId() == currentUser.getId());
@@ -64,7 +71,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<UserDTO> findOne(Long id) {
         final User currentUser = securityContextService.currentUser();
-        final Optional<UserDTO> user = userRepository.findOne(id, currentUser);
+//        final Optional<UserDTO> user = userRepository.findOne(id, currentUser);
+        final Optional<UserDTO> user = userDTORepository.findOne(id, currentUser);
         user.ifPresent(u -> {
             if (currentUser == null) return;
             u.setIsMyself(u.getId() == currentUser.getId());
