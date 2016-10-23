@@ -3,6 +3,11 @@ package com.myapp.dto;
 import com.myapp.domain.User;
 import lombok.*;
 
+import javax.xml.bind.DatatypeConverter;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 @Builder
 @ToString(exclude = {"user"})
 @EqualsAndHashCode
@@ -22,12 +27,20 @@ public class UserDTO {
     }
 
     public String getEmail() {
-        return user.getUsername();
+        if(isMyself != null && isMyself)
+            return user.getUsername();
+        else
+            return null;
     }
 
     public String getName() {
         return user.getName();
     }
 
+    public String getAvatarHash() throws NoSuchAlgorithmException, UnsupportedEncodingException {
+        byte[] bytes = MessageDigest.getInstance("MD5")
+                .digest(user.getUsername().getBytes("UTF-8"));
+        return DatatypeConverter.printHexBinary(bytes).toLowerCase();
+    }
 
 }

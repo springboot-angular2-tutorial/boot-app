@@ -41,12 +41,12 @@ public class UserController {
     }
 
     @RequestMapping
-    public Page<User> list(@RequestParam(value = "page", required = false) @Nullable Integer page,
-                           @RequestParam(value = "size", required = false) @Nullable Integer size) {
+    public Page<UserDTO> list(@RequestParam(value = "page", required = false) @Nullable Integer page,
+                              @RequestParam(value = "size", required = false) @Nullable Integer size) {
         final PageRequest pageable = new PageRequest(
                 Optional.ofNullable(page).orElse(1) - 1,
                 Optional.ofNullable(size).orElse(DEFAULT_PAGE_SIZE));
-        return userRepository.findAll(pageable);
+        return userService.findAll(pageable);
     }
 
     @RequestMapping(method = RequestMethod.POST)

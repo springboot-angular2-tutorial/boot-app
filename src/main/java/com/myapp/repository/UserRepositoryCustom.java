@@ -15,4 +15,5 @@ interface UserRepositoryCustom {
     List<RelatedUserDTO> findFollowers(User user, User currentUser, PageParams pageParams);
 
     Optional<UserDTO> findOne(Long userId, User currentUser);
+
 }

@@ -7,6 +7,9 @@ import com.myapp.dto.UserDTO;
 import com.myapp.dto.UserParams;
 import com.myapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -72,6 +76,17 @@ public class UserServiceImpl implements UserService {
     public Optional<UserDTO> findMe() {
         final User currentUser = securityContextService.currentUser();
         return findOne(currentUser.getId());
+    }
+
+    @Override
+    public Page<UserDTO> findAll(PageRequest pageable) {
+        final Page<User> page = userRepository.findAll(pageable);
+        final List<UserDTO> mappedList = page
+                .getContent()
+                .stream()
+                .map(u -> UserDTO.builder().user(u).build())
+                .collect(Collectors.toList());
+        return new PageImpl<>(mappedList, pageable, page.getTotalElements());
     }
 
     @Override
