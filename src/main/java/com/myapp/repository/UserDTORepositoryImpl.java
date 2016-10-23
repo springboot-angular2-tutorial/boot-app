@@ -12,6 +12,9 @@ import com.querydsl.core.Tuple;
 import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -23,13 +26,16 @@ import java.util.stream.Collectors;
 class UserDTORepositoryImpl implements UserDTORepository {
 
     private final JPAQueryFactory queryFactory;
+    private final UserRepository userRepository;
 
     private final QUser qUser = QUser.user;
     private final QRelationship qRelationship = QRelationship.relationship;
 
     @Autowired
-    public UserDTORepositoryImpl(JPAQueryFactory queryFactory) {
+    public UserDTORepositoryImpl(JPAQueryFactory queryFactory,
+                                 UserRepository userRepository) {
         this.queryFactory = queryFactory;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -93,6 +99,17 @@ class UserDTORepositoryImpl implements UserDTORepository {
                         .user(r.get(qUser))
                         .userStats(r.get(userStatsExpression))
                         .build());
+    }
+
+    @Override
+    public Page<UserDTO> findAll(PageRequest pageable) {
+        final Page<User> page = userRepository.findAll(pageable);
+        final List<UserDTO> mappedList = page
+                .getContent()
+                .stream()
+                .map(u -> UserDTO.builder().user(u).build())
+                .collect(Collectors.toList());
+        return new PageImpl<>(mappedList, pageable, page.getTotalElements());
     }
 
 }

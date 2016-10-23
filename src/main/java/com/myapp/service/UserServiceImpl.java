@@ -47,7 +47,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<RelatedUserDTO> findFollowings(User user, PageParams pageParams) {
         final User currentUser = securityContextService.currentUser();
-//        final List<RelatedUserDTO> followings = userRepository.findFollowings(user, currentUser, pageParams);
         final List<RelatedUserDTO> followings = userDTORepository.findFollowings(user, currentUser, pageParams);
         followings.forEach(f -> {
             if (currentUser == null) return;
@@ -59,7 +58,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<RelatedUserDTO> findFollowers(User user, PageParams pageParams) {
         final User currentUser = securityContextService.currentUser();
-//        final List<RelatedUserDTO> followers = userRepository.findFollowers(user, currentUser, pageParams);
         final List<RelatedUserDTO> followers = userDTORepository.findFollowers(user, currentUser, pageParams);
         followers.forEach(f -> {
             if (currentUser == null) return;
@@ -71,7 +69,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<UserDTO> findOne(Long id) {
         final User currentUser = securityContextService.currentUser();
-//        final Optional<UserDTO> user = userRepository.findOne(id, currentUser);
         final Optional<UserDTO> user = userDTORepository.findOne(id, currentUser);
         user.ifPresent(u -> {
             if (currentUser == null) return;
@@ -87,21 +84,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<UserDTO> findAll(PageRequest pageable) {
-        final Page<User> page = userRepository.findAll(pageable);
-        final List<UserDTO> mappedList = page
-                .getContent()
-                .stream()
-                .map(u -> UserDTO.builder().user(u).build())
-                .collect(Collectors.toList());
-        return new PageImpl<>(mappedList, pageable, page.getTotalElements());
-    }
-
-    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         final Optional<User> user = userRepository.findOneByUsername(username);
         final AccountStatusUserDetailsChecker detailsChecker = new AccountStatusUserDetailsChecker();
         user.ifPresent(detailsChecker::check);
         return user.orElseThrow(() -> new UsernameNotFoundException("user not found."));
     }
+
 }
