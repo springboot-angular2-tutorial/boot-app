@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@SuppressWarnings({"unused", "SpringJavaAutowiredMembersInspection"})
 @Repository
 class UserDTORepositoryImpl implements UserDTORepository {
 
@@ -95,10 +94,15 @@ class UserDTORepositoryImpl implements UserDTORepository {
                 .where(qUser.id.eq(userId))
                 .fetchOne();
         return Optional.ofNullable(row)
-                .map(r -> UserDTO.builder()
-                        .user(r.get(qUser))
-                        .userStats(r.get(userStatsExpression))
-                        .build());
+                .map(r -> {
+                    final User user = r.get(qUser);
+                    final UserStats userStats = r.get(userStatsExpression);
+                    assert user != null; // Row was found. It never be null.
+                    final Boolean isMyself = Optional.ofNullable(currentUser)
+                            .map(user::equals)
+                            .orElse(null);
+                    return UserDTO.newInstance(user, userStats, isMyself);
+                });
     }
 
     @Override
@@ -107,7 +111,7 @@ class UserDTORepositoryImpl implements UserDTORepository {
         final List<UserDTO> mappedList = page
                 .getContent()
                 .stream()
-                .map(u -> UserDTO.builder().user(u).build())
+                .map(UserDTO::newInstance)
                 .collect(Collectors.toList());
         return new PageImpl<>(mappedList, pageable, page.getTotalElements());
     }

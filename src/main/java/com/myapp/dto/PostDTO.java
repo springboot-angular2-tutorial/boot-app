@@ -32,11 +32,7 @@ public class PostDTO {
     }
 
     public UserDTO getUser() {
-        return UserDTO.builder()
-                .user(user)
-                .userStats(userStats)
-                .isMyself(isMyPost)
-                .build();
+        return UserDTO.newInstance(user, userStats, isMyPost);
     }
 
 }

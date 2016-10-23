@@ -69,12 +69,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<UserDTO> findOne(Long id) {
         final User currentUser = securityContextService.currentUser();
-        final Optional<UserDTO> user = userDTORepository.findOne(id, currentUser);
-        user.ifPresent(u -> {
-            if (currentUser == null) return;
-            u.setIsMyself(u.getId() == currentUser.getId());
-        });
-        return user;
+        return userDTORepository.findOne(id, currentUser);
     }
 
     @Override

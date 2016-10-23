@@ -1,6 +1,5 @@
 package com.myapp.repository
 
-
 import com.myapp.config.QueryDSLConfig
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration

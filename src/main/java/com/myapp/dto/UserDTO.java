@@ -1,46 +1,43 @@
 package com.myapp.dto;
 
+import com.myapp.Utils;
 import com.myapp.domain.User;
-import lombok.*;
+import lombok.Builder;
+import lombok.Value;
 
-import javax.xml.bind.DatatypeConverter;
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.util.Optional;
 
 @Builder
-@ToString(exclude = {"user"})
-@EqualsAndHashCode
+@Value
 public class UserDTO {
 
-    private final User user;
-
-    @Getter
+    private final long id;
+    private final String email;
+    private final String name;
+    private final String avatarHash;
     private final UserStats userStats;
+    private final Boolean isMyself;
 
-    @Getter
-    @Setter
-    private Boolean isMyself = null;
+    public static UserDTO newInstance(User user, UserStats userStats, Boolean isMyself) {
+        final String avatarHash = Utils.md5(user.getUsername());
 
-    public long getId() {
-        return user.getId();
+        return UserDTO.builder()
+                .id(user.getId())
+                .email(user.getUsername())
+                .name(user.getName())
+                .avatarHash(avatarHash)
+                .isMyself(isMyself)
+                .userStats(userStats)
+                .build();
+    }
+
+    public static UserDTO newInstance(User user) {
+        return UserDTO.newInstance(user, null, null);
     }
 
     public String getEmail() {
-        if(isMyself != null && isMyself)
-            return user.getUsername();
-        else
-            return null;
+        return Optional.ofNullable(isMyself)
+                .map(b -> email)
+                .orElse(null);
     }
-
-    public String getName() {
-        return user.getName();
-    }
-
-    public String getAvatarHash() throws NoSuchAlgorithmException, UnsupportedEncodingException {
-        byte[] bytes = MessageDigest.getInstance("MD5")
-                .digest(user.getUsername().getBytes("UTF-8"));
-        return DatatypeConverter.printHexBinary(bytes).toLowerCase();
-    }
-
 }
