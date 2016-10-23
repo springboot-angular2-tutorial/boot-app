@@ -2,8 +2,8 @@ package com.myapp.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.myapp.domain.Micropost;
-import com.myapp.domain.User;
-import lombok.*;
+import lombok.Builder;
+import lombok.Value;
 
 import java.util.Date;
 
@@ -18,9 +18,8 @@ public class PostDTO {
     private final UserDTO userDTO;
     private final Boolean isMyPost;
 
-
-    public static PostDTO newInstance(Micropost post, User user, UserStats userStats, Boolean isMyPost) {
-        final UserDTO userDTO = UserDTO.newInstance(user, userStats, isMyPost);
+    public static PostDTO newInstance(Micropost post, UserStats userStats, Boolean isMyPost) {
+        final UserDTO userDTO = UserDTO.newInstance(post.getUser(), userStats, isMyPost);
 
         return PostDTO.builder()
                 .id(post.getId())
@@ -31,8 +30,8 @@ public class PostDTO {
                 .build();
     }
 
-    public static PostDTO newInstance(Micropost post, User user, Boolean isMyPost) {
-        return PostDTO.newInstance(post, user, null, isMyPost);
+    public static PostDTO newInstance(Micropost post, Boolean isMyPost) {
+        return PostDTO.newInstance(post, null, isMyPost);
     }
 
 }

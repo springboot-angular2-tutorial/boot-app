@@ -55,11 +55,10 @@ class MicropostRepositoryImpl implements MicropostRepositoryCustom {
                 .stream()
                 .map(row -> {
                     final Micropost micropost = row.get(qMicropost);
-                    final User postUser = row.get(qMicropost.user);
                     final UserStats userStats = row.get(userStatsExpression);
-                    assert postUser != null;
-                    final Boolean isMyPost = (postUser.equals(user));
-                    return PostDTO.newInstance(micropost, postUser, userStats, isMyPost);
+                    assert micropost != null;
+                    final Boolean isMyPost = (micropost.getUser().equals(user));
+                    return PostDTO.newInstance(micropost, userStats, isMyPost);
 
                 })
                 .collect(Collectors.toList());
@@ -77,7 +76,7 @@ class MicropostRepositoryImpl implements MicropostRepositoryCustom {
                 .limit(pageParams.getCount())
                 .fetch()
                 .stream()
-                .map(post -> PostDTO.newInstance(post, post.getUser(), isMyself))
+                .map(post -> PostDTO.newInstance(post, isMyself))
                 .collect(Collectors.toList());
     }
 }
