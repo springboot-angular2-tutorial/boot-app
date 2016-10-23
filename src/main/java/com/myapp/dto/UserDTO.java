@@ -7,8 +7,8 @@ import lombok.Value;
 
 import java.util.Optional;
 
-@Builder
 @Value
+@Builder
 public class UserDTO {
 
     private final long id;

@@ -1,49 +1,34 @@
 package com.myapp.dto;
 
+import com.myapp.Utils;
 import com.myapp.domain.Relationship;
 import com.myapp.domain.User;
-import lombok.*;
+import lombok.Builder;
+import lombok.Value;
 
-import javax.xml.bind.DatatypeConverter;
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
+@Value
 @Builder
-@ToString(exclude = {"user", "relationship"})
-@EqualsAndHashCode
 public class RelatedUserDTO {
 
-    private final User user;
-
-    @Getter
+    private final long id;
+    private final String email;
+    private final String name;
+    private final String avatarHash;
     private final UserStats userStats;
-
+    private final Boolean isMyself;
     private final Relationship relationship;
 
-    @Getter
-    @Setter
-    private Boolean isMyself = null;
+    public static RelatedUserDTO newInstance(User user, Relationship relationship, UserStats userStats, Boolean isMyself) {
+        final String avatarHash = Utils.md5(user.getUsername());
 
-    public long getId() {
-        return user.getId();
-    }
-
-    public String getEmail() {
-        return user.getUsername();
-    }
-
-    public String getName() {
-        return user.getName();
-    }
-
-    public Long getRelationshipId() {
-        return relationship.getId();
-    }
-
-    public String getAvatarHash() throws NoSuchAlgorithmException, UnsupportedEncodingException {
-        byte[] bytes = MessageDigest.getInstance("MD5")
-                .digest(user.getUsername().getBytes("UTF-8"));
-        return DatatypeConverter.printHexBinary(bytes).toLowerCase();
+        return RelatedUserDTO.builder()
+                .id(user.getId())
+                .email(user.getUsername())
+                .name(user.getName())
+                .avatarHash(avatarHash)
+                .isMyself(isMyself)
+                .userStats(userStats)
+                .relationship(relationship)
+                .build();
     }
 }

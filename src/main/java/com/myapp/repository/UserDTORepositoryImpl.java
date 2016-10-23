@@ -2,6 +2,7 @@ package com.myapp.repository;
 
 import com.myapp.domain.QRelationship;
 import com.myapp.domain.QUser;
+import com.myapp.domain.Relationship;
 import com.myapp.domain.User;
 import com.myapp.dto.PageParams;
 import com.myapp.dto.RelatedUserDTO;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Repository
@@ -38,14 +40,14 @@ class UserDTORepositoryImpl implements UserDTORepository {
     }
 
     @Override
-    public List<RelatedUserDTO> findFollowings(User user, User currentUser, PageParams pageParams) {
+    public List<RelatedUserDTO> findFollowings(User subject, User currentUser, PageParams pageParams) {
         final ConstructorExpression<UserStats> userStatsExpression =
                 UserStatsQueryHelper.userStatsExpression(qUser, currentUser);
 
         return queryFactory.select(qUser, qRelationship, userStatsExpression)
                 .from(qUser)
                 .innerJoin(qUser.followedRelations, qRelationship)
-                .where(qRelationship.follower.eq(user)
+                .where(qRelationship.follower.eq(subject)
                         .and(pageParams.getSinceId().map(qRelationship.id::gt).orElse(null))
                         .and(pageParams.getMaxId().map(qRelationship.id::lt).orElse(null))
                 )
@@ -53,23 +55,19 @@ class UserDTORepositoryImpl implements UserDTORepository {
                 .limit(pageParams.getCount())
                 .fetch()
                 .stream()
-                .map(row -> RelatedUserDTO.builder()
-                        .user(row.get(qUser))
-                        .relationship(row.get(qRelationship))
-                        .userStats(row.get(userStatsExpression))
-                        .build())
+                .map(mapRowToRelatedUserDTO(currentUser, userStatsExpression))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<RelatedUserDTO> findFollowers(User user, User currentUser, PageParams pageParams) {
+    public List<RelatedUserDTO> findFollowers(User subject, User currentUser, PageParams pageParams) {
         final ConstructorExpression<UserStats> userStatsExpression =
                 UserStatsQueryHelper.userStatsExpression(qUser, currentUser);
 
         return queryFactory.select(qUser, qRelationship, userStatsExpression)
                 .from(qUser)
                 .innerJoin(qUser.followerRelations, qRelationship)
-                .where(qRelationship.followed.eq(user)
+                .where(qRelationship.followed.eq(subject)
                         .and(pageParams.getSinceId().map(qRelationship.id::gt).orElse(null))
                         .and(pageParams.getMaxId().map(qRelationship.id::lt).orElse(null))
                 )
@@ -77,11 +75,7 @@ class UserDTORepositoryImpl implements UserDTORepository {
                 .limit(pageParams.getCount())
                 .fetch()
                 .stream()
-                .map(row -> RelatedUserDTO.builder()
-                        .user(row.get(qUser))
-                        .relationship(row.get(qRelationship))
-                        .userStats(row.get(userStatsExpression))
-                        .build())
+                .map(mapRowToRelatedUserDTO(currentUser, userStatsExpression))
                 .collect(Collectors.toList());
     }
 
@@ -115,5 +109,19 @@ class UserDTORepositoryImpl implements UserDTORepository {
                 .collect(Collectors.toList());
         return new PageImpl<>(mappedList, pageable, page.getTotalElements());
     }
+
+    private Function<Tuple, RelatedUserDTO> mapRowToRelatedUserDTO(User currentUser, ConstructorExpression<UserStats> userStatsExpression) {
+        return row -> {
+            final User user = row.get(qUser);
+            final Relationship relationship = row.get(qRelationship);
+            final UserStats userStats = row.get(userStatsExpression);
+            assert user != null; // Row was found. It never be null.
+            final Boolean isMyself = Optional.ofNullable(currentUser)
+                    .map(user::equals)
+                    .orElse(null);
+            return RelatedUserDTO.newInstance(user, relationship, userStats, isMyself);
+        };
+    }
+
 
 }

@@ -47,23 +47,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<RelatedUserDTO> findFollowings(User user, PageParams pageParams) {
         final User currentUser = securityContextService.currentUser();
-        final List<RelatedUserDTO> followings = userDTORepository.findFollowings(user, currentUser, pageParams);
-        followings.forEach(f -> {
-            if (currentUser == null) return;
-            f.setIsMyself(f.getId() == currentUser.getId());
-        });
-        return followings;
+        return userDTORepository.findFollowings(user, currentUser, pageParams);
     }
 
     @Override
     public List<RelatedUserDTO> findFollowers(User user, PageParams pageParams) {
         final User currentUser = securityContextService.currentUser();
-        final List<RelatedUserDTO> followers = userDTORepository.findFollowers(user, currentUser, pageParams);
-        followers.forEach(f -> {
-            if (currentUser == null) return;
-            f.setIsMyself(f.getId() == currentUser.getId());
-        });
-        return followers;
+        return userDTORepository.findFollowers(user, currentUser, pageParams);
     }
 
     @Override
