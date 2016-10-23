@@ -24,6 +24,7 @@ class MicropostRepositoryImpl implements MicropostRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
+    @SuppressWarnings("SpringJavaAutowiredMembersInspection")
     @Autowired
     public MicropostRepositoryImpl(JPAQueryFactory queryFactory) {
         this.queryFactory = queryFactory;
@@ -52,17 +53,20 @@ class MicropostRepositoryImpl implements MicropostRepositoryCustom {
                 .limit(pageParams.getCount())
                 .fetch()
                 .stream()
-                .map(row -> PostDTO.builder()
-                        .micropost(row.get(qMicropost))
-                        .user(row.get(qMicropost.user))
-                        .userStats(row.get(userStatsExpression))
-                        .build()
-                )
+                .map(row -> {
+                    final Micropost micropost = row.get(qMicropost);
+                    final User postUser = row.get(qMicropost.user);
+                    final UserStats userStats = row.get(userStatsExpression);
+                    assert postUser != null;
+                    final Boolean isMyPost = (postUser.equals(user));
+                    return PostDTO.newInstance(micropost, postUser, userStats, isMyPost);
+
+                })
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<Micropost> findByUser(User user, PageParams pageParams) {
+    public List<PostDTO> findByUser(User user, Boolean isMyself, PageParams pageParams) {
         final QMicropost qMicropost = QMicropost.micropost;
         return queryFactory.selectFrom(qMicropost)
                 .where(qMicropost.user.eq(user)
@@ -71,6 +75,9 @@ class MicropostRepositoryImpl implements MicropostRepositoryCustom {
                 )
                 .orderBy(qMicropost.id.desc())
                 .limit(pageParams.getCount())
-                .fetch();
+                .fetch()
+                .stream()
+                .map(post -> PostDTO.newInstance(post, post.getUser(), isMyself))
+                .collect(Collectors.toList());
     }
 }

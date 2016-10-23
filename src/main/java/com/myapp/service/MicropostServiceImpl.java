@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 public class MicropostServiceImpl implements MicropostService {
@@ -35,24 +35,16 @@ public class MicropostServiceImpl implements MicropostService {
     @Override
     public List<PostDTO> findAsFeed(PageParams pageParams) {
         final User currentUser = securityContextService.currentUser();
-        final List<PostDTO> feed = micropostRepository.findAsFeed(currentUser, pageParams);
-        feed.forEach(p -> p.setIsMyPost(p.getUser().getId() == currentUser.getId()));
-        return feed;
+        return micropostRepository.findAsFeed(currentUser, pageParams);
     }
 
     @Override
     public List<PostDTO> findByUser(User user, PageParams pageParams) {
         final User currentUser = securityContextService.currentUser();
-        final Boolean isMyPost = (currentUser != null) ? (currentUser.equals(user)) : null;
-        return micropostRepository.findByUser(user, pageParams)
-                .stream()
-                .map(p -> PostDTO.builder()
-                        .micropost(p)
-                        .user(p.getUser())
-                        .isMyPost(isMyPost)
-                        .build()
-                )
-                .collect(Collectors.toList());
+        final Boolean isMyself = Optional.ofNullable(currentUser)
+                .map(user::equals)
+                .orElse(null);
+        return micropostRepository.findByUser(user, isMyself, pageParams);
     }
 
 }
