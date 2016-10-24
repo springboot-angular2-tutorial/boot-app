@@ -2,6 +2,7 @@ package com.myapp.controller
 
 import com.myapp.domain.Micropost
 import com.myapp.domain.User
+import com.myapp.repository.MicropostCustomRepository
 import com.myapp.repository.MicropostRepository
 import com.myapp.repository.UserRepository
 import com.myapp.service.MicropostService
@@ -21,6 +22,9 @@ class UserMicropostControllerTest extends BaseControllerTest {
 
     @Autowired
     private MicropostRepository micropostRepository
+
+    @Autowired
+    private MicropostCustomRepository micropostCustomRepository
 
     SecurityContextService securityContextService = Mock(SecurityContextService)
 
