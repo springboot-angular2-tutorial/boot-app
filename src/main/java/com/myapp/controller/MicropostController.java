@@ -39,13 +39,13 @@ public class MicropostController {
         micropostService.delete(id);
     }
 
-    @Data
-    private static class MicropostParam {
-        private String content;
-    }
-
     @ResponseStatus(value = HttpStatus.FORBIDDEN)
     @ExceptionHandler(NotPermittedException.class)
     public void handleNoPermission() {
+    }
+
+    @Data
+    private static class MicropostParam {
+        private String content;
     }
 }

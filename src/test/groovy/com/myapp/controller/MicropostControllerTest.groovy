@@ -2,6 +2,7 @@ package com.myapp.controller
 
 import com.myapp.domain.Micropost
 import com.myapp.domain.User
+import com.myapp.repository.MicropostCustomRepository
 import com.myapp.repository.MicropostRepository
 import com.myapp.repository.UserRepository
 import com.myapp.service.MicropostService
@@ -20,14 +21,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class MicropostControllerTest extends BaseControllerTest {
 
     @Autowired
-    MicropostRepository micropostRepository;
+    MicropostRepository micropostRepository
 
     @Autowired
-    UserRepository userRepository;
+    MicropostCustomRepository micropostCustomRepository
 
-    MicropostService micropostService;
+    @Autowired
+    UserRepository userRepository
 
-    SecurityContextService securityContextService = Mock(SecurityContextService);
+    MicropostService micropostService
+
+    SecurityContextService securityContextService = Mock(SecurityContextService)
 
     @Override
     def controllers() {
