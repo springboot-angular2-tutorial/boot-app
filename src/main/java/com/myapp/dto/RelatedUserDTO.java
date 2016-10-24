@@ -16,7 +16,7 @@ public class RelatedUserDTO {
     private final String avatarHash;
     private final UserStats userStats;
     private final Boolean isMyself;
-    private final Relationship relationship;
+    private final long relationshipId;
 
     public static RelatedUserDTO newInstance(User user, Relationship relationship, UserStats userStats, Boolean isMyself) {
         final String avatarHash = Utils.md5(user.getUsername());
@@ -28,7 +28,7 @@ public class RelatedUserDTO {
                 .avatarHash(avatarHash)
                 .isMyself(isMyself)
                 .userStats(userStats)
-                .relationship(relationship)
+                .relationshipId(relationship.getId())
                 .build();
     }
 }
