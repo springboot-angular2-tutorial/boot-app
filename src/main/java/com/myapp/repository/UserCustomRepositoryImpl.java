@@ -56,8 +56,7 @@ class UserCustomRepositoryImpl implements UserCustomRepository {
     @Override
     public Page<UserDTO> findAll(PageRequest pageable) {
         final Page<User> page = userRepository.findAll(pageable);
-        final List<UserDTO> mappedList = page
-                .getContent()
+        final List<UserDTO> mappedList = page.getContent()
                 .stream()
                 .map(UserDTO::newInstance)
                 .collect(Collectors.toList());
