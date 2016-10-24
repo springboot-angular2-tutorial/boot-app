@@ -15,10 +15,6 @@ public interface UserService extends org.springframework.security.core.userdetai
 
     User update(User user, UserParams params);
 
-    List<RelatedUserDTO> findFollowings(User user, PageParams pageParams);
-
-    List<RelatedUserDTO> findFollowers(User user, PageParams pageParams);
-
     Optional<UserDTO> findOne(Long id);
 
     Optional<UserDTO> findMe();

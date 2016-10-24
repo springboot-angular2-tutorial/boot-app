@@ -27,7 +27,7 @@ class UserRelationshipControllerTest extends BaseControllerTest {
     @Override
     def controllers() {
         final UserService userService = new UserServiceImpl(userRepository, userDTORepository, securityContextService)
-        return new UserRelationshipController(userRepository, userService)
+        return new UserRelationshipController(userRepository, userService, relationshipService)
     }
 
     def "can list followings"() {

@@ -4,7 +4,7 @@ import com.myapp.domain.User;
 import com.myapp.dto.PageParams;
 import com.myapp.dto.RelatedUserDTO;
 import com.myapp.repository.UserRepository;
-import com.myapp.service.UserService;
+import com.myapp.service.RelationshipService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,23 +17,24 @@ import java.util.List;
 public class UserRelationshipController {
 
     private final UserRepository userRepository;
-    private final UserService userService;
+    private final RelationshipService relationshipService;
 
     @Autowired
-    public UserRelationshipController(UserRepository userRepository, UserService userService) {
+    public UserRelationshipController(UserRepository userRepository, RelationshipService relationshipService) {
         this.userRepository = userRepository;
-        this.userService = userService;
+        this.relationshipService = relationshipService;
     }
 
     @RequestMapping("/followings")
     public List<RelatedUserDTO> followings(@PathVariable("userId") long userId, PageParams pageParams) {
         final User user = userRepository.findOne(userId);
-        return userService.findFollowings(user, pageParams);
+        return relationshipService.findFollowings(user, pageParams);
     }
 
     @RequestMapping("/followers")
     public List<RelatedUserDTO> followers(@PathVariable("userId") long userId, PageParams pageParams) {
         final User user = userRepository.findOne(userId);
-        return userService.findFollowers(user, pageParams);
+        return relationshipService.findFollowers(user, pageParams);
     }
+
 }
