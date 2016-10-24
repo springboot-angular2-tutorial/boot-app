@@ -3,8 +3,10 @@ package com.myapp.controller;
 import com.myapp.auth.TokenHandler;
 import com.myapp.dto.UserParams;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -17,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Created by riccardo.causo on 17.10.2016.
+ * @author riccardo.causo
  */
 @RestController
 @RequestMapping("/api/login")
@@ -28,12 +30,9 @@ public class AuthController {
     private final UserDetailsService userDetailsService;
 
     @Autowired
-    AuthController(
-            AuthenticationManager authenticationManager,
-            TokenHandler tokenHandler,
-            UserDetailsService userDetailsService
-    ){
-
+    AuthController(AuthenticationManager authenticationManager,
+                   TokenHandler tokenHandler,
+                   UserDetailsService userDetailsService) {
         this.authenticationManager = authenticationManager;
         this.tokenHandler = tokenHandler;
         this.userDetailsService = userDetailsService;
@@ -41,19 +40,19 @@ public class AuthController {
 
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<String> authenticationRequest(@RequestBody UserParams params) throws AuthenticationException {
+    public ResponseEntity<String> auth(@RequestBody UserParams params) throws AuthenticationException {
+        try {
+            UsernamePasswordAuthenticationToken loginToken = params.toAuthenticationToken();
+            Authentication authentication = authenticationManager.authenticate(loginToken);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(authentication.getName());
+            String token = tokenHandler.createTokenForUser(userDetails);
 
-        UsernamePasswordAuthenticationToken loginToken = params.toAuthenticationToken();
-        Authentication authentication =  authenticationManager.authenticate(loginToken);
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        UserDetails userDetails = userDetailsService.loadUserByUsername(params.getEmail().get());
-
-        String token = tokenHandler.createTokenForUser(userDetails);
-
-        // Return the token
-        return ResponseEntity.ok().header("x-auth-token",token).body("");
+            return ResponseEntity.ok().header("x-auth-token", token).body("");
+        } catch (BadCredentialsException e) {
+            // username or password is wrong.
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("");
+        }
     }
 
 
