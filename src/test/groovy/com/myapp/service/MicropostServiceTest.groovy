@@ -5,6 +5,7 @@ import com.myapp.domain.Relationship
 import com.myapp.domain.User
 import com.myapp.dto.PageParams
 import com.myapp.dto.PostDTO
+import com.myapp.repository.MicropostCustomRepository
 import com.myapp.repository.MicropostRepository
 import com.myapp.repository.RelationshipRepository
 import com.myapp.repository.UserRepository
@@ -15,6 +16,9 @@ class MicropostServiceTest extends BaseServiceTest {
 
     @Autowired
     MicropostRepository micropostRepository
+
+    @Autowired
+    MicropostCustomRepository micropostCustomRepository
 
     @Autowired
     UserRepository userRepository
