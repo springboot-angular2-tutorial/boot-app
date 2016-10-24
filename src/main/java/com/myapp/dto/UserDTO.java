@@ -23,7 +23,9 @@ public class UserDTO {
 
         return UserDTO.builder()
                 .id(user.getId())
-                .email(user.getUsername())
+                .email(Optional.ofNullable(isMyself)
+                        .map(b -> user.getUsername())
+                        .orElse(null))
                 .name(user.getName())
                 .avatarHash(avatarHash)
                 .isMyself(isMyself)
@@ -35,9 +37,4 @@ public class UserDTO {
         return UserDTO.newInstance(user, null, null);
     }
 
-    public String getEmail() {
-        return Optional.ofNullable(isMyself)
-                .map(b -> email)
-                .orElse(null);
-    }
 }

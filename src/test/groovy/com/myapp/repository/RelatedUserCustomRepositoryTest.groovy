@@ -33,10 +33,12 @@ class RelatedUserCustomRepositoryTest extends BaseRepositoryTest {
         List<RelatedUserDTO> result = relatedUserCustomRepository.findFollowings(user, currentUser, new PageParams())
 
         then:
-        result[0].email == "test2@test.com"
+        result[0].name == "test2"
+        result[0].email == null
         !result[0].userStats.isFollowedByMe()
         result[0].relationshipId == r2.id
-        result[1].email == "test1@test.com"
+        result[1].name == "test1"
+        result[1].email == null
         result[1].userStats.isFollowedByMe()
         result[1].relationshipId == r1.id
     }
@@ -57,10 +59,12 @@ class RelatedUserCustomRepositoryTest extends BaseRepositoryTest {
         List<RelatedUserDTO> result = relatedUserCustomRepository.findFollowers(user, currentUser, new PageParams())
 
         then:
-        result[0].email == "test2@test.com"
+        result[0].name == "test2"
+        result[0].email == null
         !result[0].userStats.isFollowedByMe()
         result[0].relationshipId == r2.id
-        result[1].email == "test1@test.com"
+        result[1].name == "test1"
+        result[1].email == null
         result[1].userStats.isFollowedByMe()
         result[1].relationshipId == r1.id
     }

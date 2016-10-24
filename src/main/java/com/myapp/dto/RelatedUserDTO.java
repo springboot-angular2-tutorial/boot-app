@@ -23,7 +23,7 @@ public class RelatedUserDTO {
 
         return RelatedUserDTO.builder()
                 .id(user.getId())
-                .email(user.getUsername())
+//                .email(user.getUsername())
                 .name(user.getName())
                 .avatarHash(avatarHash)
                 .isMyself(isMyself)
@@ -31,4 +31,5 @@ public class RelatedUserDTO {
                 .relationshipId(relationship.getId())
                 .build();
     }
+
 }
