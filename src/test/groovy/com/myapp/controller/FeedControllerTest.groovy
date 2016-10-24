@@ -2,6 +2,7 @@ package com.myapp.controller
 
 import com.myapp.domain.Micropost
 import com.myapp.domain.User
+import com.myapp.repository.MicropostCustomRepository
 import com.myapp.repository.MicropostRepository
 import com.myapp.repository.UserRepository
 import com.myapp.service.MicropostService
@@ -18,7 +19,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class FeedControllerTest extends BaseControllerTest {
 
     @Autowired
-    MicropostRepository micropostRepository;
+    MicropostRepository micropostRepository
+
+    @Autowired
+    MicropostCustomRepository micropostCustomRepository
 
     @Autowired
     UserRepository userRepository;
@@ -43,6 +47,7 @@ class FeedControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath('$[0].isMyPost', is(true)))
                 .andExpect(jsonPath('$[0].createdAt').exists())
                 .andExpect(jsonPath('$[0].user.email', is("test1@test.com")))
+                .andExpect(jsonPath('$[0].user.avatarHash', is("94fba03762323f286d7c3ca9e001c541")))
     }
 
     @Override
@@ -50,4 +55,5 @@ class FeedControllerTest extends BaseControllerTest {
         MicropostService micropostService = new MicropostServiceImpl(micropostRepository, micropostCustomRepository, securityContextService)
         return new FeedController(micropostService)
     }
+
 }
