@@ -4,6 +4,7 @@ import com.myapp.domain.Micropost;
 import com.myapp.domain.User;
 import com.myapp.dto.PageParams;
 import com.myapp.dto.PostDTO;
+import com.myapp.repository.MicropostCustomRepository;
 import com.myapp.repository.MicropostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,11 +16,13 @@ import java.util.Optional;
 public class MicropostServiceImpl implements MicropostService {
 
     private final MicropostRepository micropostRepository;
+    private final MicropostCustomRepository micropostCustomRepository;
     private final SecurityContextService securityContextService;
 
     @Autowired
-    public MicropostServiceImpl(MicropostRepository micropostRepository, SecurityContextService securityContextService) {
+    public MicropostServiceImpl(MicropostRepository micropostRepository, MicropostCustomRepository micropostCustomRepository, SecurityContextService securityContextService) {
         this.micropostRepository = micropostRepository;
+        this.micropostCustomRepository = micropostCustomRepository;
         this.securityContextService = securityContextService;
     }
 
@@ -35,7 +38,7 @@ public class MicropostServiceImpl implements MicropostService {
     @Override
     public List<PostDTO> findAsFeed(PageParams pageParams) {
         final User currentUser = securityContextService.currentUser();
-        return micropostRepository.findAsFeed(currentUser, pageParams);
+        return micropostCustomRepository.findAsFeed(currentUser, pageParams);
     }
 
     @Override
@@ -44,7 +47,7 @@ public class MicropostServiceImpl implements MicropostService {
         final Boolean isMyself = Optional.ofNullable(currentUser)
                 .map(user::equals)
                 .orElse(null);
-        return micropostRepository.findByUser(user, isMyself, pageParams);
+        return micropostCustomRepository.findByUser(user, isMyself, pageParams);
     }
 
 }

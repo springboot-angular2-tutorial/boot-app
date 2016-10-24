@@ -47,7 +47,7 @@ class FeedControllerTest extends BaseControllerTest {
 
     @Override
     def controllers() {
-        MicropostService micropostService = new MicropostServiceImpl(micropostRepository, securityContextService)
+        MicropostService micropostService = new MicropostServiceImpl(micropostRepository, micropostCustomRepository, securityContextService)
         return new FeedController(micropostService)
     }
 }

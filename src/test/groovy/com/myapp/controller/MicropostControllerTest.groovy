@@ -31,7 +31,7 @@ class MicropostControllerTest extends BaseControllerTest {
 
     @Override
     def controllers() {
-        micropostService = new MicropostServiceImpl(micropostRepository, securityContextService)
+        micropostService = new MicropostServiceImpl(micropostRepository, micropostCustomRepository, securityContextService)
         return new MicropostController(micropostRepository, micropostService, securityContextService)
     }
 

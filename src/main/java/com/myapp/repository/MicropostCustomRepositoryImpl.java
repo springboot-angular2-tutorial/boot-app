@@ -9,24 +9,19 @@ import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("unused")
-class MicropostRepositoryImpl implements MicropostRepositoryCustom {
-
-    @SuppressWarnings("UnusedDeclaration")
-    private static final Logger logger = LoggerFactory.getLogger(MicropostRepositoryImpl.class);
+@Repository
+public class MicropostCustomRepositoryImpl implements MicropostCustomRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    @SuppressWarnings("SpringJavaAutowiredMembersInspection")
     @Autowired
-    public MicropostRepositoryImpl(JPAQueryFactory queryFactory) {
+    public MicropostCustomRepositoryImpl(JPAQueryFactory queryFactory) {
         this.queryFactory = queryFactory;
     }
 
@@ -79,4 +74,5 @@ class MicropostRepositoryImpl implements MicropostRepositoryCustom {
                 .map(post -> PostDTO.newInstance(post, isMyself))
                 .collect(Collectors.toList());
     }
+
 }

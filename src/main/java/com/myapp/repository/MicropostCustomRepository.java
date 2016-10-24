@@ -6,9 +6,10 @@ import com.myapp.dto.PostDTO;
 
 import java.util.List;
 
-interface MicropostRepositoryCustom {
+public interface MicropostCustomRepository {
 
     List<PostDTO> findAsFeed(User user, PageParams pageParams);
 
     List<PostDTO> findByUser(User user, Boolean isMyself, PageParams pageParams);
+
 }
