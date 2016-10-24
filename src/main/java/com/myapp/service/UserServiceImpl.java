@@ -5,12 +5,9 @@ import com.myapp.dto.PageParams;
 import com.myapp.dto.RelatedUserDTO;
 import com.myapp.dto.UserDTO;
 import com.myapp.dto.UserParams;
-import com.myapp.repository.UserDTORepository;
+import com.myapp.repository.UserCustomRepository;
 import com.myapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,21 +15,20 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final UserDTORepository userDTORepository;
+    private final UserCustomRepository userCustomRepository;
     private final SecurityContextService securityContextService;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
-                           UserDTORepository userDTORepository,
+                           UserCustomRepository userCustomRepository,
                            SecurityContextService securityContextService) {
         this.userRepository = userRepository;
-        this.userDTORepository = userDTORepository;
+        this.userCustomRepository = userCustomRepository;
         this.securityContextService = securityContextService;
     }
 
@@ -47,19 +43,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<RelatedUserDTO> findFollowings(User user, PageParams pageParams) {
         final User currentUser = securityContextService.currentUser();
-        return userDTORepository.findFollowings(user, currentUser, pageParams);
+        return userCustomRepository.findFollowings(user, currentUser, pageParams);
     }
 
     @Override
     public List<RelatedUserDTO> findFollowers(User user, PageParams pageParams) {
         final User currentUser = securityContextService.currentUser();
-        return userDTORepository.findFollowers(user, currentUser, pageParams);
+        return userCustomRepository.findFollowers(user, currentUser, pageParams);
     }
 
     @Override
     public Optional<UserDTO> findOne(Long id) {
         final User currentUser = securityContextService.currentUser();
-        return userDTORepository.findOne(id, currentUser);
+        return userCustomRepository.findOne(id, currentUser);
     }
 
     @Override

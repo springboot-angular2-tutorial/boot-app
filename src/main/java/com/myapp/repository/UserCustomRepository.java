@@ -10,7 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import java.util.List;
 import java.util.Optional;
 
-public interface UserDTORepository {
+public interface UserCustomRepository {
 
     List<RelatedUserDTO> findFollowings(User user, User currentUser, PageParams pageParams);
 

@@ -24,7 +24,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Repository
-class UserDTORepositoryImpl implements UserDTORepository {
+class UserCustomRepositoryImpl implements UserCustomRepository {
 
     private final JPAQueryFactory queryFactory;
     private final UserRepository userRepository;
@@ -33,7 +33,7 @@ class UserDTORepositoryImpl implements UserDTORepository {
     private final QRelationship qRelationship = QRelationship.relationship;
 
     @Autowired
-    public UserDTORepositoryImpl(JPAQueryFactory queryFactory,
+    public UserCustomRepositoryImpl(JPAQueryFactory queryFactory,
                                  UserRepository userRepository) {
         this.queryFactory = queryFactory;
         this.userRepository = userRepository;

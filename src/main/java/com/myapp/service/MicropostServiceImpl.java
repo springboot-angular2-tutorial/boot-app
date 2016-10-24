@@ -24,7 +24,7 @@ public class MicropostServiceImpl implements MicropostService {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(Long id) throws NotPermittedException {
         User currentUser = securityContextService.currentUser();
         Micropost micropost = micropostRepository.findOne(id);
         if (currentUser != micropost.getUser())

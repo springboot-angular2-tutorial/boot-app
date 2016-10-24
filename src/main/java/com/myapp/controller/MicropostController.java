@@ -35,7 +35,7 @@ public class MicropostController {
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
-    public void delete(@PathVariable("id") Long id) {
+    public void delete(@PathVariable("id") Long id) throws NotPermittedException {
         micropostService.delete(id);
     }
 

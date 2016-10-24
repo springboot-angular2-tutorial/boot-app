@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface MicropostService {
 
-    void delete(Long id);
+    void delete(Long id) throws NotPermittedException;
 
     List<PostDTO> findAsFeed(PageParams pageParams);
 

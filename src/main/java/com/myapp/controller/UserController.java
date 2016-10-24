@@ -5,7 +5,7 @@ import com.myapp.domain.User;
 import com.myapp.dto.ErrorResponse;
 import com.myapp.dto.UserDTO;
 import com.myapp.dto.UserParams;
-import com.myapp.repository.UserDTORepository;
+import com.myapp.repository.UserCustomRepository;
 import com.myapp.repository.UserRepository;
 import com.myapp.service.SecurityContextService;
 import com.myapp.service.UserService;
@@ -29,15 +29,15 @@ public class UserController {
     private static final Integer DEFAULT_PAGE_SIZE = 5;
 
     private final UserRepository userRepository;
-    private final UserDTORepository userDTORepository;
+    private final UserCustomRepository userCustomRepository;
     private final UserService userService;
     private final SecurityContextService securityContextService;
     private final TokenHandler tokenHandler;
 
     @Autowired
-    public UserController(UserRepository userRepository, UserDTORepository userDTORepository, UserService userService, SecurityContextService securityContextService, TokenHandler tokenHandler) {
+    public UserController(UserRepository userRepository, UserCustomRepository userCustomRepository, UserService userService, SecurityContextService securityContextService, TokenHandler tokenHandler) {
         this.userRepository = userRepository;
-        this.userDTORepository = userDTORepository;
+        this.userCustomRepository = userCustomRepository;
         this.userService = userService;
         this.securityContextService = securityContextService;
         this.tokenHandler = tokenHandler;
@@ -49,7 +49,7 @@ public class UserController {
         final PageRequest pageable = new PageRequest(
                 Optional.ofNullable(page).orElse(1) - 1,
                 Optional.ofNullable(size).orElse(DEFAULT_PAGE_SIZE));
-        return userDTORepository.findAll(pageable);
+        return userCustomRepository.findAll(pageable);
     }
 
     @RequestMapping(method = RequestMethod.POST)
