@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class MicropostServiceImpl implements MicropostService {
@@ -38,7 +39,12 @@ public class MicropostServiceImpl implements MicropostService {
     @Override
     public List<PostDTO> findAsFeed(PageParams pageParams) {
         final User currentUser = securityContextService.currentUser();
-        return micropostCustomRepository.findAsFeed(currentUser, pageParams);
+        return micropostCustomRepository.findAsFeed(currentUser, pageParams)
+                .map(r -> {
+                    final Boolean isMyPost = (r.getMicropost().getUser().equals(currentUser));
+                    return PostDTO.newInstance(r.getMicropost(), r.getUserStats(), isMyPost);
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -47,7 +53,9 @@ public class MicropostServiceImpl implements MicropostService {
         final Boolean isMyself = Optional.ofNullable(currentUser)
                 .map(user::equals)
                 .orElse(null);
-        return micropostCustomRepository.findByUser(user, isMyself, pageParams);
+        return micropostCustomRepository.findByUser(user, pageParams)
+                .map(r -> PostDTO.newInstance(r.getMicropost(), isMyself))
+                .collect(Collectors.toList());
     }
 
 }

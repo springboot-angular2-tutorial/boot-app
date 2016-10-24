@@ -4,7 +4,6 @@ import com.myapp.domain.Micropost
 import com.myapp.domain.Relationship
 import com.myapp.domain.User
 import com.myapp.dto.PageParams
-import com.myapp.dto.PostDTO
 import org.springframework.beans.factory.annotation.Autowired
 
 class MicropostCustomRepositoryTest extends BaseRepositoryTest {
@@ -33,12 +32,12 @@ class MicropostCustomRepositoryTest extends BaseRepositoryTest {
         }
 
         when:
-        List<PostDTO> result = micropostCustomRepository.findAsFeed(follower, new PageParams())
+        def result = micropostCustomRepository.findAsFeed(follower, new PageParams()).collect()
 
         then:
         result.size() == 4
-        result.first().userDTO.id == followed.id
-        result.last().userDTO.id == follower.id
+        result.first().micropost.user.id == followed.id
+        result.last().micropost.user.id == follower.id
     }
 
     def "can find feed by since_id or max_id"() {
@@ -49,18 +48,18 @@ class MicropostCustomRepositoryTest extends BaseRepositoryTest {
         Micropost post3 = micropostRepository.save(new Micropost(content: "test3", user: user))
 
         when:
-        List<PostDTO> result = micropostCustomRepository.findAsFeed(user, new PageParams(sinceId: post2.id))
+        def result = micropostCustomRepository.findAsFeed(user, new PageParams(sinceId: post2.id)).collect()
 
         then:
         result.size() == 1
-        result.first().id == post3.id
+        result.first().micropost == post3
 
         when:
-        result = micropostCustomRepository.findAsFeed(user, new PageParams(maxId: post2.id))
+        result = micropostCustomRepository.findAsFeed(user, new PageParams(maxId: post2.id)).collect()
 
         then:
         result.size() == 1
-        result.first().id == post1.id
+        result.first().micropost == post1
     }
 
     def "can find posts by user"() {
@@ -71,20 +70,18 @@ class MicropostCustomRepositoryTest extends BaseRepositoryTest {
         Micropost post3 = micropostRepository.save(new Micropost(content: "test3", user: user))
 
         when:
-        List<PostDTO> result = micropostCustomRepository.findByUser(user, false, new PageParams(sinceId: post2.id))
+        def result = micropostCustomRepository.findByUser(user, new PageParams(sinceId: post2.id)).collect()
 
         then:
         result.size() == 1
-        result.first().id == post3.id
-        !result.first().isMyPost
+        result.first().micropost == post3
 
         when:
-        result = micropostCustomRepository.findByUser(user, true, new PageParams(maxId: post2.id))
+        result = micropostCustomRepository.findByUser(user, new PageParams(maxId: post2.id)).collect()
 
         then:
         result.size() == 1
-        result.first().id == post1.id
-        result.first().isMyPost
+        result.first().micropost == post1
     }
 
 }

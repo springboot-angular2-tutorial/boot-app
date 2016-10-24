@@ -1,8 +1,10 @@
 package com.myapp.repository;
 
-import com.myapp.domain.*;
+import com.myapp.domain.QMicropost;
+import com.myapp.domain.QRelationship;
+import com.myapp.domain.Relationship;
+import com.myapp.domain.User;
 import com.myapp.dto.PageParams;
-import com.myapp.dto.PostDTO;
 import com.myapp.dto.UserStats;
 import com.myapp.repository.helper.UserStatsQueryHelper;
 import com.querydsl.core.types.ConstructorExpression;
@@ -12,8 +14,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Repository
 public class MicropostCustomRepositoryImpl implements MicropostCustomRepository {
@@ -26,7 +27,7 @@ public class MicropostCustomRepositoryImpl implements MicropostCustomRepository 
     }
 
     @Override
-    public List<PostDTO> findAsFeed(User user, PageParams pageParams) {
+    public Stream<Row> findAsFeed(User user, PageParams pageParams) {
         final QMicropost qMicropost = QMicropost.micropost;
         final QRelationship qRelationship = QRelationship.relationship;
 
@@ -48,19 +49,15 @@ public class MicropostCustomRepositoryImpl implements MicropostCustomRepository 
                 .limit(pageParams.getCount())
                 .fetch()
                 .stream()
-                .map(row -> {
-                    final Micropost micropost = row.get(qMicropost);
-                    final UserStats userStats = row.get(userStatsExpression);
-                    assert micropost != null;
-                    final Boolean isMyPost = (micropost.getUser().equals(user));
-                    return PostDTO.newInstance(micropost, userStats, isMyPost);
-
-                })
-                .collect(Collectors.toList());
+                .map(tuple -> Row.builder()
+                        .micropost(tuple.get(qMicropost))
+                        .userStats(tuple.get(userStatsExpression))
+                        .build()
+                );
     }
 
     @Override
-    public List<PostDTO> findByUser(User user, Boolean isMyself, PageParams pageParams) {
+    public Stream<Row> findByUser(User user, PageParams pageParams) {
         final QMicropost qMicropost = QMicropost.micropost;
         return queryFactory.selectFrom(qMicropost)
                 .where(qMicropost.user.eq(user)
@@ -71,8 +68,11 @@ public class MicropostCustomRepositoryImpl implements MicropostCustomRepository 
                 .limit(pageParams.getCount())
                 .fetch()
                 .stream()
-                .map(post -> PostDTO.newInstance(post, isMyself))
-                .collect(Collectors.toList());
+                .map(post -> Row.builder()
+                        .micropost(post)
+                        .build()
+                );
     }
+
 
 }
