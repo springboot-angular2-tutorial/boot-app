@@ -7,7 +7,7 @@ import org.springframework.data.repository.Repository;
 
 import java.util.List;
 
-public interface RelationshipCustomRepository extends Repository<User, Long> {
+public interface RelatedUserCustomRepository extends Repository<User, Long> {
 
     List<RelatedUserDTO> findFollowings(User user, User currentUser, PageParams pageParams);
 

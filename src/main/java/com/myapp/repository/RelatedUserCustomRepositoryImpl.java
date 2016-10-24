@@ -20,7 +20,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Repository
-public class RelationshipCustomRepositoryImpl implements RelationshipCustomRepository {
+public class RelatedUserCustomRepositoryImpl implements RelatedUserCustomRepository {
 
     private final JPAQueryFactory queryFactory;
 
@@ -28,7 +28,7 @@ public class RelationshipCustomRepositoryImpl implements RelationshipCustomRepos
     private final QRelationship qRelationship = QRelationship.relationship;
 
     @Autowired
-    public RelationshipCustomRepositoryImpl(JPAQueryFactory queryFactory) {
+    public RelatedUserCustomRepositoryImpl(JPAQueryFactory queryFactory) {
         this.queryFactory = queryFactory;
     }
 

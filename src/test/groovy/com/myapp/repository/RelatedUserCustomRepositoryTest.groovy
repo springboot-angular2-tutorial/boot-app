@@ -6,13 +6,13 @@ import com.myapp.dto.PageParams
 import com.myapp.dto.RelatedUserDTO
 import org.springframework.beans.factory.annotation.Autowired
 
-class RelationshipCustomRepositoryTest extends BaseRepositoryTest {
+class RelatedUserCustomRepositoryTest extends BaseRepositoryTest {
 
     @Autowired
     UserRepository userRepository
 
     @Autowired
-    RelationshipCustomRepository relationshipCustomRepository
+    RelatedUserCustomRepository relatedUserCustomRepository
 
     @Autowired
     RelationshipRepository relationshipRepository
@@ -30,7 +30,7 @@ class RelationshipCustomRepositoryTest extends BaseRepositoryTest {
         Relationship r2 = relationshipRepository.save(new Relationship(follower: user, followed: u2))
 
         when:
-        List<RelatedUserDTO> result = relationshipCustomRepository.findFollowings(user, currentUser, new PageParams())
+        List<RelatedUserDTO> result = relatedUserCustomRepository.findFollowings(user, currentUser, new PageParams())
 
         then:
         result[0].email == "test2@test.com"
@@ -54,7 +54,7 @@ class RelationshipCustomRepositoryTest extends BaseRepositoryTest {
         Relationship r2 = relationshipRepository.save(new Relationship(followed: user, follower: u2))
 
         when:
-        List<RelatedUserDTO> result = relationshipCustomRepository.findFollowers(user, currentUser, new PageParams())
+        List<RelatedUserDTO> result = relatedUserCustomRepository.findFollowers(user, currentUser, new PageParams())
 
         then:
         result[0].email == "test2@test.com"
