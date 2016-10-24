@@ -6,6 +6,7 @@ import com.myapp.domain.Relationship
 import com.myapp.domain.User
 import com.myapp.repository.MicropostRepository
 import com.myapp.repository.RelationshipRepository
+import com.myapp.repository.UserCustomRepository
 import com.myapp.repository.UserRepository
 import com.myapp.service.SecurityContextService
 import com.myapp.service.UserService
@@ -24,6 +25,9 @@ class UserControllerTest extends BaseControllerTest {
     UserRepository userRepository
 
     @Autowired
+    UserCustomRepository userCustomRepository
+
+    @Autowired
     MicropostRepository micropostRepository
 
     @Autowired
@@ -37,9 +41,9 @@ class UserControllerTest extends BaseControllerTest {
 
     @Override
     def controllers() {
-        userService = new UserServiceImpl(userRepository, userDTORepository, securityContextService)
+        userService = new UserServiceImpl(userRepository, userCustomRepository, securityContextService)
         tokenHandler = new TokenHandler("secret", userService)
-        return new UserController(userRepository, userDTORepository, userService, securityContextService, tokenHandler)
+        return new UserController(userRepository, userCustomRepository, userService, securityContextService, tokenHandler)
     }
 
     def "can signup"() {
@@ -92,8 +96,10 @@ class UserControllerTest extends BaseControllerTest {
         response.andExpect(status().isOk())
                 .andExpect(jsonPath('$.content').exists())
                 .andExpect(jsonPath('$.content', hasSize(2)))
-                .andExpect(jsonPath('$.content[0].email', is("test0@test.com")))
-                .andExpect(jsonPath('$.content[1].email', is("test1@test.com")))
+                .andExpect(jsonPath('$.content[0].name', is("test0")))
+                .andExpect(jsonPath('$.content[0].email', isEmptyOrNullString()))
+                .andExpect(jsonPath('$.content[0].avatarHash', is("17c9ea0d5cb514cd00d3a71eb312b9dc")))
+                .andExpect(jsonPath('$.content[1].name', is("test1")))
     }
 
     def "can show user"() {
@@ -110,6 +116,8 @@ class UserControllerTest extends BaseControllerTest {
 //                .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath('$.name', is(user.name)))
+                .andExpect(jsonPath('$.email', isEmptyOrNullString()))
+                .andExpect(jsonPath('$.avatarHash', is("b642b4217b34b1e8d3bd915fc65c4452")))
                 .andExpect(jsonPath('$.userStats').exists())
                 .andExpect(jsonPath('$.userStats.micropostCnt', is(3)))
                 .andExpect(jsonPath('$.userStats.followingCnt', is(2)))
@@ -129,6 +137,8 @@ class UserControllerTest extends BaseControllerTest {
         then:
         response.andExpect(status().isOk())
                 .andExpect(jsonPath('$.name', is(user.name)))
+                .andExpect(jsonPath('$.email', is("test@test.com")))
+                .andExpect(jsonPath('$.avatarHash', is("b642b4217b34b1e8d3bd915fc65c4452")))
                 .andExpect(jsonPath('$.userStats').exists())
                 .andExpect(jsonPath('$.userStats.micropostCnt', is(3)))
                 .andExpect(jsonPath('$.userStats.followingCnt', is(2)))

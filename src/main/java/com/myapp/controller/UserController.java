@@ -58,12 +58,12 @@ public class UserController {
     }
 
     @RequestMapping(value = "{id:\\d+}")
-    public UserDTO show(@PathVariable("id") Long id) {
+    public UserDTO show(@PathVariable("id") Long id) throws UserNotFoundException {
         return userService.findOne(id).orElseThrow(UserNotFoundException::new);
     }
 
     @RequestMapping("/me")
-    public UserDTO showMe() {
+    public UserDTO showMe() throws UserNotFoundException {
         return userService.findMe().orElseThrow(UserNotFoundException::new);
     }
 
@@ -86,6 +86,7 @@ public class UserController {
     }
 
     @ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "No user")
-    private class UserNotFoundException extends RuntimeException {
+    private class UserNotFoundException extends Exception {
     }
+
 }
