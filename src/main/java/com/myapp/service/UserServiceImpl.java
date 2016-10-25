@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Service
+@Service("userService")
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;

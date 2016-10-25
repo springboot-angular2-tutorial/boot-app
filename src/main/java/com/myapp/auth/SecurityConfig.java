@@ -21,11 +21,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Order(1)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final UserService userService;
+    private final UserDetailsService userService;
     private final StatelessAuthenticationFilter statelessAuthenticationFilter;
 
     @Autowired
-    public SecurityConfig(UserService userService, StatelessAuthenticationFilter statelessAuthenticationFilter) {
+    public SecurityConfig(UserDetailsService userService, StatelessAuthenticationFilter statelessAuthenticationFilter) {
         super(true);
         this.userService = userService;
         this.statelessAuthenticationFilter = statelessAuthenticationFilter;

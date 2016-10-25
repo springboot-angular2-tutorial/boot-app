@@ -1,13 +1,13 @@
 package com.myapp.repository
 
 import com.myapp.config.QueryDSLConfig
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.context.annotation.Import
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.ContextConfiguration
-import org.springframework.transaction.annotation.Transactional
 import spock.lang.Specification
 
-@Transactional
 @ActiveProfiles("test")
-@ContextConfiguration(classes = [RepositoryTestConfig, QueryDSLConfig])
+@Import(value = [QueryDSLConfig])
+@DataJpaTest
 abstract class BaseRepositoryTest extends Specification {
 }

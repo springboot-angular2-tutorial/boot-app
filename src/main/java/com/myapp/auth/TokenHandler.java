@@ -1,11 +1,12 @@
 package com.myapp.auth;
 
-import com.myapp.service.UserService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import java.time.ZonedDateTime;
@@ -16,10 +17,12 @@ import java.util.Optional;
 public final class TokenHandler {
 
     private final String secret;
-    private final UserService userService;
+
+    @Qualifier("userService")
+    private final UserDetailsService userService;
 
     @Autowired
-    public TokenHandler(@Value("${app.jwt.secret}") String secret, UserService userService) {
+    public TokenHandler(@Value("${app.jwt.secret}") String secret, UserDetailsService userService) {
         this.secret = secret;
         this.userService = userService;
     }
