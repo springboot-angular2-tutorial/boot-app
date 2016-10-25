@@ -34,8 +34,7 @@ class FeedControllerTest extends BaseControllerTest2 {
 
     def "can show feed when signed in"() {
         given:
-        User user = new User(id: 1, username: "test1@test.com", password: "secret", name: "test")
-        signIn(user)
+        User user = signIn()
 
         def feed = [PostDTO.newInstance(new Micropost(id: 1, user: user, content: "content1"), true)]
         micropostService.findAsFeed(_ as PageParams) >> feed
@@ -51,16 +50,16 @@ class FeedControllerTest extends BaseControllerTest2 {
                 .andExpect(jsonPath('$[0].content', is("content1")))
                 .andExpect(jsonPath('$[0].isMyPost', is(true)))
                 .andExpect(jsonPath('$[0].createdAt', nullValue()))
-                .andExpect(jsonPath('$[0].user.email', is("test1@test.com")))
-                .andExpect(jsonPath('$[0].user.avatarHash', is("94fba03762323f286d7c3ca9e001c541")))
+                .andExpect(jsonPath('$[0].user.email', is(user.username)))
+                .andExpect(jsonPath('$[0].user.avatarHash', is("b642b4217b34b1e8d3bd915fc65c4452")))
     }
 
     def "can not show feed when not signed in"() {
         when:
-        def response = mockMvc.perform(get("/api/feed"))
+        def response = perform(get("/api/feed"))
 
         then:
-        response.andExpect(status().is(403))
+        response.andExpect(status().isUnauthorized())
     }
 
 }

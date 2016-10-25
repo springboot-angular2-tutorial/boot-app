@@ -3,10 +3,8 @@ package com.myapp.controller;
 import com.myapp.auth.TokenHandler;
 import com.myapp.dto.UserParams;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -41,18 +39,13 @@ public class AuthController {
 
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<String> auth(@RequestBody UserParams params) throws AuthenticationException {
-        try {
-            UsernamePasswordAuthenticationToken loginToken = params.toAuthenticationToken();
-            Authentication authentication = authenticationManager.authenticate(loginToken);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            UserDetails userDetails = userDetailsService.loadUserByUsername(authentication.getName());
-            String token = tokenHandler.createTokenForUser(userDetails);
+        UsernamePasswordAuthenticationToken loginToken = params.toAuthenticationToken();
+        Authentication authentication = authenticationManager.authenticate(loginToken);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(authentication.getName());
+        String token = tokenHandler.createTokenForUser(userDetails);
 
-            return ResponseEntity.ok().header("x-auth-token", token).body("");
-        } catch (BadCredentialsException e) {
-            // username or password is wrong.
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("");
-        }
+        return ResponseEntity.ok().header("x-auth-token", token).body("");
     }
 
 

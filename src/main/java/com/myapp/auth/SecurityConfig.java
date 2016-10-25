@@ -1,7 +1,7 @@
 package com.myapp.auth;
 
-import com.myapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.Http401AuthenticationEntryPoint;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -52,7 +52,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/api/relationships/**").hasRole("USER")
                 .antMatchers(HttpMethod.DELETE, "/api/relationships/**").hasRole("USER")
                 .antMatchers(HttpMethod.GET, "/api/feed").hasRole("USER")
-        ;
+                .and()
+                .exceptionHandling()
+                .authenticationEntryPoint(new Http401AuthenticationEntryPoint("'Bearer token_type=\"JWT\"'"));
 
         http.addFilterBefore(statelessAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     }

@@ -1,5 +1,6 @@
 package com.myapp.service;
 
+import com.myapp.domain.Micropost;
 import com.myapp.domain.User;
 import com.myapp.dto.PageParams;
 import com.myapp.dto.PostDTO;
@@ -13,4 +14,7 @@ public interface MicropostService {
     List<PostDTO> findAsFeed(PageParams pageParams);
 
     List<PostDTO> findByUser(User user, PageParams pageParams);
+
+    Micropost saveMyPost(Micropost post);
+
 }

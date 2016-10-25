@@ -24,17 +24,25 @@ class BaseControllerTest2 extends Specification {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    MockMvc mockMvc
+    private MockMvc mockMvc
 
     @Autowired
     private TokenAuthenticationService tokenAuthenticationService
 
     ResultActions perform(RequestBuilder requestBuilder) {
-        mockMvc.perform(requestBuilder)
+        return mockMvc.perform(requestBuilder)
     }
 
-    void signIn(User user) {
+    User signIn(User user) {
         Authentication auth = new UserAuthentication(user)
         tokenAuthenticationService.getAuthentication(_ as HttpServletRequest) >> auth
+        return user
+    }
+
+    User signIn() {
+        User user = new User(id: 1, username: "test@test.com", password: "secret", name: "test")
+        Authentication auth = new UserAuthentication(user)
+        tokenAuthenticationService.getAuthentication(_ as HttpServletRequest) >> auth
+        return user
     }
 }

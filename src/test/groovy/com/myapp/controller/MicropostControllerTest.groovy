@@ -1,15 +1,15 @@
 package com.myapp.controller
 
 import com.myapp.domain.Micropost
-import com.myapp.domain.User
-import com.myapp.repository.MicropostCustomRepository
-import com.myapp.repository.MicropostRepository
-import com.myapp.repository.UserRepository
 import com.myapp.service.MicropostService
-import com.myapp.service.MicropostServiceImpl
-import com.myapp.service.SecurityContextService
+import com.myapp.service.NotPermittedException
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.annotation.Bean
 import org.springframework.http.MediaType
+import spock.lang.Ignore
+import spock.mock.DetachedMockFactory
 
 import static groovy.json.JsonOutput.toJson
 import static org.hamcrest.Matchers.is
@@ -18,32 +18,26 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
-class MicropostControllerTest extends BaseControllerTest {
+@WebMvcTest(MicropostController)
+class MicropostControllerTest extends BaseControllerTest2 {
 
-    @Autowired
-    MicropostRepository micropostRepository
+    @TestConfiguration
+    static class Config {
+        private DetachedMockFactory factory = new DetachedMockFactory()
 
-    @Autowired
-    MicropostCustomRepository micropostCustomRepository
-
-    @Autowired
-    UserRepository userRepository
-
-    MicropostService micropostService
-
-    SecurityContextService securityContextService = Mock(SecurityContextService)
-
-    @Override
-    def controllers() {
-        micropostService = new MicropostServiceImpl(micropostRepository, micropostCustomRepository, securityContextService)
-        return new MicropostController(micropostRepository, micropostService, securityContextService)
+        @Bean
+        MicropostService micropostService() {
+            factory.Mock(MicropostService, name: "micropostService")
+        }
     }
+
+    @Autowired
+    MicropostService micropostService
 
     def "can create a micropost"() {
         given:
+        signIn()
         String content = "my content"
-        User user = userRepository.save(new User(username: "test@test.com", password: "secret", name: "test"))
-        securityContextService.currentUser() >> user
 
         when:
         def response = perform(post("/api/microposts")
@@ -52,24 +46,57 @@ class MicropostControllerTest extends BaseControllerTest {
         )
 
         then:
-        response.andExpect(status().isOk())
+        micropostService.saveMyPost(_ as Micropost) >> new Micropost(content)
+        response
+                .andExpect(status().isOk())
                 .andExpect(jsonPath('$.content').exists())
                 .andExpect(jsonPath('$.content', is(content)))
-        micropostRepository.count() == 1
+    }
+
+    def "can not create a micropost when not signed in"() {
+        when:
+        def response = perform(post("/api/microposts")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(toJson(content: "test"))
+        )
+
+        then:
+        response.andExpect(status().isUnauthorized())
     }
 
     def "can delete a micropost"() {
         given:
-        User user = userRepository.save(new User(username: "test@test.com", password: "secret", name: "test"))
-        Micropost micropost = micropostRepository.save(new Micropost(user, "content"))
-        securityContextService.currentUser() >> user
+        signIn()
 
         when:
-        def response = perform(delete("/api/microposts/${micropost.id}"))
+        def response = perform(delete("/api/microposts/1"))
 
         then:
+        1 * micropostService.delete(1)
         response.andExpect(status().isOk())
-        micropostRepository.count() == 0
     }
+
+    def "can not delete a micropost when not signed in"() {
+        when:
+        def response = perform(delete("/api/microposts/1"))
+
+        then:
+        response.andExpect(status().isUnauthorized())
+    }
+
+    // FIXME
+    @Ignore("Why is 200 returned ?? How can I fix it?")
+    def "can not delete a micropost when have no permission"() {
+        given:
+        signIn()
+        micropostService.delete(1) >> { new NotPermittedException("") }
+
+        when:
+        def response = perform(delete("/api/microposts/1"))
+
+        then:
+        response.andExpect(status().isForbidden())
+    }
+
 
 }

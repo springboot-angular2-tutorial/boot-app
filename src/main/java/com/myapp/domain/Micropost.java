@@ -33,6 +33,10 @@ public class Micropost {
         this.content = content;
     }
 
+    public Micropost(String content) {
+        this.content = content;
+    }
+
     @PrePersist
     protected void onCreate() {
         createdAt = new Date();

@@ -58,4 +58,11 @@ public class MicropostServiceImpl implements MicropostService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public Micropost saveMyPost(Micropost post) {
+        User currentUser = securityContextService.currentUser();
+        post.setUser(currentUser);
+        return micropostRepository.save(post);
+    }
+
 }
