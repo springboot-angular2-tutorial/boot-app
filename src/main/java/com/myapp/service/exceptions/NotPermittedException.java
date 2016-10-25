@@ -1,4 +1,4 @@
-package com.myapp.service;
+package com.myapp.service.exceptions;
 
 public class NotPermittedException extends Exception {
 

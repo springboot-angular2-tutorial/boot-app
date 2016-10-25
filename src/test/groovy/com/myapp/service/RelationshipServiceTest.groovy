@@ -25,7 +25,7 @@ class RelationshipServiceTest extends BaseServiceTest {
     RelationshipService relationshipService
 
     def setup() {
-        relationshipService = new RelationshipServiceImpl(relatedUserCustomRepository, securityContextService)
+        relationshipService = new RelationshipServiceImpl(relationshipRepository, relatedUserCustomRepository, userRepository, securityContextService)
     }
 
     def "can find followings when not signed in"() {
@@ -92,6 +92,27 @@ class RelationshipServiceTest extends BaseServiceTest {
         followers.first().isMyself == false
         followers.last().name == "follower1"
         followers.last().isMyself == true
+    }
+
+    def "can follow and unfollow"() {
+        given:
+        User currentUser = userRepository.save(new User(username: "test1@test.com", password: "secret", name: "akira"))
+        User targetUser = userRepository.save(new User(username: "test2@test.com", password: "secret", name: "akira"))
+        securityContextService.currentUser() >> currentUser
+
+        when:
+        relationshipService.follow(targetUser.id)
+
+        then:
+        def relationShip = relationshipRepository.findAll().first()
+        relationShip.follower == currentUser
+        relationShip.followed == targetUser
+
+        when:
+        relationshipService.unfollow(targetUser.id)
+
+        then:
+        relationshipRepository.count() == 0
     }
 
 }

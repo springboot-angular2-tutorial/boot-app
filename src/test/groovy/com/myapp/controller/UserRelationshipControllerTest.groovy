@@ -8,10 +8,7 @@ import com.myapp.repository.UserRepository
 import com.myapp.service.RelationshipService
 import com.myapp.service.RelationshipServiceImpl
 import com.myapp.service.SecurityContextService
-import com.myapp.service.UserService
-import com.myapp.service.UserServiceImpl
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 
 import static org.hamcrest.Matchers.is
 import static org.hamcrest.Matchers.isEmptyOrNullString
@@ -34,7 +31,7 @@ class UserRelationshipControllerTest extends BaseControllerTest {
 
     @Override
     def controllers() {
-        final RelationshipService relationshipService = new RelationshipServiceImpl(relatedUserCustomRepository, securityContextService)
+        final RelationshipService relationshipService = new RelationshipServiceImpl(relationshipRepository, relatedUserCustomRepository, userRepository, securityContextService)
         return new UserRelationshipController(userRepository, relationshipService)
     }
 

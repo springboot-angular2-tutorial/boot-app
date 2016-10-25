@@ -2,7 +2,7 @@ package com.myapp.controller
 
 import com.myapp.domain.Micropost
 import com.myapp.service.MicropostService
-import com.myapp.service.NotPermittedException
+import com.myapp.service.exceptions.NotPermittedException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.context.TestConfiguration
@@ -23,10 +23,8 @@ class MicropostControllerTest extends BaseControllerTest2 {
 
     @TestConfiguration
     static class Config {
-        private DetachedMockFactory factory = new DetachedMockFactory()
-
         @Bean
-        MicropostService micropostService() {
+        MicropostService micropostService(DetachedMockFactory factory) {
             factory.Mock(MicropostService, name: "micropostService")
         }
     }

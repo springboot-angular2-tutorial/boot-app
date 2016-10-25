@@ -6,6 +6,7 @@ import com.myapp.dto.PageParams;
 import com.myapp.dto.PostDTO;
 import com.myapp.repository.MicropostCustomRepository;
 import com.myapp.repository.MicropostRepository;
+import com.myapp.service.exceptions.NotPermittedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

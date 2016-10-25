@@ -3,7 +3,7 @@ package com.myapp.controller;
 import com.myapp.domain.Micropost;
 import com.myapp.dto.MicropostParams;
 import com.myapp.service.MicropostService;
-import com.myapp.service.NotPermittedException;
+import com.myapp.service.exceptions.NotPermittedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

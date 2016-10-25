@@ -21,10 +21,8 @@ class FeedControllerTest extends BaseControllerTest2 {
 
     @TestConfiguration
     static class Config {
-        private DetachedMockFactory factory = new DetachedMockFactory()
-
         @Bean
-        MicropostService micropostService() {
+        MicropostService micropostService(DetachedMockFactory factory) {
             factory.Stub(MicropostService, name: "micropostService")
         }
     }

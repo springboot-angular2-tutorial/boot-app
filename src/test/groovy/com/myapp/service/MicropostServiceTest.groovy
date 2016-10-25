@@ -9,6 +9,7 @@ import com.myapp.repository.MicropostCustomRepository
 import com.myapp.repository.MicropostRepository
 import com.myapp.repository.RelationshipRepository
 import com.myapp.repository.UserRepository
+import com.myapp.service.exceptions.NotPermittedException
 import org.springframework.beans.factory.annotation.Autowired
 import spock.lang.Shared
 

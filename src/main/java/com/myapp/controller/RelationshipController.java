@@ -1,10 +1,7 @@
 package com.myapp.controller;
 
-import com.myapp.domain.Relationship;
-import com.myapp.domain.User;
-import com.myapp.repository.RelationshipRepository;
-import com.myapp.repository.UserRepository;
-import com.myapp.service.SecurityContextService;
+import com.myapp.service.RelationshipService;
+import com.myapp.service.exceptions.RelationshipNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -13,42 +10,26 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/relationships")
 public class RelationshipController {
 
-    private final UserRepository userRepository;
-    private final RelationshipRepository relationshipRepository;
-    private final SecurityContextService securityContextService;
+    private final RelationshipService relationshipService;
 
     @Autowired
-    public RelationshipController(UserRepository userRepository,
-                                  RelationshipRepository relationshipRepository,
-                                  SecurityContextService securityContextService) {
-        this.userRepository = userRepository;
-        this.relationshipRepository = relationshipRepository;
-        this.securityContextService = securityContextService;
+    public RelationshipController(RelationshipService relationshipService) {
+        this.relationshipService = relationshipService;
     }
 
     @RequestMapping(value = "/to/{followedId}", method = RequestMethod.POST)
     public void follow(@PathVariable("followedId") Long followedId) {
-        final User followed = userRepository.findOne(followedId);
-        final User currentUser = securityContextService.currentUser();
-        final Relationship relationship = new Relationship(currentUser, followed);
-        // TODO unless followed
-
-        relationshipRepository.save(relationship);
+        relationshipService.follow(followedId);
     }
 
     @RequestMapping(value = "/to/{followedId}", method = RequestMethod.DELETE)
-    public void unfollow(@PathVariable("followedId") Long followedId) {
-        final User followed = userRepository.findOne(followedId);
-        final User currentUser = securityContextService.currentUser();
-        final Relationship relationship = relationshipRepository
-                .findOneByFollowerAndFollowed(currentUser, followed)
-                .orElseThrow(RelationshipNotFoundException::new);
-
-        relationshipRepository.delete(relationship);
+    public void unfollow(@PathVariable("followedId") Long followedId) throws RelationshipNotFoundException {
+        relationshipService.unfollow(followedId);
     }
 
-    @ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "No relationship")
-    private class RelationshipNotFoundException extends RuntimeException {
+    @ResponseStatus(value = HttpStatus.NOT_FOUND)
+    @ExceptionHandler(RelationshipNotFoundException.class)
+    public void handleRelationshipNotFound() {
     }
 
 }

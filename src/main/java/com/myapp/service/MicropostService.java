@@ -4,6 +4,7 @@ import com.myapp.domain.Micropost;
 import com.myapp.domain.User;
 import com.myapp.dto.PageParams;
 import com.myapp.dto.PostDTO;
+import com.myapp.service.exceptions.NotPermittedException;
 
 import java.util.List;
 
