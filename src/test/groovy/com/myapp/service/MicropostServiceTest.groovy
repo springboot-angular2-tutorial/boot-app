@@ -12,6 +12,7 @@ import com.myapp.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import spock.lang.Shared
 
+@SuppressWarnings("GroovyPointlessBoolean")
 class MicropostServiceTest extends BaseServiceTest {
 
     @Autowired
@@ -61,7 +62,6 @@ class MicropostServiceTest extends BaseServiceTest {
         micropostRepository.count() == 1
     }
 
-    @SuppressWarnings("GroovyPointlessBoolean")
     def "can find posts as feed"() {
         given:
         User user = userRepository.save(new User(username: "akira@test.com", password: "secret", name: "akira"))
@@ -90,10 +90,9 @@ class MicropostServiceTest extends BaseServiceTest {
         List<PostDTO> posts = micropostService.findByUser(user, new PageParams())
 
         then:
-        posts.first().isMyPost == null;
+        posts.first().isMyPost == null
     }
 
-    @SuppressWarnings("GroovyPointlessBoolean")
     def "can find posts by user when signed in"() {
         given:
         User user = userRepository.save(new User(username: "akira@test.com", password: "secret", name: "akira"))
@@ -104,7 +103,7 @@ class MicropostServiceTest extends BaseServiceTest {
         List<PostDTO> posts = micropostService.findByUser(user, new PageParams())
 
         then:
-        posts.first().isMyPost == true;
+        posts.first().isMyPost == true
 
         when:
         User anotherUser = userRepository.save(new User(username: "satoru@test.com", password: "secret", name: "satoru"))
@@ -112,6 +111,20 @@ class MicropostServiceTest extends BaseServiceTest {
         List<PostDTO> anotherPosts = micropostService.findByUser(anotherUser, new PageParams())
 
         then:
-        anotherPosts.first().isMyPost == false;
+        anotherPosts.first().isMyPost == false
+    }
+
+    def "can save my post"() {
+        given:
+        User user = userRepository.save(new User(username: "akira@test.com", password: "secret", name: "akira"))
+        securityContextService.currentUser() >> user
+        Micropost post = new Micropost("test post")
+
+        when:
+        micropostService.saveMyPost(post)
+
+        then:
+        micropostRepository.findAll().first() == post
+        post.user == user
     }
 }
