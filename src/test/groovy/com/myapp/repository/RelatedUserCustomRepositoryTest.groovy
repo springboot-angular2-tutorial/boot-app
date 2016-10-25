@@ -30,17 +30,15 @@ class RelatedUserCustomRepositoryTest extends BaseRepositoryTest {
         Relationship r2 = relationshipRepository.save(new Relationship(follower: user, followed: u2))
 
         when:
-        List<RelatedUserDTO> result = relatedUserCustomRepository.findFollowings(user, currentUser, new PageParams())
+        List<RelatedUserCustomRepository.Row> result = relatedUserCustomRepository.findFollowings(user, currentUser, new PageParams()).collect()
 
         then:
-        result[0].name == "test2"
-        result[0].email == null
+        result[0].user.username == "test2@test.com"
         !result[0].userStats.isFollowedByMe()
-        result[0].relationshipId == r2.id
-        result[1].name == "test1"
-        result[1].email == null
+        result[0].relationship.id == r2.id
+        result[1].user.username == "test1@test.com"
         result[1].userStats.isFollowedByMe()
-        result[1].relationshipId == r1.id
+        result[1].relationship.id == r1.id
     }
 
     def "findFollowers"() {
@@ -56,17 +54,15 @@ class RelatedUserCustomRepositoryTest extends BaseRepositoryTest {
         Relationship r2 = relationshipRepository.save(new Relationship(followed: user, follower: u2))
 
         when:
-        List<RelatedUserDTO> result = relatedUserCustomRepository.findFollowers(user, currentUser, new PageParams())
+        List<RelatedUserCustomRepository.Row> result = relatedUserCustomRepository.findFollowers(user, currentUser, new PageParams()).collect()
 
         then:
-        result[0].name == "test2"
-        result[0].email == null
+        result[0].user.username == "test2@test.com"
         !result[0].userStats.isFollowedByMe()
-        result[0].relationshipId == r2.id
-        result[1].name == "test1"
-        result[1].email == null
+        result[0].relationship.id == r2.id
+        result[1].user.username == "test1@test.com"
         result[1].userStats.isFollowedByMe()
-        result[1].relationshipId == r1.id
+        result[1].relationship.id == r1.id
     }
 
 }

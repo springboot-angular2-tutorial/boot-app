@@ -7,6 +7,9 @@ import com.myapp.repository.RelatedUserCustomRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class RelationshipServiceImpl implements RelationshipService {
@@ -22,13 +25,31 @@ public class RelationshipServiceImpl implements RelationshipService {
     @Override
     public List<RelatedUserDTO> findFollowings(User user, PageParams pageParams) {
         final User currentUser = securityContextService.currentUser();
-        return relatedUserCustomRepository.findFollowings(user, currentUser, pageParams);
+        return relatedUserCustomRepository.findFollowings(user, currentUser, pageParams)
+                .map(toDTO(currentUser))
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<RelatedUserDTO> findFollowers(User user, PageParams pageParams) {
         final User currentUser = securityContextService.currentUser();
-        return relatedUserCustomRepository.findFollowers(user, currentUser, pageParams);
+        return relatedUserCustomRepository.findFollowers(user, currentUser, pageParams)
+                .map(toDTO(currentUser))
+                .collect(Collectors.toList());
+    }
+
+    private Function<RelatedUserCustomRepository.Row, RelatedUserDTO> toDTO(User currentUser) {
+        return r -> {
+            final Boolean isMyself = Optional.ofNullable(currentUser)
+                    .map(u -> currentUser.equals(r.getUser()))
+                    .orElse(null);
+            return RelatedUserDTO.newInstance(
+                    r.getUser(),
+                    r.getRelationship(),
+                    r.getUserStats(),
+                    isMyself
+            );
+        };
     }
 
 }
