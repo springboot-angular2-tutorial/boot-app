@@ -7,6 +7,8 @@ import com.myapp.repository.RelationshipRepository
 import com.myapp.repository.UserCustomRepository
 import com.myapp.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 
@@ -39,6 +41,7 @@ class UserServiceTest extends BaseServiceTest {
 
         then:
         userDTO.id == user.id
+        userDTO.isMyself == null // not signed in
     }
 
     def "findMe"() {
@@ -51,6 +54,22 @@ class UserServiceTest extends BaseServiceTest {
 
         then:
         userDTO.id == user.id
+        userDTO.isMyself == true
+    }
+
+    def "findAll"() {
+        given:
+        //noinspection GroovyUnusedAssignment
+        User user1 = userRepository.save(new User(username: "test1@test.com", password: "secret", name: "akira"))
+        User user2 = userRepository.save(new User(username: "test2@test.com", password: "secret", name: "akira"))
+
+        when:
+        PageRequest pageRequest = new PageRequest(1, 1)
+        Page<UserDTO> page = userService.findAll(pageRequest)
+
+        then:
+        page.content.first().id == user2.id
+        page.totalElements == 2
     }
 
     def "update"() {

@@ -19,4 +19,6 @@ public interface UserService extends org.springframework.security.core.userdetai
 
     Optional<UserDTO> findMe();
 
+    Page<UserDTO> findAll(PageRequest pageable);
+
 }

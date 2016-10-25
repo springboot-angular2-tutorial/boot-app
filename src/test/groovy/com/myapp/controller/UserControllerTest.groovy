@@ -43,7 +43,7 @@ class UserControllerTest extends BaseControllerTest {
     def controllers() {
         userService = new UserServiceImpl(userRepository, userCustomRepository, securityContextService)
         tokenHandler = new TokenHandler("secret", userService)
-        return new UserController(userRepository, userCustomRepository, userService, securityContextService, tokenHandler)
+        return new UserController(userRepository, userService, securityContextService, tokenHandler)
     }
 
     def "can signup"() {
