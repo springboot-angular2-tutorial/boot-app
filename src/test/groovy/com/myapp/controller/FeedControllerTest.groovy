@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @WebMvcTest(FeedController)
-class FeedControllerTest extends BaseControllerTest2 {
+class FeedControllerTest extends BaseControllerTest {
 
     @TestConfiguration
     static class Config {

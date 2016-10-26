@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 
 @WebMvcTest(UserController)
-class UserControllerTest extends BaseControllerTest2 {
+class UserControllerTest extends BaseControllerTest {
 
     @TestConfiguration
     static class Config {

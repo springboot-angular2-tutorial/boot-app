@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @WebMvcTest(UserRelationshipController)
-class UserRelationshipControllerTest extends BaseControllerTest2 {
+class UserRelationshipControllerTest extends BaseControllerTest {
 
     @TestConfiguration
     static class Config {

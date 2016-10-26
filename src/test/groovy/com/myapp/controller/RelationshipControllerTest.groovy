@@ -13,7 +13,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @WebMvcTest(RelationshipController)
-class RelationshipControllerTest extends BaseControllerTest2 {
+class RelationshipControllerTest extends BaseControllerTest {
 
     @TestConfiguration
     static class Config {
