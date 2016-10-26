@@ -11,6 +11,8 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import spock.mock.DetachedMockFactory
 
+import java.time.LocalDateTime
+
 import static org.hamcrest.Matchers.*
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
@@ -33,8 +35,9 @@ class FeedControllerTest extends BaseControllerTest {
     def "can show feed when signed in"() {
         given:
         User user = signIn()
+        Date now = new Date()
 
-        def feed = [PostDTO.newInstance(new Micropost(id: 1, user: user, content: "content1"), true)]
+        def feed = [PostDTO.newInstance(new Micropost(id: 1, user: user, content: "content1", createdAt: now), true)]
         micropostService.findAsFeed(_ as PageParams) >> feed
 
         when:
@@ -46,7 +49,7 @@ class FeedControllerTest extends BaseControllerTest {
             andExpect(jsonPath('$', hasSize(1)))
             andExpect(jsonPath('$[0].content', is("content1")))
             andExpect(jsonPath('$[0].isMyPost', is(true)))
-            andExpect(jsonPath('$[0].createdAt', nullValue()))
+            andExpect(jsonPath('$[0].createdAt', greaterThanOrEqualTo(now.time)))
             andExpect(jsonPath('$[0].user.email', is(user.username)))
             andExpect(jsonPath('$[0].user.avatarHash', is("b642b4217b34b1e8d3bd915fc65c4452")))
         }

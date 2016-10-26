@@ -34,7 +34,7 @@ class UserMicropostControllerTest extends BaseControllerTest {
         given:
         User user = new User(id: 1, username: "akira@test.com", password: "secret", name: "akira")
         micropostService.findByUser(1, new PageParams()) >> (0..1).collect {
-            Micropost post = new Micropost(id: it, content: "content${it}", user: user)
+            Micropost post = new Micropost(id: it, content: "content${it}", user: user, createdAt: new Date())
             return PostDTO.newInstance(post, null)
         }
 
@@ -57,7 +57,7 @@ class UserMicropostControllerTest extends BaseControllerTest {
         given:
         User user = signIn()
         micropostService.findMyPosts(new PageParams()) >> (0..1).collect {
-            Micropost post = new Micropost(id: it, content: "content${it}", user: user)
+            Micropost post = new Micropost(id: it, content: "content${it}", user: user, createdAt: new Date())
             return PostDTO.newInstance(post, true)
         }
 

@@ -3,6 +3,7 @@ package com.myapp.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.myapp.domain.Micropost;
 import lombok.Builder;
+import lombok.NonNull;
 import lombok.Value;
 
 import java.util.Date;
@@ -12,7 +13,9 @@ import java.util.Date;
 public class PostDTO {
 
     private final long id;
+    @NonNull
     private final String content;
+    @NonNull
     private final Date createdAt;
     @JsonProperty("user")
     private final UserDTO userDTO;
