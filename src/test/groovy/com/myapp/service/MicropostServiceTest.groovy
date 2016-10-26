@@ -34,7 +34,7 @@ class MicropostServiceTest extends BaseServiceTest {
     RelationshipRepository relationshipRepository
 
     def setup() {
-        micropostService = new MicropostServiceImpl(micropostRepository, micropostCustomRepository, securityContextService)
+        micropostService = new MicropostServiceImpl(micropostRepository, userRepository, micropostCustomRepository, securityContextService)
     }
 
     def "can delete micropost when have a permission"() {
@@ -77,6 +77,7 @@ class MicropostServiceTest extends BaseServiceTest {
         List<PostDTO> posts = micropostService.findAsFeed(new PageParams())
 
         then:
+        posts.size() == 2
         posts.first().content == 'follower content'
         posts.first().isMyPost == false
         posts.last().isMyPost == true
@@ -88,9 +89,11 @@ class MicropostServiceTest extends BaseServiceTest {
         micropostRepository.save(new Micropost(user: user, content: "my content"))
 
         when:
-        List<PostDTO> posts = micropostService.findByUser(user, new PageParams())
+        List<PostDTO> posts = micropostService.findByUser(user.id, new PageParams())
 
         then:
+        posts.size() == 1
+        posts.first().content == "my content"
         posts.first().isMyPost == null
     }
 
@@ -101,7 +104,7 @@ class MicropostServiceTest extends BaseServiceTest {
 
         when:
         micropostRepository.save(new Micropost(user: user, content: "my content"))
-        List<PostDTO> posts = micropostService.findByUser(user, new PageParams())
+        List<PostDTO> posts = micropostService.findByUser(user.id, new PageParams())
 
         then:
         posts.first().isMyPost == true
@@ -109,10 +112,25 @@ class MicropostServiceTest extends BaseServiceTest {
         when:
         User anotherUser = userRepository.save(new User(username: "satoru@test.com", password: "secret", name: "satoru"))
         micropostRepository.save(new Micropost(user: anotherUser, content: "my content"))
-        List<PostDTO> anotherPosts = micropostService.findByUser(anotherUser, new PageParams())
+        List<PostDTO> anotherPosts = micropostService.findByUser(anotherUser.id, new PageParams())
 
         then:
         anotherPosts.first().isMyPost == false
+    }
+
+    def "can find my posts"() {
+        given:
+        User user = userRepository.save(new User(username: "akira@test.com", password: "secret", name: "akira"))
+        securityContextService.currentUser() >> user
+        micropostRepository.save(new Micropost(user: user, content: "my content"))
+
+        when:
+        List<PostDTO> posts = micropostService.findMyPosts(new PageParams())
+
+        then:
+        posts.size() == 1
+        posts.first().content == "my content"
+        posts.first().isMyPost == true
     }
 
     def "can save my post"() {

@@ -14,7 +14,9 @@ public interface MicropostService {
 
     List<PostDTO> findAsFeed(PageParams pageParams);
 
-    List<PostDTO> findByUser(User user, PageParams pageParams);
+    List<PostDTO> findByUser(Long userId, PageParams pageParams);
+
+    List<PostDTO> findMyPosts(PageParams pageParams);
 
     Micropost saveMyPost(Micropost post);
 

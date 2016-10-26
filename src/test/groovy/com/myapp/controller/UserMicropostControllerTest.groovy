@@ -2,71 +2,91 @@ package com.myapp.controller
 
 import com.myapp.domain.Micropost
 import com.myapp.domain.User
-import com.myapp.repository.MicropostCustomRepository
-import com.myapp.repository.MicropostRepository
-import com.myapp.repository.UserRepository
+import com.myapp.dto.PageParams
+import com.myapp.dto.PostDTO
 import com.myapp.service.MicropostService
-import com.myapp.service.MicropostServiceImpl
-import com.myapp.service.SecurityContextService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.annotation.Bean
+import spock.mock.DetachedMockFactory
 
 import static org.hamcrest.Matchers.*
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
-class UserMicropostControllerTest extends BaseControllerTest {
+@WebMvcTest(UserMicropostController)
+class UserMicropostControllerTest extends BaseControllerTest2 {
 
-    @Autowired
-    private UserRepository userRepository
-
-    @Autowired
-    private MicropostRepository micropostRepository
-
-    @Autowired
-    private MicropostCustomRepository micropostCustomRepository
-
-    SecurityContextService securityContextService = Mock(SecurityContextService)
-
-    @Override
-    def controllers() {
-        final MicropostService micropostService = new MicropostServiceImpl(micropostRepository, micropostCustomRepository, securityContextService);
-        return new UserMicropostController(userRepository, micropostService, securityContextService)
+    @TestConfiguration
+    static class Config {
+        @Bean
+        MicropostService micropostService(DetachedMockFactory f) {
+            return f.Mock(MicropostService)
+        }
     }
+
+    @Autowired
+    MicropostService micropostService
 
     def "can list microposts"() {
         given:
-        User user = userRepository.save(new User(username: "akira@test.com", password: "secret", name: "akira"))
-        micropostRepository.save(new Micropost(user: user, content: "my content"))
+        User user = new User(id: 1, username: "akira@test.com", password: "secret", name: "akira")
+        micropostService.findByUser(1, new PageParams()) >> (0..1).collect {
+            Micropost post = new Micropost(id: it, content: "content${it}", user: user)
+            return PostDTO.newInstance(post)
+        }
+
 
         when:
         def response = perform(get("/api/users/${user.id}/microposts/"))
 
         then:
-        response
-//                .andDo(MockMvcResultHandlers.print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath('$', hasSize(1)))
-                .andExpect(jsonPath('$[0].content', is("my content")))
-                .andExpect(jsonPath('$[0].isMyPost', nullValue()))
+        with(response) {
+            andExpect(status().isOk())
+            andExpect(jsonPath('$', hasSize(2)))
+            andExpect(jsonPath('$[0].content', is("content0")))
+            andExpect(jsonPath('$[0].isMyPost', nullValue()))
+            andExpect(jsonPath('$[0].user.name', is("akira")))
+            andExpect(jsonPath('$[1].content', is("content1")))
+        }
     }
 
-    def "can list my microposts"() {
+    def "can list my microposts when signed in"() {
         given:
-        User user = userRepository.save(new User(username: "akira@test.com", password: "secret", name: "akira"))
-        micropostRepository.save(new Micropost(user: user, content: "my content"))
-        securityContextService.currentUser() >> user
+        User user = signIn()
+        micropostService.findMyPosts(new PageParams()) >> (0..1).collect {
+            Micropost post = new Micropost(id: it, content: "content${it}", user: user)
+            return PostDTO.newInstance(post, true)
+        }
+
 
         when:
-        def response = perform(get("/api/users/me/microposts/"))
+        def response = perform(get("/api/users/me/microposts"))
 
         then:
-        response
-//                .andDo(MockMvcResultHandlers.print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath('$', hasSize(1)))
-                .andExpect(jsonPath('$[0].content', is("my content")))
-                .andExpect(jsonPath('$[0].isMyPost', is(true)))
+        with(response) {
+            andExpect(status().isOk())
+            andExpect(jsonPath('$', hasSize(2)))
+            andExpect(jsonPath('$[0].content', is("content0")))
+            andExpect(jsonPath('$[0].isMyPost', is(true)))
+            andExpect(jsonPath('$[0].user.name', is(user.name)))
+            andExpect(jsonPath('$[1].content', is("content1")))
+        }
+    }
+
+    def "can not list my microposts when signed in"() {
+        given:
+        micropostService.findMyPosts(new PageParams()) >> []
+
+        when:
+        def response = perform(get("/api/users/me/microposts"))
+
+        then:
+        with(response) {
+            andExpect(status().isUnauthorized())
+        }
     }
 
 }

@@ -138,7 +138,7 @@ class UserControllerTest extends BaseControllerTest2 {
             andExpect(jsonPath('$.name', is("test")))
             andExpect(jsonPath('$.email', isEmptyOrNullString()))
             andExpect(jsonPath('$.avatarHash', is("94fba03762323f286d7c3ca9e001c541")))
-            andExpect(jsonPath('$.isMyself', isEmptyOrNullString()))
+            andExpect(jsonPath('$.isMyself', nullValue()))
             andExpect(jsonPath('$.userStats').exists())
             andExpect(jsonPath('$.userStats.micropostCnt', is(3)))
             andExpect(jsonPath('$.userStats.followingCnt', is(2)))

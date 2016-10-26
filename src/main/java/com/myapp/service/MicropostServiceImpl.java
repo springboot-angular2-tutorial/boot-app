@@ -6,6 +6,7 @@ import com.myapp.dto.PageParams;
 import com.myapp.dto.PostDTO;
 import com.myapp.repository.MicropostCustomRepository;
 import com.myapp.repository.MicropostRepository;
+import com.myapp.repository.UserRepository;
 import com.myapp.service.exceptions.NotPermittedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,12 +19,14 @@ import java.util.stream.Collectors;
 public class MicropostServiceImpl implements MicropostService {
 
     private final MicropostRepository micropostRepository;
+    private final UserRepository userRepository;
     private final MicropostCustomRepository micropostCustomRepository;
     private final SecurityContextService securityContextService;
 
     @Autowired
-    public MicropostServiceImpl(MicropostRepository micropostRepository, MicropostCustomRepository micropostCustomRepository, SecurityContextService securityContextService) {
+    public MicropostServiceImpl(MicropostRepository micropostRepository, UserRepository userRepository, MicropostCustomRepository micropostCustomRepository, SecurityContextService securityContextService) {
         this.micropostRepository = micropostRepository;
+        this.userRepository = userRepository;
         this.micropostCustomRepository = micropostCustomRepository;
         this.securityContextService = securityContextService;
     }
@@ -49,7 +52,8 @@ public class MicropostServiceImpl implements MicropostService {
     }
 
     @Override
-    public List<PostDTO> findByUser(User user, PageParams pageParams) {
+    public List<PostDTO> findByUser(Long userId, PageParams pageParams) {
+        final User user = userRepository.findOne(userId);
         final User currentUser = securityContextService.currentUser();
         final Boolean isMyself = Optional.ofNullable(currentUser)
                 .map(user::equals)
@@ -57,6 +61,12 @@ public class MicropostServiceImpl implements MicropostService {
         return micropostCustomRepository.findByUser(user, pageParams)
                 .map(r -> PostDTO.newInstance(r.getMicropost(), isMyself))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PostDTO> findMyPosts(PageParams pageParams) {
+        final User currentUser = securityContextService.currentUser();
+        return findByUser(currentUser.getId(), pageParams);
     }
 
     @Override
