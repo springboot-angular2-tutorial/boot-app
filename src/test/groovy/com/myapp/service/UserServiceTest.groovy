@@ -29,7 +29,7 @@ class UserServiceTest extends BaseServiceTest {
     UserService userService
 
     def setup() {
-        userService = new UserServiceImpl(userRepository, userCustomRepository, securityContextService)
+        userService = new UserServiceImpl(userRepository, userCustomRepository, relationshipRepository, securityContextService)
     }
 
     def "can find a user"() {

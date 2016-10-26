@@ -17,6 +17,7 @@ public class UserDTO {
     private final String avatarHash;
     private final UserStats userStats;
     private final Boolean isMyself;
+    private final Boolean isFollowedByMe;
 
     public static UserDTO newInstance(User user, UserStats userStats, Boolean isMyself) {
         final String avatarHash = Utils.md5(user.getUsername());
@@ -36,6 +37,16 @@ public class UserDTO {
 
     public static UserDTO newInstance(User user) {
         return UserDTO.newInstance(user, null, null);
+    }
+
+    public static UserDTOBuilder builder2(User user, UserStats userStats) {
+        final String avatarHash = Utils.md5(user.getUsername());
+
+        return UserDTO.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .avatarHash(avatarHash)
+                .userStats(userStats);
     }
 
 }

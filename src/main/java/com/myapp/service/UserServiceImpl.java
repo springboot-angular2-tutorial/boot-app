@@ -3,6 +3,7 @@ package com.myapp.service;
 import com.myapp.domain.User;
 import com.myapp.dto.UserDTO;
 import com.myapp.dto.UserParams;
+import com.myapp.repository.RelationshipRepository;
 import com.myapp.repository.UserCustomRepository;
 import com.myapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,31 +21,34 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserCustomRepository userCustomRepository;
+    private final RelationshipRepository relationshipRepository;
     private final SecurityContextService securityContextService;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
                            UserCustomRepository userCustomRepository,
+                           RelationshipRepository relationshipRepository,
                            SecurityContextService securityContextService) {
         this.userRepository = userRepository;
         this.userCustomRepository = userCustomRepository;
+        this.relationshipRepository = relationshipRepository;
         this.securityContextService = securityContextService;
     }
 
     @Override
     public Optional<UserDTO> findOne(Long id) {
         final User currentUser = securityContextService.currentUser();
-        return userCustomRepository.findOne(id, currentUser)
-                .map(r -> {
-                    final Boolean isMyself = Optional.ofNullable(currentUser)
-                            .map(u -> u.equals(r.getUser()))
-                            .orElse(null);
-                    return UserDTO.newInstance(
-                            r.getUser(),
-                            r.getUserStats(),
-                            isMyself
-                    );
-                });
+
+        return userCustomRepository.findOne(id, currentUser).map(r -> {
+            final boolean isFollowedByMe = relationshipRepository.findOneByFollowerAndFollowed(currentUser, r.getUser()).isPresent();
+            final Boolean isMyself = Optional.ofNullable(currentUser)
+                    .map(u -> u.equals(r.getUser()))
+                    .orElse(null);
+            return UserDTO.builder2(r.getUser(), r.getUserStats())
+                    .isMyself(isMyself)
+                    .isFollowedByMe(isFollowedByMe)
+                    .build();
+        });
     }
 
     @Override
