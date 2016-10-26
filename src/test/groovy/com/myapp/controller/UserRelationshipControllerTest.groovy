@@ -39,8 +39,8 @@ class UserRelationshipControllerTest extends BaseControllerTest {
         Relationship r1 = new Relationship(id: 1, follower: follower, followed: followed1)
         Relationship r2 = new Relationship(id: 2, follower: follower, followed: followed2)
         relationshipService.findFollowings(follower.id, new PageParams()) >> [
-                RelatedUserDTO.newInstance(followed1, r1, null, null),
-                RelatedUserDTO.newInstance(followed2, r2, null, null),
+                RelatedUserDTO.builder2(followed1, r1, null).build(),
+                RelatedUserDTO.builder2(followed2, r2, null).build(),
         ]
 
         when:
@@ -66,8 +66,8 @@ class UserRelationshipControllerTest extends BaseControllerTest {
         Relationship r1 = new Relationship(id: 1, follower: follower1, followed: followed)
         Relationship r2 = new Relationship(id: 2, follower: follower2, followed: followed)
         relationshipService.findFollowers(followed.id, new PageParams()) >> [
-                RelatedUserDTO.newInstance(follower1, r1, null, null),
-                RelatedUserDTO.newInstance(follower2, r2, null, null),
+                RelatedUserDTO.builder2(follower1, r1, null).build(),
+                RelatedUserDTO.builder2(follower2, r2, null).build(),
         ]
 
         when:

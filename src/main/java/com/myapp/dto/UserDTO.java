@@ -19,28 +19,8 @@ public class UserDTO {
     private final Boolean isMyself;
     private final Boolean isFollowedByMe;
 
-    public String getEmail() {
-        return Optional.ofNullable(isMyself)
-                        .filter(Boolean::booleanValue)
-                        .map(b -> this.email)
-                        .orElse(null);
-    }
-
-    public static UserDTO newInstance(User user, UserStats userStats, Boolean isMyself) {
-        final String avatarHash = Utils.md5(user.getUsername());
-
-        return UserDTO.builder()
-                .id(user.getId())
-                .email(user.getUsername())
-                .name(user.getName())
-                .avatarHash(avatarHash)
-                .userStats(userStats)
-                .isMyself(isMyself)
-                .build();
-    }
-
     public static UserDTO newInstance(User user) {
-        return UserDTO.newInstance(user, null, null);
+        return UserDTO.builder2(user, null).build();
     }
 
     public static UserDTOBuilder builder2(User user, UserStats userStats) {
@@ -52,6 +32,14 @@ public class UserDTO {
                 .name(user.getName())
                 .avatarHash(avatarHash)
                 .userStats(userStats);
+    }
+
+    @SuppressWarnings("unused")
+    public String getEmail() {
+        return Optional.ofNullable(isMyself)
+                .filter(Boolean::booleanValue)
+                .map(b -> this.email)
+                .orElse(null);
     }
 
 }

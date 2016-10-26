@@ -35,7 +35,7 @@ class UserMicropostControllerTest extends BaseControllerTest {
         User user = new User(id: 1, username: "akira@test.com", password: "secret", name: "akira")
         micropostService.findByUser(1, new PageParams()) >> (0..1).collect {
             Micropost post = new Micropost(id: it, content: "content${it}", user: user)
-            return PostDTO.newInstance(post)
+            return PostDTO.newInstance(post, null)
         }
 
 

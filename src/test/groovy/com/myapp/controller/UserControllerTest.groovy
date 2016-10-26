@@ -126,7 +126,7 @@ class UserControllerTest extends BaseControllerTest {
         userService.findOne(1) >> {
             User user = new User(id: 1, username: "test1@test.com", password: "secret", name: "test")
             UserStats userStats = new UserStats(3, 2, 1)
-            return Optional.of(UserDTO.newInstance(user, userStats, null))
+            return Optional.of(UserDTO.builder2(user, userStats).build())
         }
 
         when:
@@ -166,7 +166,11 @@ class UserControllerTest extends BaseControllerTest {
         userService.findMe() >> {
             User user = new User(id: 1, username: "test1@test.com", password: "secret", name: "test")
             UserStats userStats = new UserStats(3, 2, 1)
-            return Optional.of(UserDTO.newInstance(user, userStats, true))
+            Optional.of(UserDTO.builder2(user, userStats)
+                    .isMyself(true)
+                    .isFollowedByMe(false)
+                    .build()
+            )
         }
 
         when:
@@ -179,7 +183,7 @@ class UserControllerTest extends BaseControllerTest {
             andExpect(jsonPath('$.email', is("test1@test.com")))
             andExpect(jsonPath('$.avatarHash', is("94fba03762323f286d7c3ca9e001c541")))
             andExpect(jsonPath('$.isMyself', is(true)))
-            andExpect(jsonPath('$.isFollowedByMe', nullValue()))
+            andExpect(jsonPath('$.isFollowedByMe', is(false)))
             andExpect(jsonPath('$.userStats').exists())
             andExpect(jsonPath('$.userStats.micropostCnt', is(3)))
             andExpect(jsonPath('$.userStats.followingCnt', is(2)))

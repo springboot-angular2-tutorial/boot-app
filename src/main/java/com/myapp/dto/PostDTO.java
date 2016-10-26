@@ -36,8 +36,4 @@ public class PostDTO {
         return PostDTO.newInstance(post, null, isMyPost);
     }
 
-    public static PostDTO newInstance(Micropost post) {
-        return PostDTO.newInstance(post, null, null);
-    }
-
 }
