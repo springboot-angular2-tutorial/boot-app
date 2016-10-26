@@ -4,6 +4,10 @@ This repository is an example application for Spring Boot and Angular2 tutorial.
 
 [Demo](https://micropost.hana053.com/).
 
+* JWT
+* [Querydsl](http://www.querydsl.com/)
+* [Spock](http://spockframework.org/)
+
 ## Getting Started
 
 Run Spring Boot.
