@@ -1,52 +1,52 @@
 package com.myapp.controller
 
 import com.myapp.auth.TokenHandler
-import com.myapp.domain.Micropost
-import com.myapp.domain.Relationship
+import com.myapp.auth.TokenHandlerImpl
 import com.myapp.domain.User
-import com.myapp.repository.MicropostRepository
-import com.myapp.repository.RelationshipRepository
-import com.myapp.repository.UserCustomRepository
-import com.myapp.repository.UserRepository
-import com.myapp.service.SecurityContextService
+import com.myapp.dto.UserDTO
+import com.myapp.dto.UserParams
+import com.myapp.dto.UserStats
 import com.myapp.service.UserService
-import com.myapp.service.UserServiceImpl
+import com.myapp.service.exceptions.UserNotFoundException
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.annotation.Bean
+import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.PageRequest
 import org.springframework.http.MediaType
+import spock.mock.DetachedMockFactory
 
 import static groovy.json.JsonOutput.toJson
 import static org.hamcrest.Matchers.*
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 
-class UserControllerTest extends BaseControllerTest {
+@WebMvcTest(UserController)
+class UserControllerTest extends BaseControllerTest2 {
 
-    @Autowired
-    UserRepository userRepository
+    @TestConfiguration
+    static class Config {
+        @Bean
+        UserService userService(DetachedMockFactory factory) {
+            return factory.Mock(UserService)
+        }
 
-    @Autowired
-    UserCustomRepository userCustomRepository
-
-    @Autowired
-    MicropostRepository micropostRepository
-
-    @Autowired
-    RelationshipRepository relationshipRepository
-
-    TokenHandler tokenHandler
-
-    UserService userService
-
-    SecurityContextService securityContextService = Mock(SecurityContextService)
-
-    @Override
-    def controllers() {
-        userService = new UserServiceImpl(userRepository, userCustomRepository, securityContextService)
-        tokenHandler = new TokenHandler("secret", userService)
-        return new UserController(userRepository, userService, securityContextService, tokenHandler)
+        @Bean
+        TokenHandler tokenHandler(UserService userService) {
+            return new TokenHandlerImpl("jwt secret", userService)
+        }
     }
 
+    @Autowired
+    UserService userService
+
+    @Autowired
+    TokenHandler tokenHandler
+
     def "can signup"() {
+        given:
         def email = "akirasosa@test.com"
         def password = "secret123"
         def name = "akira"
@@ -58,100 +58,152 @@ class UserControllerTest extends BaseControllerTest {
         )
 
         then:
-        response
-//                .andDo(MockMvcResultHandlers.print())
-                .andExpect(status().isOk())
-        userRepository.count() == 1
-        userRepository.findAll().get(0).username == email
+        1 * userService.create(new UserParams(email, password, name))
+        response.andExpect(status().isOk())
     }
 
     def "can not signup when email is duplicated"() {
+        given:
         def email = "akirasosa@test.com"
         def password = "secret123"
         def name = "akira1"
+        userService.create(_ as UserParams) >> {
+            throw new DataIntegrityViolationException("")
+        }
 
         when:
-        userRepository.save(new User(username: email, password: password, name: "akira0"))
         def response = perform(post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(toJson(email: email, password: password, name: name))
         )
 
         then:
-        response
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath('$.code', is("email_already_taken")))
+        with(response) {
+            andExpect(status().isBadRequest())
+            andExpect(jsonPath('$.code', is("email_already_taken")))
+        }
     }
 
-    def "can list users"() {
+    def "can list users when signed in"() {
         given:
-        2.times {
-            userRepository.save(new User(username: "test${it}@test.com", password: "secret", name: "test${it}"))
+        signIn()
+        userService.findAll(_ as PageRequest) >> {
+            List<UserDTO> content = (0..1).collect {
+                User u = new User(id: it, username: "test${it}@test.com", password: "secret", name: "test${it}")
+                UserDTO.newInstance(u)
+            }
+            return new PageImpl<>(content)
         }
 
         when:
         def response = perform(get("/api/users"))
 
         then:
-        response.andExpect(status().isOk())
-                .andExpect(jsonPath('$.content').exists())
-                .andExpect(jsonPath('$.content', hasSize(2)))
-                .andExpect(jsonPath('$.content[0].name', is("test0")))
-                .andExpect(jsonPath('$.content[0].email', isEmptyOrNullString()))
-                .andExpect(jsonPath('$.content[0].avatarHash', is("17c9ea0d5cb514cd00d3a71eb312b9dc")))
-                .andExpect(jsonPath('$.content[1].name', is("test1")))
+        with(response) {
+            andExpect(status().isOk())
+            andExpect(jsonPath('$.content').exists())
+            andExpect(jsonPath('$.content', hasSize(2)))
+            andExpect(jsonPath('$.content[0].name', is("test0")))
+            andExpect(jsonPath('$.content[0].email', isEmptyOrNullString()))
+            andExpect(jsonPath('$.content[0].avatarHash', is("17c9ea0d5cb514cd00d3a71eb312b9dc")))
+            andExpect(jsonPath('$.content[1].name', is("test1")))
+        }
+    }
+
+    def "can not list users when not signed in"() {
+        given:
+        userService.findAll(_ as PageRequest) >> []
+
+        when:
+        def response = perform(get("/api/users"))
+
+        then:
+        response.andExpect(status().isUnauthorized())
     }
 
     def "can show user"() {
         given:
-        User user = userRepository.save(new User(username: "test@test.com", password: "secret", name: "test"))
-        prepareMicroposts(user)
-        prepareRelationships(user)
+        userService.findOne(1) >> {
+            User user = new User(id: 1, username: "test1@test.com", password: "secret", name: "test")
+            UserStats userStats = new UserStats(3, 2, 1, false)
+            return Optional.of(UserDTO.newInstance(user, userStats, null))
+        }
 
         when:
-        def response = perform(get("/api/users/${user.id}"))
+        def response = perform(get("/api/users/1"))
 
         then:
-        response
-//                .andDo(MockMvcResultHandlers.print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath('$.name', is(user.name)))
-                .andExpect(jsonPath('$.email', isEmptyOrNullString()))
-                .andExpect(jsonPath('$.avatarHash', is("b642b4217b34b1e8d3bd915fc65c4452")))
-                .andExpect(jsonPath('$.userStats').exists())
-                .andExpect(jsonPath('$.userStats.micropostCnt', is(3)))
-                .andExpect(jsonPath('$.userStats.followingCnt', is(2)))
-                .andExpect(jsonPath('$.userStats.followerCnt', is(1)))
+        with(response) {
+            andExpect(status().isOk())
+            andExpect(jsonPath('$.name', is("test")))
+            andExpect(jsonPath('$.email', isEmptyOrNullString()))
+            andExpect(jsonPath('$.avatarHash', is("94fba03762323f286d7c3ca9e001c541")))
+            andExpect(jsonPath('$.isMyself', isEmptyOrNullString()))
+            andExpect(jsonPath('$.userStats').exists())
+            andExpect(jsonPath('$.userStats.micropostCnt', is(3)))
+            andExpect(jsonPath('$.userStats.followingCnt', is(2)))
+            andExpect(jsonPath('$.userStats.followerCnt', is(1)))
+        }
     }
 
-    def "can show logged in user"() {
+    def "can not show user when user was not found"() {
         given:
-        User user = userRepository.save(new User(username: "test@test.com", password: "secret", name: "test"))
-        securityContextService.currentUser() >> user
-        prepareMicroposts(user)
-        prepareRelationships(user)
+        userService.findOne(1) >> { throw new UserNotFoundException() }
+
+        when:
+        def response = perform(get("/api/users/1"))
+
+        then:
+        with(response) {
+            andExpect(status().isNotFound())
+        }
+    }
+
+    def "can show logged in user when signed in"() {
+        given:
+        signIn()
+        userService.findMe() >> {
+            User user = new User(id: 1, username: "test1@test.com", password: "secret", name: "test")
+            UserStats userStats = new UserStats(3, 2, 1, true)
+            return Optional.of(UserDTO.newInstance(user, userStats, true))
+        }
 
         when:
         def response = perform(get("/api/users/me"))
 
         then:
-        response.andExpect(status().isOk())
-                .andExpect(jsonPath('$.name', is(user.name)))
-                .andExpect(jsonPath('$.email', is("test@test.com")))
-                .andExpect(jsonPath('$.avatarHash', is("b642b4217b34b1e8d3bd915fc65c4452")))
-                .andExpect(jsonPath('$.userStats').exists())
-                .andExpect(jsonPath('$.userStats.micropostCnt', is(3)))
-                .andExpect(jsonPath('$.userStats.followingCnt', is(2)))
-                .andExpect(jsonPath('$.userStats.followerCnt', is(1)))
+        with(response) {
+            andExpect(status().isOk())
+            andExpect(jsonPath('$.name', is("test")))
+            andExpect(jsonPath('$.email', is("test1@test.com")))
+            andExpect(jsonPath('$.avatarHash', is("94fba03762323f286d7c3ca9e001c541")))
+            andExpect(jsonPath('$.isMyself', is(true)))
+            andExpect(jsonPath('$.userStats').exists())
+            andExpect(jsonPath('$.userStats.micropostCnt', is(3)))
+            andExpect(jsonPath('$.userStats.followingCnt', is(2)))
+            andExpect(jsonPath('$.userStats.followerCnt', is(1)))
+        }
+    }
+
+    def "can not show logged in user when not signed in"() {
+        when:
+        def response = perform(get("/api/users/me"))
+
+        then:
+        with(response) {
+            andExpect(status().isUnauthorized())
+        }
     }
 
     def "can update me"() {
         given:
-        User user = userRepository.save(new User(username: "test@test.com", password: "secret", name: "test"))
-        securityContextService.currentUser() >> user
+        signIn()
         String email = "test2@test.com"
         String password = "very secret"
         String name = "new name"
+        userService.updateMe(new UserParams(email, password, name)) >> {
+            return new User(id: 1, username: email, password: password, name: name)
+        }
 
         when:
         def response = perform(patch("/api/users/me")
@@ -160,26 +212,40 @@ class UserControllerTest extends BaseControllerTest {
         )
 
         then:
-        response
-                .andExpect(status().isOk())
-                .andExpect(header().string("x-auth-token", not(isEmptyOrNullString())))
-        user.getUsername() == email
-        user.getName() == name
-    }
-
-    private prepareMicroposts(User user) {
-        3.times {
-            micropostRepository.save(new Micropost(user, "content${it}"))
+        with(response) {
+            andExpect(status().isOk())
+            andExpect(header().string("x-auth-token", not(isEmptyOrNullString())))
         }
     }
 
-    private void prepareRelationships(User user) {
-        List<User> otherUsers = (1..2).collect {
-            User u = userRepository.save(new User(username: "test${it}@test.com", password: "secret", name: "test"))
-            relationshipRepository.save(new Relationship(follower: user, followed: u))
-            return u
+    def "can not update me when not signed in"() {
+        when:
+        def response = perform(patch("/api/users/me")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(toJson(email: "test", password: "test", name: "test"))
+        )
+
+        then:
+        with(response) {
+            andExpect(status().isUnauthorized())
         }
-        relationshipRepository.save(new Relationship(follower: otherUsers.first(), followed: user))
+    }
+
+    def "can not update me when parameter is invalid"() {
+        given:
+        signIn()
+
+        when:
+        // password is too short
+        def response = perform(patch("/api/users/me")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(toJson(email: "test@test.com", password: "a", name: "test"))
+        )
+
+        then:
+        with(response) {
+            andExpect(status().isBadRequest())
+        }
     }
 
 }

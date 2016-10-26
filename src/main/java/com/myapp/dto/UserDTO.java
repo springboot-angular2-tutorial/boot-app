@@ -24,6 +24,7 @@ public class UserDTO {
         return UserDTO.builder()
                 .id(user.getId())
                 .email(Optional.ofNullable(isMyself)
+                        .filter(Boolean::booleanValue)
                         .map(b -> user.getUsername())
                         .orElse(null))
                 .name(user.getName())

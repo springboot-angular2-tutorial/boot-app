@@ -8,7 +8,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.http.MediaType
-import spock.lang.Ignore
 import spock.mock.DetachedMockFactory
 
 import static groovy.json.JsonOutput.toJson
@@ -82,12 +81,10 @@ class MicropostControllerTest extends BaseControllerTest2 {
         response.andExpect(status().isUnauthorized())
     }
 
-    // FIXME
-    @Ignore("Why is 200 returned ?? How can I fix it?")
     def "can not delete a micropost when have no permission"() {
         given:
         signIn()
-        micropostService.delete(1) >> { new NotPermittedException("") }
+        micropostService.delete(1) >> { throw new NotPermittedException("") }
 
         when:
         def response = perform(delete("/api/microposts/1"))
@@ -95,6 +92,5 @@ class MicropostControllerTest extends BaseControllerTest2 {
         then:
         response.andExpect(status().isForbidden())
     }
-
 
 }

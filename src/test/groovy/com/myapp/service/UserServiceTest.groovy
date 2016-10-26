@@ -32,7 +32,7 @@ class UserServiceTest extends BaseServiceTest {
         userService = new UserServiceImpl(userRepository, userCustomRepository, securityContextService)
     }
 
-    def "findOne"() {
+    def "can find a user"() {
         given:
         User user = userRepository.save(new User(username: "akira@test.com", password: "secret", name: "akira"))
 
@@ -44,7 +44,7 @@ class UserServiceTest extends BaseServiceTest {
         userDTO.isMyself == null // not signed in
     }
 
-    def "findMe"() {
+    def "can find me"() {
         given:
         User user = userRepository.save(new User(username: "akira@test.com", password: "secret", name: "akira"))
         securityContextService.currentUser() >> user
@@ -57,7 +57,7 @@ class UserServiceTest extends BaseServiceTest {
         userDTO.isMyself == true
     }
 
-    def "findAll"() {
+    def "can find paged user list"() {
         given:
         //noinspection GroovyUnusedAssignment
         User user1 = userRepository.save(new User(username: "test1@test.com", password: "secret", name: "akira"))
@@ -72,12 +72,24 @@ class UserServiceTest extends BaseServiceTest {
         page.totalElements == 2
     }
 
-    def "update"() {
+    def "can create a user"() {
         given:
-        User user = userRepository.save(new User(username: "akira@test.com", password: "secret", name: "akira"))
+        UserParams params = new UserParams("test1@test.com", "secret", "test1")
 
         when:
+        User user = userService.create(params)
+
+        then:
+        userRepository.count() == 1
+        user.username == "test1@test.com"
+    }
+
+    def "can update a user"() {
+        given:
+        User user = userRepository.save(new User(username: "akira@test.com", password: "secret", name: "akira"))
         UserParams params = new UserParams("test2@test.com", "secret2", "test2")
+
+        when:
         userService.update(user, params)
 
         then:
@@ -90,6 +102,20 @@ class UserServiceTest extends BaseServiceTest {
 
         then:
         user.username == "test3@test.com"
+        user.name == "test2"
+    }
+
+    def "can update me"() {
+        given:
+        User user = userRepository.save(new User(username: "akira@test.com", password: "secret", name: "akira"))
+        UserParams params = new UserParams("test2@test.com", "secret2", "test2")
+        securityContextService.currentUser() >> user
+
+        when:
+        userService.updateMe(params)
+
+        then:
+        user.username == "test2@test.com"
         user.name == "test2"
     }
 

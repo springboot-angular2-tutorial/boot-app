@@ -7,16 +7,13 @@ import com.myapp.repository.UserCustomRepository;
 import com.myapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service("userService")
 public class UserServiceImpl implements UserService {
@@ -32,14 +29,6 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
         this.userCustomRepository = userCustomRepository;
         this.securityContextService = securityContextService;
-    }
-
-    @Override
-    public User update(User user, UserParams params) {
-        params.getEmail().ifPresent(user::setUsername);
-        params.getEncodedPassword().ifPresent(user::setPassword);
-        params.getName().ifPresent(user::setName);
-        return userRepository.save(user);
     }
 
     @Override
@@ -66,12 +55,26 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Page<UserDTO> findAll(PageRequest pageable) {
-        final Page<User> page = userRepository.findAll(pageable);
-        final List<UserDTO> mappedList = page.getContent()
-                .stream()
-                .map(UserDTO::newInstance)
-                .collect(Collectors.toList());
-        return new PageImpl<>(mappedList, pageable, page.getTotalElements());
+        return userRepository.findAll(pageable).map(UserDTO::newInstance);
+    }
+
+    @Override
+    public User create(UserParams params) {
+        return userRepository.save(params.toUser());
+    }
+
+    @Override
+    public User update(User user, UserParams params) {
+        params.getEmail().ifPresent(user::setUsername);
+        params.getEncodedPassword().ifPresent(user::setPassword);
+        params.getName().ifPresent(user::setName);
+        return userRepository.save(user);
+    }
+
+    @Override
+    public User updateMe(UserParams params) {
+        User user = securityContextService.currentUser();
+        return update(user, params);
     }
 
     @Override

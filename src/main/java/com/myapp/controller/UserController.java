@@ -5,9 +5,8 @@ import com.myapp.domain.User;
 import com.myapp.dto.ErrorResponse;
 import com.myapp.dto.UserDTO;
 import com.myapp.dto.UserParams;
-import com.myapp.repository.UserRepository;
-import com.myapp.service.SecurityContextService;
 import com.myapp.service.UserService;
+import com.myapp.service.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -27,16 +26,12 @@ public class UserController {
 
     private static final Integer DEFAULT_PAGE_SIZE = 5;
 
-    private final UserRepository userRepository;
     private final UserService userService;
-    private final SecurityContextService securityContextService;
     private final TokenHandler tokenHandler;
 
     @Autowired
-    public UserController(UserRepository userRepository, UserService userService, SecurityContextService securityContextService, TokenHandler tokenHandler) {
-        this.userRepository = userRepository;
+    public UserController(UserService userService, TokenHandler tokenHandler) {
         this.userService = userService;
-        this.securityContextService = securityContextService;
         this.tokenHandler = tokenHandler;
     }
 
@@ -51,7 +46,7 @@ public class UserController {
 
     @RequestMapping(method = RequestMethod.POST)
     public User create(@Valid @RequestBody UserParams params) {
-        return userRepository.save(params.toUser());
+        return userService.create(params);
     }
 
     @RequestMapping(value = "{id:\\d+}")
@@ -59,15 +54,15 @@ public class UserController {
         return userService.findOne(id).orElseThrow(UserNotFoundException::new);
     }
 
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     @RequestMapping("/me")
-    public UserDTO showMe() throws UserNotFoundException {
-        return userService.findMe().orElseThrow(UserNotFoundException::new);
+    public UserDTO showMe()  {
+        return userService.findMe().get();
     }
 
     @RequestMapping(value = "/me", method = RequestMethod.PATCH)
     public ResponseEntity updateMe(@Valid @RequestBody UserParams params) {
-        User user = securityContextService.currentUser();
-        userService.update(user, params);
+        User user = userService.updateMe(params);
 
         // when username was changed, re-issue jwt.
         HttpHeaders headers = new HttpHeaders();
@@ -83,7 +78,8 @@ public class UserController {
     }
 
     @ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "No user")
-    private class UserNotFoundException extends Exception {
+    @ExceptionHandler(UserNotFoundException.class)
+    public void handleUserNotFound() {
     }
 
 }

@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
-import spock.lang.Ignore
 import spock.mock.DetachedMockFactory
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
@@ -67,13 +66,11 @@ class RelationshipControllerTest extends BaseControllerTest2 {
         response.andExpect(status().isUnauthorized())
     }
 
-    // FIXME
-    @Ignore("Why is 200 returned ?? How can I fix it?")
     def "can not unfollow another user when have already followed"() {
         given:
         signIn()
         relationshipService.unfollow(1) >> {
-            new RelationshipNotFoundException()
+            throw new RelationshipNotFoundException()
         }
 
         when:

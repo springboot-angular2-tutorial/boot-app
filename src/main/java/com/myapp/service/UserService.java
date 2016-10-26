@@ -13,12 +13,17 @@ import java.util.Optional;
 
 public interface UserService extends org.springframework.security.core.userdetails.UserDetailsService {
 
-    User update(User user, UserParams params);
-
     Optional<UserDTO> findOne(Long id);
 
     Optional<UserDTO> findMe();
 
     Page<UserDTO> findAll(PageRequest pageable);
+
+    User create(UserParams params);
+
+    User update(User user, UserParams params);
+
+    User updateMe(UserParams params);
+
 
 }

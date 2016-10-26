@@ -46,6 +46,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers(HttpMethod.GET, "/api/users").hasRole("USER")
                 .antMatchers(HttpMethod.GET, "/api/users/me").hasRole("USER")
+                .antMatchers(HttpMethod.PATCH, "/api/users/me").hasRole("USER")
                 .antMatchers(HttpMethod.GET, "/api/users/me/microposts").hasRole("USER")
                 .antMatchers(HttpMethod.POST, "/api/microposts/**").hasRole("USER")
                 .antMatchers(HttpMethod.DELETE, "/api/microposts/**").hasRole("USER")
