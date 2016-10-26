@@ -9,8 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 @Service
 class TokenAuthenticationServiceImpl implements TokenAuthenticationService {
 
-    private static final String AUTH_HEADER_NAME = "x-auth-token";
-
     private final TokenHandler tokenHandler;
 
     @Autowired
@@ -19,10 +17,15 @@ class TokenAuthenticationServiceImpl implements TokenAuthenticationService {
     }
 
     public Authentication getAuthentication(HttpServletRequest request) {
-        final String token = request.getHeader(AUTH_HEADER_NAME);
-        if (token == null || token.isEmpty()) return null;
+        final String authHeader = request.getHeader("authorization");
+        if (authHeader == null) return null;
+        if (!authHeader.startsWith("Bearer")) return null;
+
+        final String jwt = authHeader.substring(7);
+        if (jwt.isEmpty()) return null;
+
         return tokenHandler
-                .parseUserFromToken(token)
+                .parseUserFromToken(jwt)
                 .map(UserAuthentication::new)
                 .orElse(null);
     }
