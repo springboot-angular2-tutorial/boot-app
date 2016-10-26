@@ -34,7 +34,8 @@ public class RelationshipServiceImpl implements RelationshipService {
     }
 
     @Override
-    public List<RelatedUserDTO> findFollowings(User user, PageParams pageParams) {
+    public List<RelatedUserDTO> findFollowings(Long userId, PageParams pageParams) {
+        final User user = userRepository.findOne(userId);
         final User currentUser = securityContextService.currentUser();
         return relatedUserCustomRepository.findFollowings(user, currentUser, pageParams)
                 .map(toDTO(currentUser))
@@ -42,7 +43,8 @@ public class RelationshipServiceImpl implements RelationshipService {
     }
 
     @Override
-    public List<RelatedUserDTO> findFollowers(User user, PageParams pageParams) {
+    public List<RelatedUserDTO> findFollowers(Long userId, PageParams pageParams) {
+        final User user = userRepository.findOne(userId);
         final User currentUser = securityContextService.currentUser();
         return relatedUserCustomRepository.findFollowers(user, currentUser, pageParams)
                 .map(toDTO(currentUser))

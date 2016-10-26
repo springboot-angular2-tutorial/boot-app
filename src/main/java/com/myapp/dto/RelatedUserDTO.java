@@ -23,7 +23,7 @@ public class RelatedUserDTO {
 
         return RelatedUserDTO.builder()
                 .id(user.getId())
-//                .email(user.getUsername())
+//                .email(user.getUsername()) // for privacy reason
                 .name(user.getName())
                 .avatarHash(avatarHash)
                 .isMyself(isMyself)

@@ -29,8 +29,8 @@ class UserControllerTest extends BaseControllerTest2 {
     @TestConfiguration
     static class Config {
         @Bean
-        UserService userService(DetachedMockFactory factory) {
-            return factory.Mock(UserService)
+        UserService userService(DetachedMockFactory f) {
+            return f.Mock(UserService)
         }
 
         @Bean

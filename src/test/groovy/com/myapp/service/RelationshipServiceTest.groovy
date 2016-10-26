@@ -35,7 +35,7 @@ class RelationshipServiceTest extends BaseServiceTest {
         relationshipRepository.save(new Relationship(follower: follower, followed: followed))
 
         when:
-        def followings = relationshipService.findFollowings(follower, new PageParams())
+        def followings = relationshipService.findFollowings(follower.id, new PageParams())
 
         then:
         followings.first().isMyself == null
@@ -51,7 +51,7 @@ class RelationshipServiceTest extends BaseServiceTest {
         securityContextService.currentUser() >> followed1
 
         when:
-        def followings = relationshipService.findFollowings(follower, new PageParams())
+        def followings = relationshipService.findFollowings(follower.id, new PageParams())
 
         then:
         followings.first().name == "followed2"
@@ -68,7 +68,7 @@ class RelationshipServiceTest extends BaseServiceTest {
         relationshipRepository.save(new Relationship(follower: follower, followed: followed))
 
         when:
-        def followers = relationshipService.findFollowers(followed, new PageParams())
+        def followers = relationshipService.findFollowers(followed.id, new PageParams())
 
         then:
         followers.first().isMyself == null
@@ -84,7 +84,7 @@ class RelationshipServiceTest extends BaseServiceTest {
         securityContextService.currentUser() >> follower1
 
         when:
-        def followers = relationshipService.findFollowers(followed, new PageParams())
+        def followers = relationshipService.findFollowers(followed.id, new PageParams())
 
         then:
         followers.first().name == "follower2"
