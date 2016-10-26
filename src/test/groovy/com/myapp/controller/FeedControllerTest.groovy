@@ -22,8 +22,8 @@ class FeedControllerTest extends BaseControllerTest {
     @TestConfiguration
     static class Config {
         @Bean
-        MicropostService micropostService(DetachedMockFactory factory) {
-            factory.Stub(MicropostService, name: "micropostService")
+        MicropostService micropostService(DetachedMockFactory f) {
+            f.Stub(MicropostService, name: "micropostService")
         }
     }
 
@@ -41,15 +41,15 @@ class FeedControllerTest extends BaseControllerTest {
         def response = perform(get("/api/feed"))
 
         then:
-        response
-//                .andDo(MockMvcResultHandlers.print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath('$', hasSize(1)))
-                .andExpect(jsonPath('$[0].content', is("content1")))
-                .andExpect(jsonPath('$[0].isMyPost', is(true)))
-                .andExpect(jsonPath('$[0].createdAt', nullValue()))
-                .andExpect(jsonPath('$[0].user.email', is(user.username)))
-                .andExpect(jsonPath('$[0].user.avatarHash', is("b642b4217b34b1e8d3bd915fc65c4452")))
+        with(response) {
+            andExpect(status().isOk())
+            andExpect(jsonPath('$', hasSize(1)))
+            andExpect(jsonPath('$[0].content', is("content1")))
+            andExpect(jsonPath('$[0].isMyPost', is(true)))
+            andExpect(jsonPath('$[0].createdAt', nullValue()))
+            andExpect(jsonPath('$[0].user.email', is(user.username)))
+            andExpect(jsonPath('$[0].user.avatarHash', is("b642b4217b34b1e8d3bd915fc65c4452")))
+        }
     }
 
     def "can not show feed when not signed in"() {

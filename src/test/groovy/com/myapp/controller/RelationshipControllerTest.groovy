@@ -18,8 +18,8 @@ class RelationshipControllerTest extends BaseControllerTest {
     @TestConfiguration
     static class Config {
         @Bean
-        RelationshipService relationshipService(DetachedMockFactory factory) {
-            return factory.Mock(RelationshipService)
+        RelationshipService relationshipService(DetachedMockFactory f) {
+            return f.Mock(RelationshipService)
         }
     }
 

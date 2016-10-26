@@ -23,8 +23,8 @@ class MicropostControllerTest extends BaseControllerTest {
     @TestConfiguration
     static class Config {
         @Bean
-        MicropostService micropostService(DetachedMockFactory factory) {
-            factory.Mock(MicropostService, name: "micropostService")
+        MicropostService micropostService(DetachedMockFactory f) {
+            f.Mock(MicropostService, name: "micropostService")
         }
     }
 
@@ -44,10 +44,11 @@ class MicropostControllerTest extends BaseControllerTest {
 
         then:
         micropostService.saveMyPost(_ as Micropost) >> new Micropost(content)
-        response
-                .andExpect(status().isOk())
-                .andExpect(jsonPath('$.content').exists())
-                .andExpect(jsonPath('$.content', is(content)))
+        with(response) {
+            andExpect(status().isOk())
+            andExpect(jsonPath('$.content').exists())
+            andExpect(jsonPath('$.content', is(content)))
+        }
     }
 
     def "can not create a micropost when not signed in"() {
