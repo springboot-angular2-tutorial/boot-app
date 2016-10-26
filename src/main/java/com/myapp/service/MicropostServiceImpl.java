@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,10 +45,7 @@ public class MicropostServiceImpl implements MicropostService {
     public List<PostDTO> findAsFeed(PageParams pageParams) {
         final User currentUser = securityContextService.currentUser();
         return micropostCustomRepository.findAsFeed(currentUser, pageParams)
-                .map(r -> {
-                    final Boolean isMyPost = (r.getMicropost().getUser().equals(currentUser));
-                    return PostDTO.newInstance(r.getMicropost(), r.getUserStats(), isMyPost);
-                })
+                .map(toDTO(currentUser))
                 .collect(Collectors.toList());
     }
 
@@ -55,11 +53,8 @@ public class MicropostServiceImpl implements MicropostService {
     public List<PostDTO> findByUser(Long userId, PageParams pageParams) {
         final User user = userRepository.findOne(userId);
         final User currentUser = securityContextService.currentUser();
-        final Boolean isMyself = Optional.ofNullable(currentUser)
-                .map(user::equals)
-                .orElse(null);
         return micropostCustomRepository.findByUser(user, pageParams)
-                .map(r -> PostDTO.newInstance(r.getMicropost(), isMyself))
+                .map(toDTO(currentUser))
                 .collect(Collectors.toList());
     }
 
@@ -74,6 +69,15 @@ public class MicropostServiceImpl implements MicropostService {
         User currentUser = securityContextService.currentUser();
         post.setUser(currentUser);
         return micropostRepository.save(post);
+    }
+
+    private Function<MicropostCustomRepository.Row, PostDTO> toDTO(User currentUser) {
+        return r -> {
+            final Boolean isMyPost = Optional.ofNullable(currentUser)
+                    .map(u -> r.getMicropost().getUser().equals(u))
+                    .orElse(null);
+            return PostDTO.newInstance(r.getMicropost(), r.getUserStats(), isMyPost);
+        };
     }
 
 }

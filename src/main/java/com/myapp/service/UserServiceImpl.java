@@ -37,10 +37,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<UserDTO> findOne(Long id) {
-        final User currentUser = securityContextService.currentUser();
-
-        return userCustomRepository.findOne(id, currentUser).map(r -> {
-            final boolean isFollowedByMe = relationshipRepository.findOneByFollowerAndFollowed(currentUser, r.getUser()).isPresent();
+        return userCustomRepository.findOne(id).map(r -> {
+            final User currentUser = securityContextService.currentUser();
+            final Boolean isFollowedByMe = Optional.ofNullable(currentUser)
+                    .map(u -> relationshipRepository
+                            .findOneByFollowerAndFollowed(u, r.getUser())
+                            .isPresent()
+                    )
+                    .orElse(null);
             final Boolean isMyself = Optional.ofNullable(currentUser)
                     .map(u -> u.equals(r.getUser()))
                     .orElse(null);

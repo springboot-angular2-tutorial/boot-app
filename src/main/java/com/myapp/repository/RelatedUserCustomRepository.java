@@ -12,9 +12,9 @@ import java.util.List;
 
 public interface RelatedUserCustomRepository extends Repository<User, Long> {
 
-    List<Row> findFollowings(User user, User currentUser, PageParams pageParams);
+    List<Row> findFollowings(User user, PageParams pageParams);
 
-    List<Row> findFollowers(User user, User currentUser, PageParams pageParams);
+    List<Row> findFollowers(User user, PageParams pageParams);
 
     @Value
     @Builder

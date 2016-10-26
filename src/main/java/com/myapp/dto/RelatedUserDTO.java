@@ -17,7 +17,7 @@ public class RelatedUserDTO {
     private final UserStats userStats;
     private final long relationshipId;
     private final Boolean isMyself;
-    private final boolean isFollowedByMe;
+    private final Boolean isFollowedByMe;
 
     public static RelatedUserDTO newInstance(User user, Relationship relationship, UserStats userStats, Boolean isMyself) {
         final String avatarHash = Utils.md5(user.getUsername());

@@ -1,7 +1,6 @@
 package com.myapp.repository;
 
 import com.myapp.domain.QUser;
-import com.myapp.domain.User;
 import com.myapp.dto.UserStats;
 import com.myapp.repository.helper.UserStatsQueryHelper;
 import com.querydsl.core.Tuple;
@@ -25,20 +24,19 @@ class UserCustomRepositoryImpl implements UserCustomRepository {
     }
 
     @Override
-    public Optional<Row> findOne(Long userId, User currentUser) {
+    public Optional<Row> findOne(Long userId) {
         final ConstructorExpression<UserStats> userStatsExpression =
-                UserStatsQueryHelper.userStatsExpression(qUser, currentUser);
+                UserStatsQueryHelper.userStatsExpression(qUser);
         final Tuple row = queryFactory.select(qUser, userStatsExpression)
                 .from(qUser)
                 .where(qUser.id.eq(userId))
                 .fetchOne();
-        return Optional.ofNullable(row)
-                .map(tuple ->
-                        Row.builder()
-                                .user(tuple.get(qUser))
-                                .userStats(tuple.get(userStatsExpression))
-                                .build()
-                );
+        return Optional.ofNullable(row).map(tuple ->
+                Row.builder()
+                        .user(tuple.get(qUser))
+                        .userStats(tuple.get(userStatsExpression))
+                        .build()
+        );
     }
 
 

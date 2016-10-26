@@ -39,6 +39,7 @@ class RelationshipServiceTest extends BaseServiceTest {
 
         then:
         followings.first().isMyself == null
+        followings.first().isFollowedByMe == null
     }
 
     def "can find followings when signed in"() {
@@ -57,8 +58,10 @@ class RelationshipServiceTest extends BaseServiceTest {
         followings.first().name == "followed2"
         followings.first().email == null
         followings.first().isMyself == false
+        followings.first().isFollowedByMe == false
         followings.last().name == "followed1"
         followings.last().isMyself == true
+        followings.last().isFollowedByMe == false
     }
 
     def "can find followers when not signed in"() {
@@ -72,6 +75,7 @@ class RelationshipServiceTest extends BaseServiceTest {
 
         then:
         followers.first().isMyself == null
+        followers.first().isFollowedByMe == null
     }
 
     def "can find followers when signed in"() {
@@ -90,8 +94,10 @@ class RelationshipServiceTest extends BaseServiceTest {
         followers.first().name == "follower2"
         followers.first().email == null
         followers.first().isMyself == false
+        followers.first().isFollowedByMe == false
         followers.last().name == "follower1"
         followers.last().isMyself == true
+        followers.last().isFollowedByMe == false
     }
 
     def "can follow and unfollow"() {

@@ -1,5 +1,6 @@
 package com.myapp.service
 
+import com.myapp.domain.Relationship
 import com.myapp.domain.User
 import com.myapp.dto.UserDTO
 import com.myapp.dto.UserParams
@@ -32,7 +33,7 @@ class UserServiceTest extends BaseServiceTest {
         userService = new UserServiceImpl(userRepository, userCustomRepository, relationshipRepository, securityContextService)
     }
 
-    def "can find a user"() {
+    def "can find a user when not signed in"() {
         given:
         User user = userRepository.save(new User(username: "akira@test.com", password: "secret", name: "akira"))
 
@@ -42,6 +43,23 @@ class UserServiceTest extends BaseServiceTest {
         then:
         userDTO.id == user.id
         userDTO.isMyself == null // not signed in
+        userDTO.isFollowedByMe == null // not signed in
+    }
+
+    def "can find a user with isFollowedByMe true when signed in"() {
+        given:
+        User user = userRepository.save(new User(username: "akira@test.com", password: "secret", name: "akira"))
+        User currentUser = userRepository.save(new User(username: "current@test.com", password: "secret", name: "akira"))
+        securityContextService.currentUser() >> currentUser
+        relationshipRepository.save(new Relationship(follower: currentUser, followed: user))
+
+        when:
+        UserDTO userDTO = userService.findOne(user.id).get()
+
+        then:
+        userDTO.id == user.id
+        userDTO.isMyself == false
+        userDTO.isFollowedByMe == true
     }
 
     def "can find me"() {

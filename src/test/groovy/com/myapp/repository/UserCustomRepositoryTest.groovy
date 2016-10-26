@@ -14,14 +14,15 @@ class UserCustomRepositoryTest extends BaseRepositoryTest {
     def "findOne"() {
         given:
         User user = userRepository.save(new User(username: "akira@test.com", password: "secret", name: "akira"))
-        User currentUser = userRepository.save(new User(username: "current@test.com", password: "secret", name: "current"))
 
         when:
-        UserCustomRepository.Row result = userCustomRepository.findOne(user.id, currentUser).get()
+        UserCustomRepository.Row result = userCustomRepository.findOne(user.id).get()
 
         then:
         result.user == user
-        !result.userStats.followedByMe
+        result.userStats.followerCnt == 0
+        result.userStats.followingCnt == 0
+        result.userStats.micropostCnt == 0
     }
 
 }

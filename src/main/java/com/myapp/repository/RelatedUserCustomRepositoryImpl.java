@@ -28,9 +28,9 @@ public class RelatedUserCustomRepositoryImpl implements RelatedUserCustomReposit
     }
 
     @Override
-    public List<Row> findFollowings(User subject, User currentUser, PageParams pageParams) {
+    public List<Row> findFollowings(User subject, PageParams pageParams) {
         final ConstructorExpression<UserStats> userStatsExpression =
-                UserStatsQueryHelper.userStatsExpression(qUser, currentUser);
+                UserStatsQueryHelper.userStatsExpression(qUser);
 
         return queryFactory.select(qUser, qRelationship, userStatsExpression)
                 .from(qUser)
@@ -53,9 +53,9 @@ public class RelatedUserCustomRepositoryImpl implements RelatedUserCustomReposit
     }
 
     @Override
-    public List<Row> findFollowers(User subject, User currentUser, PageParams pageParams) {
+    public List<Row> findFollowers(User subject, PageParams pageParams) {
         final ConstructorExpression<UserStats> userStatsExpression =
-                UserStatsQueryHelper.userStatsExpression(qUser, currentUser);
+                UserStatsQueryHelper.userStatsExpression(qUser);
 
         return queryFactory.select(qUser, qRelationship, userStatsExpression)
                 .from(qUser)

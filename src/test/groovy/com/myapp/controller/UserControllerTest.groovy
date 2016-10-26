@@ -125,7 +125,7 @@ class UserControllerTest extends BaseControllerTest {
         given:
         userService.findOne(1) >> {
             User user = new User(id: 1, username: "test1@test.com", password: "secret", name: "test")
-            UserStats userStats = new UserStats(3, 2, 1, false)
+            UserStats userStats = new UserStats(3, 2, 1)
             return Optional.of(UserDTO.newInstance(user, userStats, null))
         }
 
@@ -139,6 +139,7 @@ class UserControllerTest extends BaseControllerTest {
             andExpect(jsonPath('$.email', isEmptyOrNullString()))
             andExpect(jsonPath('$.avatarHash', is("94fba03762323f286d7c3ca9e001c541")))
             andExpect(jsonPath('$.isMyself', nullValue()))
+            andExpect(jsonPath('$.isFollowedByMe', nullValue()))
             andExpect(jsonPath('$.userStats').exists())
             andExpect(jsonPath('$.userStats.micropostCnt', is(3)))
             andExpect(jsonPath('$.userStats.followingCnt', is(2)))
@@ -164,7 +165,7 @@ class UserControllerTest extends BaseControllerTest {
         signIn()
         userService.findMe() >> {
             User user = new User(id: 1, username: "test1@test.com", password: "secret", name: "test")
-            UserStats userStats = new UserStats(3, 2, 1, true)
+            UserStats userStats = new UserStats(3, 2, 1)
             return Optional.of(UserDTO.newInstance(user, userStats, true))
         }
 
@@ -178,6 +179,7 @@ class UserControllerTest extends BaseControllerTest {
             andExpect(jsonPath('$.email', is("test1@test.com")))
             andExpect(jsonPath('$.avatarHash', is("94fba03762323f286d7c3ca9e001c541")))
             andExpect(jsonPath('$.isMyself', is(true)))
+            andExpect(jsonPath('$.isFollowedByMe', nullValue()))
             andExpect(jsonPath('$.userStats').exists())
             andExpect(jsonPath('$.userStats.micropostCnt', is(3)))
             andExpect(jsonPath('$.userStats.followingCnt', is(2)))

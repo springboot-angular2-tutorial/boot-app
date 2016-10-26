@@ -35,19 +35,17 @@ public class RelationshipServiceImpl implements RelationshipService {
     @Override
     public List<RelatedUserDTO> findFollowings(Long userId, PageParams pageParams) {
         final User user = userRepository.findOne(userId);
-        final User currentUser = securityContextService.currentUser();
-        final List<RelatedUserCustomRepository.Row> rows = relatedUserCustomRepository.findFollowings(user, currentUser, pageParams);
+        final List<RelatedUserCustomRepository.Row> rows = relatedUserCustomRepository.findFollowings(user, pageParams);
 
-        return rowsToRelatedUsers(currentUser, rows);
+        return rowsToRelatedUsers(rows);
     }
 
     @Override
     public List<RelatedUserDTO> findFollowers(Long userId, PageParams pageParams) {
         final User user = userRepository.findOne(userId);
-        final User currentUser = securityContextService.currentUser();
-        final List<RelatedUserCustomRepository.Row> rows = relatedUserCustomRepository.findFollowers(user, currentUser, pageParams);
+        final List<RelatedUserCustomRepository.Row> rows = relatedUserCustomRepository.findFollowers(user, pageParams);
 
-        return rowsToRelatedUsers(currentUser, rows);
+        return rowsToRelatedUsers(rows);
     }
 
     @Override
@@ -70,7 +68,8 @@ public class RelationshipServiceImpl implements RelationshipService {
         relationshipRepository.delete(relationship);
     }
 
-    private List<RelatedUserDTO> rowsToRelatedUsers(User currentUser, List<RelatedUserCustomRepository.Row> rows) {
+    private List<RelatedUserDTO> rowsToRelatedUsers(List<RelatedUserCustomRepository.Row> rows) {
+        final User currentUser = securityContextService.currentUser();
         final List<User> relatedUsers = rows.stream()
                 .map(RelatedUserCustomRepository.Row::getUser)
                 .collect(Collectors.toList());
@@ -78,7 +77,9 @@ public class RelationshipServiceImpl implements RelationshipService {
         final List<User> followedByMe = userRepository.findFollowedBy(currentUser, relatedUsers);
 
         return rows.stream().map(row -> {
-            final boolean isFollowedByMe = followedByMe.contains(row.getUser());
+            final Boolean isFollowedByMe = Optional.ofNullable(currentUser)
+                    .map(u -> followedByMe.contains(row.getUser()))
+                    .orElse(null) ;
             final Boolean isMyself = Optional.ofNullable(currentUser)
                     .map(u -> currentUser.equals(row.getUser()))
                     .orElse(null);

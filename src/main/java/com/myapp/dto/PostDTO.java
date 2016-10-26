@@ -19,7 +19,9 @@ public class PostDTO {
     private final Boolean isMyPost;
 
     public static PostDTO newInstance(Micropost post, UserStats userStats, Boolean isMyPost) {
-        final UserDTO userDTO = UserDTO.newInstance(post.getUser(), userStats, isMyPost);
+        final UserDTO userDTO = UserDTO.builder2(post.getUser(), userStats)
+                .isMyself(isMyPost)
+                .build();
 
         return PostDTO.builder()
                 .id(post.getId())

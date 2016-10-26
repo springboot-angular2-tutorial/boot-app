@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface UserCustomRepository extends Repository<User, Long> {
 
-    Optional<Row> findOne(Long userId, User currentUser);
+    Optional<Row> findOne(Long userId);
 
     @Value
     @Builder

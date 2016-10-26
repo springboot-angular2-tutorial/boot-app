@@ -14,25 +14,12 @@ import java.util.Optional;
 
 public class UserStatsQueryHelper {
 
-    public static ConstructorExpression<UserStats> userStatsExpression(QUser qUser, User currentUser) {
+    public static ConstructorExpression<UserStats> userStatsExpression(QUser qUser) {
         return Projections.constructor(UserStats.class,
                 cntPostsQuery(qUser),
                 cntFollowingsQuery(qUser),
-                cntFollowersQuery(qUser),
-                isFollowedByMeQuery(qUser, currentUser)
+                cntFollowersQuery(qUser)
         );
-    }
-
-    private static JPQLQuery<Boolean> isFollowedByMeQuery(QUser qUser, User currentUser) {
-        final QRelationship qRelationship = new QRelationship("relationship_is_followed_by_me");
-        return JPAExpressions.select(qRelationship.count().eq(1L))
-                .from(qRelationship)
-                .where(qRelationship.followed.eq(qUser)
-                        .and(Optional.ofNullable(currentUser)
-                                .map(qRelationship.follower::eq)
-                                .orElse(qRelationship.ne(qRelationship)) // make it always false when no current user
-                        )
-                );
     }
 
     private static JPQLQuery<Long> cntFollowersQuery(QUser qUser) {

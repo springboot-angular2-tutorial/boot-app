@@ -11,14 +11,12 @@ public class UserStats {
     private final long micropostCnt;
     private final long followingCnt;
     private final long followerCnt;
-    private final boolean isFollowedByMe;
 
     @QueryProjection
-    public UserStats(long micropostCnt, long followingCnt, long followerCnt, boolean isFollowedByMe) {
+    public UserStats(long micropostCnt, long followingCnt, long followerCnt) {
         this.micropostCnt = micropostCnt;
         this.followingCnt = followingCnt;
         this.followerCnt = followerCnt;
-        this.isFollowedByMe = isFollowedByMe;
     }
 
 }

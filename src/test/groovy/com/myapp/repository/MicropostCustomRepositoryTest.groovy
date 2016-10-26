@@ -32,7 +32,7 @@ class MicropostCustomRepositoryTest extends BaseRepositoryTest {
         }
 
         when:
-        def result = micropostCustomRepository.findAsFeed(follower, new PageParams()).collect()
+        List<MicropostCustomRepository.Row> result = micropostCustomRepository.findAsFeed(follower, new PageParams()).collect()
 
         then:
         result.size() == 4
@@ -48,7 +48,7 @@ class MicropostCustomRepositoryTest extends BaseRepositoryTest {
         Micropost post3 = micropostRepository.save(new Micropost(content: "test3", user: user))
 
         when:
-        def result = micropostCustomRepository.findAsFeed(user, new PageParams(sinceId: post2.id)).collect()
+        List<MicropostCustomRepository.Row> result = micropostCustomRepository.findAsFeed(user, new PageParams(sinceId: post2.id)).collect()
 
         then:
         result.size() == 1
@@ -70,7 +70,7 @@ class MicropostCustomRepositoryTest extends BaseRepositoryTest {
         Micropost post3 = micropostRepository.save(new Micropost(content: "test3", user: user))
 
         when:
-        def result = micropostCustomRepository.findByUser(user, new PageParams(sinceId: post2.id)).collect()
+        List<MicropostCustomRepository.Row> result = micropostCustomRepository.findByUser(user, new PageParams(sinceId: post2.id)).collect()
 
         then:
         result.size() == 1

@@ -32,7 +32,7 @@ public class MicropostCustomRepositoryImpl implements MicropostCustomRepository 
         final QRelationship qRelationship = QRelationship.relationship;
 
         final ConstructorExpression<UserStats> userStatsExpression =
-                UserStatsQueryHelper.userStatsExpression(qMicropost.user, user);
+                UserStatsQueryHelper.userStatsExpression(qMicropost.user);
         final JPQLQuery<Relationship> relationshipSubQuery = JPAExpressions
                 .selectFrom(qRelationship)
                 .where(qRelationship.follower.eq(user)
