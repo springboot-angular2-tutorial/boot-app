@@ -8,13 +8,13 @@ import lombok.Builder;
 import lombok.Value;
 import org.springframework.data.repository.Repository;
 
-import java.util.stream.Stream;
+import java.util.List;
 
 public interface RelatedUserCustomRepository extends Repository<User, Long> {
 
-    Stream<Row> findFollowings(User user, User currentUser, PageParams pageParams);
+    List<Row> findFollowings(User user, User currentUser, PageParams pageParams);
 
-    Stream<Row> findFollowers(User user, User currentUser, PageParams pageParams);
+    List<Row> findFollowers(User user, User currentUser, PageParams pageParams);
 
     @Value
     @Builder

@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,18 +36,18 @@ public class RelationshipServiceImpl implements RelationshipService {
     public List<RelatedUserDTO> findFollowings(Long userId, PageParams pageParams) {
         final User user = userRepository.findOne(userId);
         final User currentUser = securityContextService.currentUser();
-        return relatedUserCustomRepository.findFollowings(user, currentUser, pageParams)
-                .map(toDTO(currentUser))
-                .collect(Collectors.toList());
+        final List<RelatedUserCustomRepository.Row> rows = relatedUserCustomRepository.findFollowings(user, currentUser, pageParams);
+
+        return rowsToRelatedUsers(currentUser, rows);
     }
 
     @Override
     public List<RelatedUserDTO> findFollowers(Long userId, PageParams pageParams) {
         final User user = userRepository.findOne(userId);
         final User currentUser = securityContextService.currentUser();
-        return relatedUserCustomRepository.findFollowers(user, currentUser, pageParams)
-                .map(toDTO(currentUser))
-                .collect(Collectors.toList());
+        final List<RelatedUserCustomRepository.Row> rows = relatedUserCustomRepository.findFollowers(user, currentUser, pageParams);
+
+        return rowsToRelatedUsers(currentUser, rows);
     }
 
     @Override
@@ -71,18 +70,23 @@ public class RelationshipServiceImpl implements RelationshipService {
         relationshipRepository.delete(relationship);
     }
 
-    private Function<RelatedUserCustomRepository.Row, RelatedUserDTO> toDTO(User currentUser) {
-        return r -> {
+    private List<RelatedUserDTO> rowsToRelatedUsers(User currentUser, List<RelatedUserCustomRepository.Row> rows) {
+        final List<User> relatedUsers = rows.stream()
+                .map(RelatedUserCustomRepository.Row::getUser)
+                .collect(Collectors.toList());
+
+        final List<User> followedByMe = userRepository.findFollowedBy(currentUser, relatedUsers);
+
+        return rows.stream().map(row -> {
+            final boolean isFollowedByMe = followedByMe.contains(row.getUser());
             final Boolean isMyself = Optional.ofNullable(currentUser)
-                    .map(u -> currentUser.equals(r.getUser()))
+                    .map(u -> currentUser.equals(row.getUser()))
                     .orElse(null);
-            return RelatedUserDTO.newInstance(
-                    r.getUser(),
-                    r.getRelationship(),
-                    r.getUserStats(),
-                    isMyself
-            );
-        };
+            return RelatedUserDTO.builder2(row.getUser(), row.getRelationship(), row.getUserStats())
+                    .isMyself(isMyself)
+                    .isFollowedByMe(isFollowedByMe)
+                    .build();
+        }).collect(Collectors.toList());
     }
 
 }

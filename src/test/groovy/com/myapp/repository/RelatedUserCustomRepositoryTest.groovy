@@ -3,7 +3,6 @@ package com.myapp.repository
 import com.myapp.domain.Relationship
 import com.myapp.domain.User
 import com.myapp.dto.PageParams
-import com.myapp.dto.RelatedUserDTO
 import org.springframework.beans.factory.annotation.Autowired
 
 class RelatedUserCustomRepositoryTest extends BaseRepositoryTest {
@@ -30,7 +29,7 @@ class RelatedUserCustomRepositoryTest extends BaseRepositoryTest {
         Relationship r2 = relationshipRepository.save(new Relationship(follower: user, followed: u2))
 
         when:
-        List<RelatedUserCustomRepository.Row> result = relatedUserCustomRepository.findFollowings(user, currentUser, new PageParams()).collect()
+        List<RelatedUserCustomRepository.Row> result = relatedUserCustomRepository.findFollowings(user, currentUser, new PageParams())
 
         then:
         result[0].user.username == "test2@test.com"
@@ -54,7 +53,7 @@ class RelatedUserCustomRepositoryTest extends BaseRepositoryTest {
         Relationship r2 = relationshipRepository.save(new Relationship(followed: user, follower: u2))
 
         when:
-        List<RelatedUserCustomRepository.Row> result = relatedUserCustomRepository.findFollowers(user, currentUser, new PageParams()).collect()
+        List<RelatedUserCustomRepository.Row> result = relatedUserCustomRepository.findFollowers(user, currentUser, new PageParams())
 
         then:
         result[0].user.username == "test2@test.com"

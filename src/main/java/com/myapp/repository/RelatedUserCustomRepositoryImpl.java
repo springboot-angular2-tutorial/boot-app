@@ -11,7 +11,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.stream.Stream;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 public class RelatedUserCustomRepositoryImpl implements RelatedUserCustomRepository {
@@ -27,7 +28,7 @@ public class RelatedUserCustomRepositoryImpl implements RelatedUserCustomReposit
     }
 
     @Override
-    public Stream<Row> findFollowings(User subject, User currentUser, PageParams pageParams) {
+    public List<Row> findFollowings(User subject, User currentUser, PageParams pageParams) {
         final ConstructorExpression<UserStats> userStatsExpression =
                 UserStatsQueryHelper.userStatsExpression(qUser, currentUser);
 
@@ -47,11 +48,12 @@ public class RelatedUserCustomRepositoryImpl implements RelatedUserCustomReposit
                         .relationship(tuple.get(qRelationship))
                         .userStats(tuple.get(userStatsExpression))
                         .build()
-                );
+                )
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Stream<Row> findFollowers(User subject, User currentUser, PageParams pageParams) {
+    public List<Row> findFollowers(User subject, User currentUser, PageParams pageParams) {
         final ConstructorExpression<UserStats> userStatsExpression =
                 UserStatsQueryHelper.userStatsExpression(qUser, currentUser);
 
@@ -71,7 +73,8 @@ public class RelatedUserCustomRepositoryImpl implements RelatedUserCustomReposit
                         .relationship(tuple.get(qRelationship))
                         .userStats(tuple.get(userStatsExpression))
                         .build()
-                );
+                )
+                .collect(Collectors.toList());
     }
 
 }

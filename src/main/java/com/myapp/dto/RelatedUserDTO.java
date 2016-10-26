@@ -15,21 +15,32 @@ public class RelatedUserDTO {
     private final String name;
     private final String avatarHash;
     private final UserStats userStats;
-    private final Boolean isMyself;
     private final long relationshipId;
+    private final Boolean isMyself;
+    private final boolean isFollowedByMe;
 
     public static RelatedUserDTO newInstance(User user, Relationship relationship, UserStats userStats, Boolean isMyself) {
         final String avatarHash = Utils.md5(user.getUsername());
 
         return RelatedUserDTO.builder()
                 .id(user.getId())
-//                .email(user.getUsername()) // for privacy reason
                 .name(user.getName())
                 .avatarHash(avatarHash)
                 .isMyself(isMyself)
                 .userStats(userStats)
                 .relationshipId(relationship.getId())
                 .build();
+    }
+
+    public static RelatedUserDTOBuilder builder2(User user, Relationship relationship, UserStats userStats) {
+        final String avatarHash = Utils.md5(user.getUsername());
+
+        return RelatedUserDTO.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .avatarHash(avatarHash)
+                .userStats(userStats)
+                .relationshipId(relationship.getId());
     }
 
 }
