@@ -12,7 +12,7 @@ class RelationshipRepositoryTest extends BaseRepositoryTest {
     @Autowired
     UserRepository userRepository
 
-    def "can find by follower and followed"() {
+    def "can find one by follower and followed"() {
         given:
         User follower = new User(username: "akira@test.com", password: "secret", name: "akira")
         User followed = new User(username: "satoru@test.com", password: "secret", name: "satoru")
@@ -33,7 +33,7 @@ class RelationshipRepositoryTest extends BaseRepositoryTest {
         result.get() == relationship
     }
 
-    def "can find all by follower"() {
+    def "can find all by follower and followed in"() {
         given:
         User follower = new User(username: "akira@test.com", password: "secret", name: "akira")
         User followed1 = new User(username: "followed1@test.com", password: "secret", name: "satoru")
