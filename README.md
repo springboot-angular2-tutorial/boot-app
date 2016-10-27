@@ -1,4 +1,7 @@
-# Spring Boot example app for Spring Boot and Angular2 Tutorial [![Build Status][travis-image]][travis-url]
+# Spring Boot example app for Spring Boot and Angular2 Tutorial
+ 
+[![Build Status][travis-image]][travis-url]
+[![Coverage Status](https://coveralls.io/repos/github/springboot-angular2-tutorial/boot-app/badge.svg?branch=master)](https://coveralls.io/github/springboot-angular2-tutorial/boot-app?branch=master)
 
 This repository is an example application for Spring Boot and Angular2 tutorial.
 

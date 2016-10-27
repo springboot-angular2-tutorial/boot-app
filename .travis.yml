@@ -14,7 +14,7 @@ install:
   - sudo pip install awscli
   - aws --version
 
-script: mvn clean test -Dspring.profiles.active=test
+script: mvn clean test jacoco:report coveralls:report -Dspring.profiles.active=test
 
 before_deploy:
   # Parse branch name and determine an environment to deploy
