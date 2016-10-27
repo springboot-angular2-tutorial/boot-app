@@ -18,7 +18,7 @@ import spock.mock.DetachedMockFactory
 import static groovy.json.JsonOutput.toJson
 import static org.hamcrest.Matchers.is
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @WebMvcTest(AuthController)
@@ -72,7 +72,7 @@ class AuthControllerTest extends BaseControllerTest {
         then:
         with(response) {
             andExpect(status().isOk())
-            andExpect(header().string("x-auth-token", is("created jwt")))
+            andExpect(jsonPath('$.token', is("created jwt")))
         }
     }
 

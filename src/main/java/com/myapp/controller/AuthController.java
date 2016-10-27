@@ -2,10 +2,10 @@ package com.myapp.controller;
 
 import com.myapp.auth.TokenHandler;
 import com.myapp.domain.User;
+import com.myapp.dto.AuthResponse;
 import com.myapp.dto.UserParams;
 import com.myapp.service.SecurityContextService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -37,15 +37,14 @@ public class AuthController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<String> auth(@RequestBody UserParams params) throws AuthenticationException {
+    public AuthResponse auth(@RequestBody UserParams params) throws AuthenticationException {
         final UsernamePasswordAuthenticationToken loginToken = params.toAuthenticationToken();
         final Authentication authentication = authenticationManager.authenticate(loginToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         final User currentUser = securityContextService.currentUser();
         final String token = tokenHandler.createTokenForUser(currentUser);
 
-        return ResponseEntity.ok().header("x-auth-token", token).body("");
+        return new AuthResponse(token);
     }
-
 
 }
