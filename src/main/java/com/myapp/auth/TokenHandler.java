@@ -1,5 +1,6 @@
 package com.myapp.auth;
 
+import com.myapp.domain.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -10,6 +11,6 @@ public interface TokenHandler {
 
     Optional<UserDetails> parseUserFromToken(String token);
 
-    String createTokenForUser(UserDetails user);
+    String createTokenForUser(User user);
 
 }

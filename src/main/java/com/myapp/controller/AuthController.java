@@ -1,7 +1,9 @@
 package com.myapp.controller;
 
 import com.myapp.auth.TokenHandler;
+import com.myapp.domain.User;
 import com.myapp.dto.UserParams;
+import com.myapp.service.SecurityContextService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -9,8 +11,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,25 +25,24 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final TokenHandler tokenHandler;
-    private final UserDetailsService userDetailsService;
+    private final SecurityContextService securityContextService;
 
     @Autowired
     AuthController(AuthenticationManager authenticationManager,
                    TokenHandler tokenHandler,
-                   UserDetailsService userDetailsService) {
+                   SecurityContextService securityContextService) {
         this.authenticationManager = authenticationManager;
         this.tokenHandler = tokenHandler;
-        this.userDetailsService = userDetailsService;
+        this.securityContextService = securityContextService;
     }
-
 
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<String> auth(@RequestBody UserParams params) throws AuthenticationException {
-        UsernamePasswordAuthenticationToken loginToken = params.toAuthenticationToken();
-        Authentication authentication = authenticationManager.authenticate(loginToken);
+        final UsernamePasswordAuthenticationToken loginToken = params.toAuthenticationToken();
+        final Authentication authentication = authenticationManager.authenticate(loginToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        UserDetails userDetails = userDetailsService.loadUserByUsername(authentication.getName());
-        String token = tokenHandler.createTokenForUser(userDetails);
+        final User currentUser = securityContextService.currentUser();
+        final String token = tokenHandler.createTokenForUser(currentUser);
 
         return ResponseEntity.ok().header("x-auth-token", token).body("");
     }

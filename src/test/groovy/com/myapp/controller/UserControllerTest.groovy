@@ -1,7 +1,5 @@
 package com.myapp.controller
 
-import com.myapp.auth.TokenHandler
-import com.myapp.auth.TokenHandlerImpl
 import com.myapp.domain.User
 import com.myapp.dto.UserDTO
 import com.myapp.dto.UserParams
@@ -32,18 +30,10 @@ class UserControllerTest extends BaseControllerTest {
         UserService userService(DetachedMockFactory f) {
             return f.Mock(UserService)
         }
-
-        @Bean
-        TokenHandler tokenHandler(UserService userService) {
-            return new TokenHandlerImpl("jwt secret", userService)
-        }
     }
 
     @Autowired
     UserService userService
-
-    @Autowired
-    TokenHandler tokenHandler
 
     def "can signup"() {
         given:
@@ -220,7 +210,6 @@ class UserControllerTest extends BaseControllerTest {
         then:
         with(response) {
             andExpect(status().isOk())
-            andExpect(header().string("x-auth-token", not(isEmptyOrNullString())))
         }
     }
 

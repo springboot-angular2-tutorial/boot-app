@@ -27,12 +27,10 @@ public class UserController {
     private static final Integer DEFAULT_PAGE_SIZE = 5;
 
     private final UserService userService;
-    private final TokenHandler tokenHandler;
 
     @Autowired
-    public UserController(UserService userService, TokenHandler tokenHandler) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.tokenHandler = tokenHandler;
     }
 
     @RequestMapping
@@ -61,14 +59,8 @@ public class UserController {
     }
 
     @RequestMapping(value = "/me", method = RequestMethod.PATCH)
-    public ResponseEntity updateMe(@Valid @RequestBody UserParams params) {
-        User user = userService.updateMe(params);
-
-        // when username was changed, re-issue jwt.
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("x-auth-token", tokenHandler.createTokenForUser(user));
-
-        return new ResponseEntity(headers, HttpStatus.OK);
+    public void updateMe(@Valid @RequestBody UserParams params) {
+        userService.updateMe(params);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
