@@ -22,6 +22,7 @@
         <start-class>com.myapp.Application</start-class>
         <querydsl.version>4.1.4</querydsl.version>
         <spock.version>1.1-groovy-2.4-rc-2</spock.version>
+        <swagger2.version>2.6.0</swagger2.version>
     </properties>
 
     <dependencies>
@@ -93,7 +94,7 @@
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
             <scope>runtime</scope>
-            <version>1.5.2</version>
+            <version>1.5.4</version>
         </dependency>
         <dependency>
             <groupId>com.zaxxer</groupId>
@@ -108,13 +109,13 @@
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
-            <version>2.6.0</version>
+            <version>${swagger2.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger-ui</artifactId>
-            <version>2.6.0</version>
+            <version>${swagger2.version}</version>
             <scope>compile</scope>
         </dependency>
 
@@ -246,6 +247,7 @@
                 <artifactId>coveralls-maven-plugin</artifactId>
                 <version>4.3.0</version>
                 <configuration>
+                    <!--suppress MavenModelInspection -->
                     <repoToken>${env.COVERALLS_TOKEN}</repoToken>
                 </configuration>
             </plugin>
