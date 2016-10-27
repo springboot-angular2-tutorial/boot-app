@@ -2,9 +2,8 @@ package com.myapp.controller;
 
 import com.myapp.auth.TokenHandler;
 import com.myapp.domain.User;
-import com.myapp.dto.AuthResponse;
-import com.myapp.dto.UserParams;
 import com.myapp.service.SecurityContextService;
+import lombok.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -37,7 +36,7 @@ public class AuthController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public AuthResponse auth(@RequestBody UserParams params) throws AuthenticationException {
+    public AuthResponse auth(@RequestBody AuthParams params) throws AuthenticationException {
         final UsernamePasswordAuthenticationToken loginToken = params.toAuthenticationToken();
         final Authentication authentication = authenticationManager.authenticate(loginToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -45,6 +44,21 @@ public class AuthController {
         final String token = tokenHandler.createTokenForUser(currentUser);
 
         return new AuthResponse(token);
+    }
+
+    @Value
+    private static final class AuthParams {
+        private final String email;
+        private final String password;
+
+        UsernamePasswordAuthenticationToken toAuthenticationToken() {
+            return new UsernamePasswordAuthenticationToken(email, password);
+        }
+    }
+
+    @Value
+    private static final class AuthResponse {
+        private final String token;
     }
 
 }

@@ -1,6 +1,5 @@
 package com.myapp.controller;
 
-import com.myapp.auth.TokenHandler;
 import com.myapp.domain.User;
 import com.myapp.dto.ErrorResponse;
 import com.myapp.dto.UserDTO;
@@ -11,9 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Nullable;
@@ -33,7 +30,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @RequestMapping
+    @RequestMapping(method = RequestMethod.GET)
     public Page<UserDTO> list(@RequestParam(value = "page", required = false) @Nullable Integer page,
                               @RequestParam(value = "size", required = false) @Nullable Integer size) {
         final PageRequest pageable = new PageRequest(
@@ -47,18 +44,18 @@ public class UserController {
         return userService.create(params);
     }
 
-    @RequestMapping(value = "{id:\\d+}")
+    @RequestMapping(method = RequestMethod.GET, path = "{id:\\d+}")
     public UserDTO show(@PathVariable("id") Long id) throws UserNotFoundException {
         return userService.findOne(id).orElseThrow(UserNotFoundException::new);
     }
 
     @SuppressWarnings("OptionalGetWithoutIsPresent")
-    @RequestMapping("/me")
-    public UserDTO showMe()  {
+    @RequestMapping(method = RequestMethod.GET, path = "/me")
+    public UserDTO showMe() {
         return userService.findMe().get();
     }
 
-    @RequestMapping(value = "/me", method = RequestMethod.PATCH)
+    @RequestMapping(method = RequestMethod.PATCH, path = "/me")
     public void updateMe(@Valid @RequestBody UserParams params) {
         userService.updateMe(params);
     }

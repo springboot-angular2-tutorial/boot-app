@@ -7,6 +7,7 @@ This repository is an example application for Spring Boot and Angular2 tutorial.
 * JWT
 * [Querydsl](http://www.querydsl.com/)
 * [Spock](http://spockframework.org/)
+* [Swagger2](http://swagger.io/)
 
 ## Getting Started
 
@@ -27,6 +28,13 @@ Testing.
 
 ```
 mvn test
+```
+
+API documentation
+
+```
+mvn spring-boot:run
+open http://localhost:8080/swagger-ui.html
 ```
 
 ### Important note

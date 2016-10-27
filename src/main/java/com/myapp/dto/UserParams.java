@@ -52,8 +52,4 @@ public final class UserParams {
         return user;
     }
 
-    public UsernamePasswordAuthenticationToken toAuthenticationToken() {
-        return new UsernamePasswordAuthenticationToken(email, password);
-    }
-
 }
