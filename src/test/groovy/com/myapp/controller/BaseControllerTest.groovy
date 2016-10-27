@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletRequest
 
 @ActiveProfiles("test")
 @ComponentScan(basePackages = ["com.myapp.auth"])
-class BaseControllerTest extends Specification {
+abstract class BaseControllerTest extends Specification {
 
     @SuppressWarnings("GroovyUnusedDeclaration")
     final Logger logger = LoggerFactory.getLogger(this.getClass());
