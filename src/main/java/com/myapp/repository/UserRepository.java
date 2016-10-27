@@ -12,7 +12,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findOneByUsername(String username);
 
-    @Query("select u from User u left join u.followedRelations f where f.follower = :user and u in :targetUsers")
-    List<User> findFollowedBy(@Param("user") User user, @Param("targetUsers") List<User> targetUsers);
-
 }

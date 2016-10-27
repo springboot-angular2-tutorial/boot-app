@@ -70,11 +70,15 @@ public class RelationshipServiceImpl implements RelationshipService {
 
     private List<RelatedUserDTO> rowsToRelatedUsers(List<RelatedUserCustomRepository.Row> rows) {
         final User currentUser = securityContextService.currentUser();
+
         final List<User> relatedUsers = rows.stream()
                 .map(RelatedUserCustomRepository.Row::getUser)
                 .collect(Collectors.toList());
 
-        final List<User> followedByMe = userRepository.findFollowedBy(currentUser, relatedUsers);
+        final List<User> followedByMe = relationshipRepository
+                .findAllByFollowerAndFollowedIn(currentUser, relatedUsers)
+                .map(Relationship::getFollowed)
+                .collect(Collectors.toList());
 
         return rows.stream().map(row -> {
             final Boolean isFollowedByMe = Optional.ofNullable(currentUser)
