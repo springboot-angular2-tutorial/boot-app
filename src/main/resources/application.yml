@@ -14,8 +14,6 @@ management:
 app:
   jwt:
     secret: qwerty
-  asset-host: localhost:3001
-  asset-manifest-url: http://localhost:3001/manifest.json
 ---
 spring:
   profiles: dev
@@ -76,9 +74,6 @@ spring:
       ddl-auto: validate
 logging:
   config: classpath:logback-prod.xml
-app:
-  asset-host: cdn.hana053.com
-  asset-manifest-url: https://s3.amazonaws.com/cdn.hana053.com/manifest.json
 ---
 spring:
   profiles: prod
@@ -93,7 +88,3 @@ spring:
       ddl-auto: validate
 logging:
   config: classpath:logback-prod.xml
-app:
-  asset-host: cdn.hana053.com
-  asset-manifest-url: https://s3.amazonaws.com/cdn.hana053.com/manifest.json
-
