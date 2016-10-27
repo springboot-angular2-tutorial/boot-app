@@ -64,7 +64,7 @@ class AuthControllerTest extends BaseControllerTest {
 
     def "can auth when username and password are correct"() {
         when:
-        def response = perform(post("/api/login")
+        def response = perform(post("/api/auth")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(toJson(email: "test1@test.com", password: "secret"))
         )
@@ -78,7 +78,7 @@ class AuthControllerTest extends BaseControllerTest {
 
     def "can not auth when username or password is not correct"() {
         when:
-        def response = perform(post("/api/login")
+        def response = perform(post("/api/auth")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(toJson(email: "test2@test.com", password: "secret"))
         )
