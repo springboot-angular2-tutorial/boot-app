@@ -79,8 +79,10 @@ public class MicropostServiceImpl implements MicropostService {
     }
 
     private Function<MicropostCustomRepository.Row, PostDTO> toDTO() {
+        final Optional<User> currentUser = securityContextService.currentUser();
+
         return r -> {
-            final Boolean isMyPost = securityContextService.currentUser()
+            final Boolean isMyPost = currentUser
                     .map(u -> r.getMicropost().getUser().equals(u))
                     .orElse(null);
             return PostDTO.newInstance(r.getMicropost(), r.getUserStats(), isMyPost);
