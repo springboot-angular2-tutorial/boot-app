@@ -256,12 +256,13 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.7.7.201606060606</version>
                 <configuration>
-                    <exclude>com.myapp.config.*</exclude>
-                    <exclude>**/QMicropost</exclude>
-                    <exclude>**/QRelationship</exclude>
-                    <exclude>**/QUser</exclude>
-                    <exclude>**/QUserStats</exclude>
-                    <exclude>some/package/SomeClass.java</exclude>
+                    <excludes>
+                        <exclude>com.myapp.config.*</exclude>
+                        <exclude>**/QMicropost.java</exclude>
+                        <exclude>**/QRelationship.java</exclude>
+                        <exclude>**/QUser.java</exclude>
+                        <exclude>**/QUserStats.java</exclude>
+                    </excludes>
                 </configuration>
                 <executions>
                     <execution>
