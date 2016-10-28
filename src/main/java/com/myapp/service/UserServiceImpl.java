@@ -9,6 +9,7 @@ import com.myapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -83,7 +84,7 @@ public class UserServiceImpl implements UserService {
     public User updateMe(UserParams params) {
         return securityContextService.currentUser()
                 .map(u -> update(u, params))
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(() -> new AccessDeniedException(""));
     }
 
     @Override

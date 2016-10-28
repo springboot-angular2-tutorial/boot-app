@@ -9,6 +9,7 @@ import com.myapp.repository.MicropostRepository;
 import com.myapp.repository.UserRepository;
 import com.myapp.service.exceptions.NotPermittedException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -49,7 +50,7 @@ public class MicropostServiceImpl implements MicropostService {
                 .map(u -> micropostCustomRepository.findAsFeed(u, pageParams)
                         .map(toDTO())
                         .collect(Collectors.toList()))
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(() -> new AccessDeniedException(""));
     }
 
     @Override
@@ -74,7 +75,7 @@ public class MicropostServiceImpl implements MicropostService {
                     post.setUser(u);
                     return micropostRepository.save(post);
                 })
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(() -> new AccessDeniedException(""));
     }
 
     private Function<MicropostCustomRepository.Row, PostDTO> toDTO() {
