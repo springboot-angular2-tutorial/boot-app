@@ -25,8 +25,6 @@ class UserServiceTest extends BaseServiceTest {
     @Autowired
     RelationshipRepository relationshipRepository
 
-    SecurityContextService securityContextService = Mock(SecurityContextService)
-
     UserService userService
 
     def setup() {
@@ -50,7 +48,7 @@ class UserServiceTest extends BaseServiceTest {
         given:
         User user = userRepository.save(new User(username: "akira@test.com", password: "secret", name: "akira"))
         User currentUser = userRepository.save(new User(username: "current@test.com", password: "secret", name: "akira"))
-        securityContextService.currentUser() >> currentUser
+        signIn(currentUser)
         relationshipRepository.save(new Relationship(follower: currentUser, followed: user))
 
         when:
@@ -65,7 +63,7 @@ class UserServiceTest extends BaseServiceTest {
     def "can find me"() {
         given:
         User user = userRepository.save(new User(username: "akira@test.com", password: "secret", name: "akira"))
-        securityContextService.currentUser() >> user
+        signIn(user)
 
         when:
         UserDTO userDTO = userService.findMe().get()
@@ -127,7 +125,7 @@ class UserServiceTest extends BaseServiceTest {
         given:
         User user = userRepository.save(new User(username: "akira@test.com", password: "secret", name: "akira"))
         UserParams params = new UserParams("test2@test.com", "secret2", "test2")
-        securityContextService.currentUser() >> user
+        signIn(user)
 
         when:
         userService.updateMe(params)

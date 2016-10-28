@@ -34,46 +34,52 @@ public class MicropostServiceImpl implements MicropostService {
 
     @Override
     public void delete(Long id) throws NotPermittedException {
-        User currentUser = securityContextService.currentUser();
-        Micropost micropost = micropostRepository.findOne(id);
-        if (currentUser != micropost.getUser())
-            throw new NotPermittedException("no permission to delete this post");
-        micropostRepository.delete(id);
+        final Micropost micropost = micropostRepository.findOne(id);
+        final Optional<User> currentUser = securityContextService.currentUser();
+
+        currentUser.filter(u -> u.equals(micropost.getUser()))
+                .ifPresent(u -> micropostRepository.delete(id));
+        currentUser.filter(u -> u.equals(micropost.getUser()))
+                .orElseThrow(() -> new NotPermittedException("no permission to delete this post"));
     }
 
     @Override
     public List<PostDTO> findAsFeed(PageParams pageParams) {
-        final User currentUser = securityContextService.currentUser();
-        return micropostCustomRepository.findAsFeed(currentUser, pageParams)
-                .map(toDTO(currentUser))
-                .collect(Collectors.toList());
+        return securityContextService.currentUser()
+                .map(u -> micropostCustomRepository.findAsFeed(u, pageParams)
+                        .map(toDTO())
+                        .collect(Collectors.toList()))
+                .orElseThrow(RuntimeException::new);
     }
 
     @Override
     public List<PostDTO> findByUser(Long userId, PageParams pageParams) {
         final User user = userRepository.findOne(userId);
-        final User currentUser = securityContextService.currentUser();
         return micropostCustomRepository.findByUser(user, pageParams)
-                .map(toDTO(currentUser))
+                .map(toDTO())
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<PostDTO> findMyPosts(PageParams pageParams) {
-        final User currentUser = securityContextService.currentUser();
-        return findByUser(currentUser.getId(), pageParams);
+        return securityContextService.currentUser()
+                .map(u -> findByUser(u.getId(), pageParams))
+                .orElseThrow(RuntimeException::new);
     }
 
     @Override
     public Micropost saveMyPost(Micropost post) {
-        User currentUser = securityContextService.currentUser();
-        post.setUser(currentUser);
-        return micropostRepository.save(post);
+        return securityContextService.currentUser()
+                .map(u -> {
+                    post.setUser(u);
+                    return micropostRepository.save(post);
+                })
+                .orElseThrow(RuntimeException::new);
     }
 
-    private Function<MicropostCustomRepository.Row, PostDTO> toDTO(User currentUser) {
+    private Function<MicropostCustomRepository.Row, PostDTO> toDTO() {
         return r -> {
-            final Boolean isMyPost = Optional.ofNullable(currentUser)
+            final Boolean isMyPost = securityContextService.currentUser()
                     .map(u -> r.getMicropost().getUser().equals(u))
                     .orElse(null);
             return PostDTO.newInstance(r.getMicropost(), r.getUserStats(), isMyPost);

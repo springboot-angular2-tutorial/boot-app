@@ -20,8 +20,6 @@ class RelationshipServiceTest extends BaseServiceTest {
     @Autowired
     RelationshipRepository relationshipRepository
 
-    SecurityContextService securityContextService = Mock(SecurityContextService)
-
     RelationshipService relationshipService
 
     def setup() {
@@ -49,7 +47,7 @@ class RelationshipServiceTest extends BaseServiceTest {
         User followed2 = userRepository.save(new User(username: "followed2@test.com", password: "secret", name: "followed2"))
         relationshipRepository.save(new Relationship(follower: follower, followed: followed1))
         relationshipRepository.save(new Relationship(follower: follower, followed: followed2))
-        securityContextService.currentUser() >> followed1
+        signIn(followed1)
 
         when:
         def followings = relationshipService.findFollowings(follower.id, new PageParams())
@@ -85,7 +83,7 @@ class RelationshipServiceTest extends BaseServiceTest {
         User follower2 = userRepository.save(new User(username: "follower2@test.com", password: "secret", name: "follower2"))
         relationshipRepository.save(new Relationship(follower: follower1, followed: followed))
         relationshipRepository.save(new Relationship(follower: follower2, followed: followed))
-        securityContextService.currentUser() >> follower1
+        signIn(follower1)
 
         when:
         def followers = relationshipService.findFollowers(followed.id, new PageParams())
@@ -104,7 +102,7 @@ class RelationshipServiceTest extends BaseServiceTest {
         given:
         User currentUser = userRepository.save(new User(username: "test1@test.com", password: "secret", name: "akira"))
         User targetUser = userRepository.save(new User(username: "test2@test.com", password: "secret", name: "akira"))
-        securityContextService.currentUser() >> currentUser
+        signIn(currentUser)
 
         when:
         relationshipService.follow(targetUser.id)

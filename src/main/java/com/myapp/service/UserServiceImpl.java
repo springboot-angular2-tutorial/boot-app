@@ -38,14 +38,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<UserDTO> findOne(Long id) {
         return userCustomRepository.findOne(id).map(r -> {
-            final User currentUser = securityContextService.currentUser();
-            final Boolean isFollowedByMe = Optional.ofNullable(currentUser)
+            final Optional<User> currentUser = securityContextService.currentUser();
+
+            final Boolean isFollowedByMe = currentUser
                     .map(u -> relationshipRepository
                             .findOneByFollowerAndFollowed(u, r.getUser())
                             .isPresent()
                     )
                     .orElse(null);
-            final Boolean isMyself = Optional.ofNullable(currentUser)
+            final Boolean isMyself = currentUser
                     .map(u -> u.equals(r.getUser()))
                     .orElse(null);
             return UserDTO.builder2(r.getUser(), r.getUserStats())
@@ -57,8 +58,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<UserDTO> findMe() {
-        final User currentUser = securityContextService.currentUser();
-        return findOne(currentUser.getId());
+        return securityContextService.currentUser().flatMap(u -> findOne(u.getId()));
     }
 
     @Override
@@ -81,8 +81,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User updateMe(UserParams params) {
-        User user = securityContextService.currentUser();
-        return update(user, params);
+        return securityContextService.currentUser()
+                .map(u -> update(u, params))
+                .orElseThrow(RuntimeException::new);
     }
 
     @Override

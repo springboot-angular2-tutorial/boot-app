@@ -58,7 +58,7 @@ class AuthControllerTest extends BaseControllerTest {
         authenticationManager.authenticate(_ as Authentication) >> {
             throw new BadCredentialsException("")
         }
-        securityContextService.currentUser() >> user
+        securityContextService.currentUser() >> Optional.of(user)
         tokenHandler.createTokenForUser(user) >> "created jwt"
     }
 

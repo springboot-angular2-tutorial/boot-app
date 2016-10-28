@@ -10,6 +10,7 @@ import com.myapp.repository.UserRepository;
 import com.myapp.service.exceptions.RelationshipNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -51,41 +52,41 @@ public class RelationshipServiceImpl implements RelationshipService {
     @Override
     public void follow(Long userId) {
         final User user = userRepository.findOne(userId);
-        final User currentUser = securityContextService.currentUser();
-        final Relationship relationship = new Relationship(currentUser, user);
-        // TODO unless followed
-
-        relationshipRepository.save(relationship);
+        securityContextService.currentUser().ifPresent(currentUser -> {
+            final Relationship relationship = new Relationship(currentUser, user);
+            relationshipRepository.save(relationship);
+        });
     }
 
     @Override
     public void unfollow(Long userId) throws RelationshipNotFoundException {
         final User followed = userRepository.findOne(userId);
-        final User currentUser = securityContextService.currentUser();
-        final Relationship relationship = relationshipRepository
-                .findOneByFollowerAndFollowed(currentUser, followed)
-                .orElseThrow(RelationshipNotFoundException::new);
-        relationshipRepository.delete(relationship);
+        final Optional<Relationship> relationship = securityContextService.currentUser()
+                .flatMap(currentUser -> relationshipRepository.findOneByFollowerAndFollowed(currentUser, followed));
+
+        relationship.ifPresent(relationshipRepository::delete);
+        relationship.orElseThrow(RelationshipNotFoundException::new);
     }
 
     private List<RelatedUserDTO> rowsToRelatedUsers(List<RelatedUserCustomRepository.Row> rows) {
-        final User currentUser = securityContextService.currentUser();
+        final Optional<User> currentUser = securityContextService.currentUser();
 
         final List<User> relatedUsers = rows.stream()
                 .map(RelatedUserCustomRepository.Row::getUser)
                 .collect(Collectors.toList());
 
-        final List<User> followedByMe = relationshipRepository
-                .findAllByFollowerAndFollowedIn(currentUser, relatedUsers)
+        final List<User> followedByMe = currentUser.map(u -> relationshipRepository
+                .findAllByFollowerAndFollowedIn(u, relatedUsers)
                 .map(Relationship::getFollowed)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList())
+        ).orElse(Collections.emptyList());
 
         return rows.stream().map(row -> {
-            final Boolean isFollowedByMe = Optional.ofNullable(currentUser)
+            final Boolean isFollowedByMe = currentUser
                     .map(u -> followedByMe.contains(row.getUser()))
-                    .orElse(null) ;
-            final Boolean isMyself = Optional.ofNullable(currentUser)
-                    .map(u -> currentUser.equals(row.getUser()))
+                    .orElse(null);
+            final Boolean isMyself = currentUser
+                    .map(u -> u.equals(row.getUser()))
                     .orElse(null);
             return RelatedUserDTO.builder2(row.getUser(), row.getRelationship(), row.getUserStats())
                     .isMyself(isMyself)

@@ -1,7 +1,6 @@
 package com.myapp.controller;
 
 import com.myapp.auth.TokenHandler;
-import com.myapp.domain.User;
 import com.myapp.service.SecurityContextService;
 import lombok.Value;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,10 +39,11 @@ public class AuthController {
         final UsernamePasswordAuthenticationToken loginToken = params.toAuthenticationToken();
         final Authentication authentication = authenticationManager.authenticate(loginToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        final User currentUser = securityContextService.currentUser();
-        final String token = tokenHandler.createTokenForUser(currentUser);
 
-        return new AuthResponse(token);
+        return securityContextService.currentUser().map(u -> {
+            final String token = tokenHandler.createTokenForUser(u);
+            return new AuthResponse(token);
+        }).orElseThrow(RuntimeException::new); // it does not happen.
     }
 
     @Value

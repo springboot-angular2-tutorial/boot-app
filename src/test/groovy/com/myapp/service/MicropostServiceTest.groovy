@@ -25,8 +25,6 @@ class MicropostServiceTest extends BaseServiceTest {
     @Autowired
     UserRepository userRepository
 
-    SecurityContextService securityContextService = Mock(SecurityContextService)
-
     @Shared
     MicropostService micropostService
 
@@ -41,7 +39,7 @@ class MicropostServiceTest extends BaseServiceTest {
         given:
         User user = userRepository.save(new User(username: "akira@test.com", password: "secret", name: "akira"))
         Micropost post = micropostRepository.save(new Micropost(user: user, content: "test"))
-        securityContextService.currentUser() >> user
+        signIn(user)
 
         when:
         micropostService.delete(post.id)
@@ -52,8 +50,10 @@ class MicropostServiceTest extends BaseServiceTest {
 
     def "can not delete micropost when have no permission"() {
         given:
-        User user = userRepository.save(new User(username: "akira@test.com", password: "secret", name: "akira"))
-        Micropost post = micropostRepository.save(new Micropost(user: user, content: "test"))
+        User currentUser = userRepository.save(new User(username: "test1@test.com", password: "secret", name: "akira"))
+        User anotherUser = userRepository.save(new User(username: "test2@test.com", password: "secret", name: "akira"))
+        Micropost post = micropostRepository.save(new Micropost(user: anotherUser, content: "test"))
+        signIn(currentUser)
 
         when:
         micropostService.delete(post.id)
@@ -67,7 +67,7 @@ class MicropostServiceTest extends BaseServiceTest {
         given:
         User user = userRepository.save(new User(username: "akira@test.com", password: "secret", name: "akira"))
         micropostRepository.save(new Micropost(user: user, content: "my content"))
-        securityContextService.currentUser() >> user
+        signIn(user)
 
         User followed = userRepository.save(new User(username: "test1@test.com", password: "secret", name: "test1"))
         relationshipRepository.save(new Relationship(follower: user, followed: followed))
@@ -100,7 +100,7 @@ class MicropostServiceTest extends BaseServiceTest {
     def "can find posts by user when signed in"() {
         given:
         User user = userRepository.save(new User(username: "akira@test.com", password: "secret", name: "akira"))
-        securityContextService.currentUser() >> user
+        signIn(user)
 
         when:
         micropostRepository.save(new Micropost(user: user, content: "my content"))
@@ -121,7 +121,7 @@ class MicropostServiceTest extends BaseServiceTest {
     def "can find my posts"() {
         given:
         User user = userRepository.save(new User(username: "akira@test.com", password: "secret", name: "akira"))
-        securityContextService.currentUser() >> user
+        signIn(user)
         micropostRepository.save(new Micropost(user: user, content: "my content"))
 
         when:
@@ -136,7 +136,7 @@ class MicropostServiceTest extends BaseServiceTest {
     def "can save my post"() {
         given:
         User user = userRepository.save(new User(username: "akira@test.com", password: "secret", name: "akira"))
-        securityContextService.currentUser() >> user
+        signIn(user)
         Micropost post = new Micropost("test post")
 
         when:
