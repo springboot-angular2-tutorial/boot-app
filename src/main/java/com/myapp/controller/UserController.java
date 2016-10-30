@@ -11,6 +11,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Nullable;
@@ -46,13 +47,14 @@ public class UserController {
 
     @RequestMapping(method = RequestMethod.GET, path = "{id:\\d+}")
     public UserDTO show(@PathVariable("id") Long id) throws UserNotFoundException {
-        return userService.findOne(id).orElseThrow(UserNotFoundException::new);
+        return userService.findOne(id)
+                .orElseThrow(UserNotFoundException::new);
     }
 
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
     @RequestMapping(method = RequestMethod.GET, path = "/me")
     public UserDTO showMe() {
-        return userService.findMe().get();
+        return userService.findMe()
+                .orElseThrow(() -> new AccessDeniedException(""));
     }
 
     @RequestMapping(method = RequestMethod.PATCH, path = "/me")
