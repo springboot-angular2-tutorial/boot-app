@@ -10,7 +10,6 @@ This repository is an example application for Spring Boot and Angular2 tutorial.
 * JWT
 * [Querydsl](http://www.querydsl.com/)
 * [Spock](http://spockframework.org/)
-* [Swagger2](http://swagger.io/)
 
 ## Getting Started
 
@@ -60,6 +59,7 @@ Under construction...
 * [Android app](https://github.com/springboot-angular2-tutorial/android-app)
 * [Server provisioning by Ansible and Packer](https://github.com/springboot-angular2-tutorial/micropost-provisionings)
 * [Infrastructure by Terraform](https://github.com/springboot-angular2-tutorial/micropost-formation)
+* [Lambda functions by Serverless](https://github.com/springboot-angular2-tutorial/micropost-functions)
 
 ## Credits
 
