@@ -1,13 +1,9 @@
 #!/usr/bin/env bash
 
-if [ -z "${ENV}" ]; then
-  echo "ENV is required."
-  exit 1
-fi
+set -u
 
-# Switch AWS Role when ENV is prod
-if [ "${ENV}" = "prod" ]; then
-  source scripts/switch-production-role.sh
+if [ ! -v AWS_SESSION_TOKEN ]; then
+  source ./scripts/switch-role.sh
 fi
 
 # create and upload jar

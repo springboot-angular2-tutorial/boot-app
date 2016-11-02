@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+export AWS_DEFAULT_REGION=ap-northeast-1
+
+export ROLE_ARN_stg=
+export ROLE_ARN_prod=
