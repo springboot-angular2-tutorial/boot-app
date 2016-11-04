@@ -158,12 +158,6 @@
                     <mainClass>com.myapp.Application</mainClass>
                     <executable>true</executable>
                 </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>springloaded</artifactId>
-                    </dependency>
-                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.gmavenplus</groupId>
