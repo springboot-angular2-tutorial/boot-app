@@ -3,7 +3,7 @@ package com.myapp.controller
 import com.myapp.domain.User
 import com.myapp.dto.UserDTO
 import com.myapp.dto.UserParams
-import com.myapp.dto.UserStats
+import com.myapp.domain.UserStats
 import com.myapp.service.UserService
 import com.myapp.service.exceptions.UserNotFoundException
 import org.springframework.beans.factory.annotation.Autowired

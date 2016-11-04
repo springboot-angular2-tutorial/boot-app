@@ -2,6 +2,7 @@ package com.myapp.dto;
 
 import com.myapp.Utils;
 import com.myapp.domain.User;
+import com.myapp.domain.UserStats;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;

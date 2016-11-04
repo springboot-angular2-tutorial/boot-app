@@ -2,6 +2,7 @@ package com.myapp.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.myapp.domain.Micropost;
+import com.myapp.domain.UserStats;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;

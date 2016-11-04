@@ -1,4 +1,4 @@
-package com.myapp.dto;
+package com.myapp.domain;
 
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Builder;

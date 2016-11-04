@@ -4,7 +4,7 @@ import com.myapp.domain.QRelationship;
 import com.myapp.domain.QUser;
 import com.myapp.domain.User;
 import com.myapp.dto.PageParams;
-import com.myapp.dto.UserStats;
+import com.myapp.domain.UserStats;
 import com.myapp.repository.helper.UserStatsQueryHelper;
 import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;

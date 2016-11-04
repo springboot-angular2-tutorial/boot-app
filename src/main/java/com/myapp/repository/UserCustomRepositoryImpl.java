@@ -1,7 +1,7 @@
 package com.myapp.repository;
 
 import com.myapp.domain.QUser;
-import com.myapp.dto.UserStats;
+import com.myapp.domain.UserStats;
 import com.myapp.repository.helper.UserStatsQueryHelper;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.ConstructorExpression;

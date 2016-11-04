@@ -3,14 +3,11 @@ package com.myapp.repository.helper;
 import com.myapp.domain.QMicropost;
 import com.myapp.domain.QRelationship;
 import com.myapp.domain.QUser;
-import com.myapp.domain.User;
-import com.myapp.dto.UserStats;
+import com.myapp.domain.UserStats;
 import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
-
-import java.util.Optional;
 
 public class UserStatsQueryHelper {
 

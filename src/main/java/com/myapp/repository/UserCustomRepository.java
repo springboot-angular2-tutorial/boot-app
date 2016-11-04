@@ -1,7 +1,7 @@
 package com.myapp.repository;
 
 import com.myapp.domain.User;
-import com.myapp.dto.UserStats;
+import com.myapp.domain.UserStats;
 import lombok.Builder;
 import lombok.Value;
 import org.springframework.data.repository.Repository;
