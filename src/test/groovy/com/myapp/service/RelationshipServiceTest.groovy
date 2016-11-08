@@ -36,7 +36,6 @@ class RelationshipServiceTest extends BaseServiceTest {
         def followings = relationshipService.findFollowings(follower.id, new PageParams())
 
         then:
-        followings.first().isMyself == null
         followings.first().isFollowedByMe == null
     }
 
@@ -54,11 +53,8 @@ class RelationshipServiceTest extends BaseServiceTest {
 
         then:
         followings.first().name == "followed2"
-        followings.first().email == null
-        followings.first().isMyself == false
         followings.first().isFollowedByMe == false
         followings.last().name == "followed1"
-        followings.last().isMyself == true
         followings.last().isFollowedByMe == false
     }
 
@@ -72,7 +68,6 @@ class RelationshipServiceTest extends BaseServiceTest {
         def followers = relationshipService.findFollowers(followed.id, new PageParams())
 
         then:
-        followers.first().isMyself == null
         followers.first().isFollowedByMe == null
     }
 
@@ -90,11 +85,8 @@ class RelationshipServiceTest extends BaseServiceTest {
 
         then:
         followers.first().name == "follower2"
-        followers.first().email == null
-        followers.first().isMyself == false
         followers.first().isFollowedByMe == false
         followers.last().name == "follower1"
-        followers.last().isMyself == true
         followers.last().isFollowedByMe == false
     }
 

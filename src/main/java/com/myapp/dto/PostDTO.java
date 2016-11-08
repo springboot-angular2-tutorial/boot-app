@@ -1,6 +1,7 @@
 package com.myapp.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.myapp.Utils;
 import com.myapp.domain.Micropost;
 import com.myapp.domain.UserStats;
 import lombok.Builder;
@@ -23,8 +24,11 @@ public class PostDTO {
     private final Boolean isMyPost;
 
     public static PostDTO newInstance(Micropost post, UserStats userStats, Boolean isMyPost) {
-        final UserDTO userDTO = UserDTO.builder2(post.getUser(), userStats)
-                .isMyself(isMyPost)
+        final UserDTO userDTO = UserDTO.builder()
+                .id(post.getUser().getId())
+                .name(post.getUser().getName())
+                .userStats(userStats)
+                .avatarHash(Utils.md5(post.getUser().getUsername()))
                 .build();
 
         return PostDTO.builder()

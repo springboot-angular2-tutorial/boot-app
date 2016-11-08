@@ -50,7 +50,7 @@ class FeedControllerTest extends BaseControllerTest {
             andExpect(jsonPath('$[0].content', is("content1")))
             andExpect(jsonPath('$[0].isMyPost', is(true)))
             andExpect(jsonPath('$[0].createdAt', greaterThanOrEqualTo(now.time)))
-            andExpect(jsonPath('$[0].user.email', is(user.username)))
+            andExpect(jsonPath('$[0].user.email', nullValue()))
             andExpect(jsonPath('$[0].user.avatarHash', is("b642b4217b34b1e8d3bd915fc65c4452")))
         }
     }

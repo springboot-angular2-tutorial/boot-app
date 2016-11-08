@@ -1,5 +1,6 @@
 package com.myapp.service;
 
+import com.myapp.Utils;
 import com.myapp.domain.Relationship;
 import com.myapp.domain.User;
 import com.myapp.dto.PageParams;
@@ -81,15 +82,16 @@ public class RelationshipServiceImpl implements RelationshipService {
                 .collect(Collectors.toList())
         ).orElse(Collections.emptyList());
 
-        return rows.stream().map(row -> {
+        return rows.stream().map(r -> {
             final Boolean isFollowedByMe = currentUser
-                    .map(u -> followedByMe.contains(row.getUser()))
+                    .map(u -> followedByMe.contains(r.getUser()))
                     .orElse(null);
-            final Boolean isMyself = currentUser
-                    .map(u -> u.equals(row.getUser()))
-                    .orElse(null);
-            return RelatedUserDTO.builder2(row.getUser(), row.getRelationship(), row.getUserStats())
-                    .isMyself(isMyself)
+            return RelatedUserDTO.builder()
+                    .id(r.getUser().getId())
+                    .avatarHash(Utils.md5(r.getUser().getUsername()))
+                    .name(r.getUser().getName())
+                    .userStats(r.getUserStats())
+                    .relationshipId(r.getRelationship().getId())
                     .isFollowedByMe(isFollowedByMe)
                     .build();
         }).collect(Collectors.toList());

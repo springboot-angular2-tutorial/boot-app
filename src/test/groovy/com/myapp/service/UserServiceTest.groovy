@@ -40,7 +40,6 @@ class UserServiceTest extends BaseServiceTest {
 
         then:
         userDTO.id == user.id
-        userDTO.isMyself == null // not signed in
         userDTO.isFollowedByMe == null // not signed in
     }
 
@@ -56,7 +55,6 @@ class UserServiceTest extends BaseServiceTest {
 
         then:
         userDTO.id == user.id
-        userDTO.isMyself == false
         userDTO.isFollowedByMe == true
     }
 
@@ -70,7 +68,6 @@ class UserServiceTest extends BaseServiceTest {
 
         then:
         userDTO.id == user.id
-        userDTO.isMyself == true
     }
 
     def "can find paged user list"() {

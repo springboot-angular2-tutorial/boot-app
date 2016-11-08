@@ -1,9 +1,10 @@
 package com.myapp.controller
 
+import com.myapp.Utils
 import com.myapp.domain.User
+import com.myapp.domain.UserStats
 import com.myapp.dto.UserDTO
 import com.myapp.dto.UserParams
-import com.myapp.domain.UserStats
 import com.myapp.service.UserService
 import com.myapp.service.exceptions.UserNotFoundException
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,7 +20,8 @@ import spock.mock.DetachedMockFactory
 import static groovy.json.JsonOutput.toJson
 import static org.hamcrest.Matchers.*
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @WebMvcTest(UserController)
 class UserControllerTest extends BaseControllerTest {
@@ -80,7 +82,11 @@ class UserControllerTest extends BaseControllerTest {
         userService.findAll(_ as PageRequest) >> {
             List<UserDTO> content = (0..1).collect {
                 User u = new User(id: it, username: "test${it}@test.com", password: "secret", name: "test${it}")
-                UserDTO.newInstance(u)
+                UserDTO.builder()
+                        .id(u.id)
+                        .name(u.name)
+                        .avatarHash(Utils.md5(u.username))
+                        .build()
             }
             return new PageImpl<>(content)
         }
@@ -94,7 +100,7 @@ class UserControllerTest extends BaseControllerTest {
             andExpect(jsonPath('$.content').exists())
             andExpect(jsonPath('$.content', hasSize(2)))
             andExpect(jsonPath('$.content[0].name', is("test0")))
-            andExpect(jsonPath('$.content[0].email', isEmptyOrNullString()))
+            andExpect(jsonPath('$.content[0].email', nullValue()))
             andExpect(jsonPath('$.content[0].avatarHash', is("17c9ea0d5cb514cd00d3a71eb312b9dc")))
             andExpect(jsonPath('$.content[1].name', is("test1")))
         }
@@ -116,7 +122,13 @@ class UserControllerTest extends BaseControllerTest {
         userService.findOne(1) >> {
             User user = new User(id: 1, username: "test1@test.com", password: "secret", name: "test")
             UserStats userStats = new UserStats(3, 2, 1)
-            return Optional.of(UserDTO.builder2(user, userStats).build())
+            UserDTO userDTO = UserDTO.builder()
+                    .id(user.id)
+                    .name(user.name)
+                    .avatarHash(Utils.md5(user.username))
+                    .userStats(userStats)
+                    .build()
+            return Optional.of(userDTO)
         }
 
         when:
@@ -126,9 +138,8 @@ class UserControllerTest extends BaseControllerTest {
         with(response) {
             andExpect(status().isOk())
             andExpect(jsonPath('$.name', is("test")))
-            andExpect(jsonPath('$.email', isEmptyOrNullString()))
+            andExpect(jsonPath('$.email', nullValue()))
             andExpect(jsonPath('$.avatarHash', is("94fba03762323f286d7c3ca9e001c541")))
-            andExpect(jsonPath('$.isMyself', nullValue()))
             andExpect(jsonPath('$.isFollowedByMe', nullValue()))
             andExpect(jsonPath('$.userStats').exists())
             andExpect(jsonPath('$.userStats.micropostCnt', is(3)))
@@ -152,15 +163,18 @@ class UserControllerTest extends BaseControllerTest {
 
     def "can show logged in user when signed in"() {
         given:
-        signIn()
+        User user = signIn()
         userService.findMe() >> {
-            User user = new User(id: 1, username: "test1@test.com", password: "secret", name: "test")
             UserStats userStats = new UserStats(3, 2, 1)
-            Optional.of(UserDTO.builder2(user, userStats)
-                    .isMyself(true)
+            UserDTO userDTO = UserDTO.builder()
+                    .id(user.id)
+                    .name(user.name)
+                    .email(user.username)
+                    .avatarHash(Utils.md5(user.username))
+                    .userStats(userStats)
                     .isFollowedByMe(false)
                     .build()
-            )
+            Optional.of(userDTO)
         }
 
         when:
@@ -170,9 +184,8 @@ class UserControllerTest extends BaseControllerTest {
         with(response) {
             andExpect(status().isOk())
             andExpect(jsonPath('$.name', is("test")))
-            andExpect(jsonPath('$.email', is("test1@test.com")))
-            andExpect(jsonPath('$.avatarHash', is("94fba03762323f286d7c3ca9e001c541")))
-            andExpect(jsonPath('$.isMyself', is(true)))
+            andExpect(jsonPath('$.email', is("test@test.com")))
+            andExpect(jsonPath('$.avatarHash', is("b642b4217b34b1e8d3bd915fc65c4452")))
             andExpect(jsonPath('$.isFollowedByMe', is(false)))
             andExpect(jsonPath('$.userStats').exists())
             andExpect(jsonPath('$.userStats.micropostCnt', is(3)))

@@ -1,5 +1,6 @@
 package com.myapp.service;
 
+import com.myapp.Utils;
 import com.myapp.domain.User;
 import com.myapp.dto.UserDTO;
 import com.myapp.dto.UserParams;
@@ -40,18 +41,24 @@ public class UserServiceImpl implements UserService {
     public Optional<UserDTO> findOne(Long id) {
         return userCustomRepository.findOne(id).map(r -> {
             final Optional<User> currentUser = securityContextService.currentUser();
-
             final Boolean isFollowedByMe = currentUser
                     .map(u -> relationshipRepository
                             .findOneByFollowerAndFollowed(u, r.getUser())
                             .isPresent()
                     )
                     .orElse(null);
-            final Boolean isMyself = currentUser
-                    .map(u -> u.equals(r.getUser()))
+            // Set email only if it equals with currentUser.
+            final String email = currentUser
+                    .filter(u -> u.equals(r.getUser()))
+                    .map(User::getUsername)
                     .orElse(null);
-            return UserDTO.builder2(r.getUser(), r.getUserStats())
-                    .isMyself(isMyself)
+
+            return UserDTO.builder()
+                    .id(r.getUser().getId())
+                    .email(email)
+                    .avatarHash(Utils.md5(r.getUser().getUsername()))
+                    .name(r.getUser().getName())
+                    .userStats(r.getUserStats())
                     .isFollowedByMe(isFollowedByMe)
                     .build();
         });
@@ -64,7 +71,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Page<UserDTO> findAll(PageRequest pageable) {
-        return userRepository.findAll(pageable).map(UserDTO::newInstance);
+        return userRepository.findAll(pageable).map(u -> UserDTO.builder()
+                .id(u.getId())
+                .name(u.getName())
+                .avatarHash(Utils.md5(u.getUsername()))
+                .build()
+        );
     }
 
     @Override
