@@ -23,12 +23,13 @@ public class PostDTO {
     private final UserDTO userDTO;
     private final Boolean isMyPost;
 
-    public static PostDTO newInstance(Micropost post, UserStats userStats, Boolean isMyPost) {
+    public static PostDTO newInstance(Micropost post, UserStats userStats, Boolean isMyPost, Boolean isFollowedByMe) {
         final UserDTO userDTO = UserDTO.builder()
                 .id(post.getUser().getId())
                 .name(post.getUser().getName())
                 .userStats(userStats)
                 .avatarHash(Utils.md5(post.getUser().getUsername()))
+                .isFollowedByMe(isFollowedByMe)
                 .build();
 
         return PostDTO.builder()
@@ -41,7 +42,7 @@ public class PostDTO {
     }
 
     public static PostDTO newInstance(Micropost post, Boolean isMyPost) {
-        return PostDTO.newInstance(post, null, isMyPost);
+        return PostDTO.newInstance(post, null, isMyPost, null);
     }
 
 }

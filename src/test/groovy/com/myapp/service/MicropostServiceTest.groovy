@@ -32,7 +32,7 @@ class MicropostServiceTest extends BaseServiceTest {
     RelationshipRepository relationshipRepository
 
     def setup() {
-        micropostService = new MicropostServiceImpl(micropostRepository, userRepository, micropostCustomRepository, securityContextService)
+        micropostService = new MicropostServiceImpl(micropostRepository, userRepository, micropostCustomRepository, relationshipRepository, securityContextService)
     }
 
     def "can delete micropost when have a permission"() {
