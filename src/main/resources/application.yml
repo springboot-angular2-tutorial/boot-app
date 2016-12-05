@@ -63,8 +63,6 @@ server:
 ---
 spring:
   profiles: stg
-  redis:
-    host: ${REDIS_ENDPOINT}
   datasource:
     driverClassName: org.mariadb.jdbc.Driver
     jdbcUrl: jdbc:mysql://${RDS_ENDPOINT}/ebdb?useSSL=false
@@ -77,8 +75,6 @@ logging:
 ---
 spring:
   profiles: prod
-  redis:
-    host: ${REDIS_ENDPOINT}
   datasource:
     driverClassName: org.mariadb.jdbc.Driver
     jdbcUrl: jdbc:mysql://${RDS_ENDPOINT}/ebdb?useSSL=false
