@@ -4,6 +4,8 @@ import com.myapp.domain.User;
 import com.myapp.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +17,9 @@ import java.util.Optional;
 
 @Component
 public final class TokenHandlerImpl implements TokenHandler {
+
+    @SuppressWarnings("unused")
+    private static final Logger logger = LoggerFactory.getLogger(TokenHandlerImpl.class);
 
     private final String secret;
 

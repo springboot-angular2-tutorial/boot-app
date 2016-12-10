@@ -11,9 +11,7 @@ endpoints:
   health.enabled: true
 management:
   context-path: /manage
-app:
-  jwt:
-    secret: qwerty
+app.jwt.secret: qwerty
 ---
 spring:
   profiles: dev
@@ -66,21 +64,27 @@ spring:
   datasource:
     driverClassName: org.mariadb.jdbc.Driver
     jdbcUrl: jdbc:mysql://${MYSQL_ENDPOINT}/ebdb?useSSL=false
+    username: micropostuser
+    password: ENC(jSxIbUwZQ5KgQJkOLGbYsZV83hH3oI0D)
   jpa:
     database: MYSQL
     hibernate:
       ddl-auto: validate
 logging:
   config: classpath:logback-prod.xml
+app.jwt.secret: ENC(L4Y4hVbkFgZC3VFVWH28jTiCSSCBAx6xeM/nBSIahjrbc/JggbhTiKr2w9RLu9sx)
 ---
 spring:
   profiles: prod
   datasource:
     driverClassName: org.mariadb.jdbc.Driver
     jdbcUrl: jdbc:mysql://${MYSQL_ENDPOINT}/ebdb?useSSL=false
+    username: micropostuser
+    password: ENC(eKw2P1jyrqKKs6KVg9Ql9iaJC8ve2kD8)
   jpa:
     database: MYSQL
     hibernate:
       ddl-auto: validate
 logging:
   config: classpath:logback-prod.xml
+app.jwt.secret: ENC(t0NojUi8WhsSCti12Qj8CgzzrBA1Wt0PC9R1N5KvRltEcegGhxSy1zEmI7OxqzOA)

@@ -76,6 +76,11 @@
             <artifactId>querydsl-apt</artifactId>
             <version>${querydsl.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.ulisesbocchio</groupId>
+            <artifactId>jasypt-spring-boot-starter</artifactId>
+            <version>1.9</version>
+        </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -162,6 +167,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <mainClass>com.myapp.Application</mainClass>
+                    <executable>true</executable>
                 </configuration>
             </plugin>
             <plugin>
