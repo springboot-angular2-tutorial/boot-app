@@ -162,7 +162,6 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <mainClass>com.myapp.Application</mainClass>
-                    <executable>true</executable>
                 </configuration>
             </plugin>
             <plugin>
