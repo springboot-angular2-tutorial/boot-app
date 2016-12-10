@@ -56,6 +56,7 @@ mvn clean package -DskipTests=true -Dmaven.javadoc.skip=true
 docker build -t IMAGE .
 docker run -e "SPRING_PROFILES_ACTIVE=prod" \
   -e "MYSQL_ENDPOINT=dbhost:3306" \
+  -e "JASYPT_ENCRYPTOR_PASSWORD=encryption password" \
   -e "NEW_RELIC_LICENSE_KEY=newrelic licence key" \
   IMAGE
 ```
