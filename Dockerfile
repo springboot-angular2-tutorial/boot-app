@@ -1,10 +1,8 @@
 FROM java:alpine
 
-ENV APP_HOME /app
-
 VOLUME /tmp
 
-WORKDIR ${APP_HOME}
+WORKDIR /app
 
 COPY target/springboot-angular2-tutorial-0.1.0.jar app.jar
 RUN sh -c 'touch app.jar'
@@ -20,4 +18,3 @@ ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS \
 -jar app.jar" ]
 
 EXPOSE 8080
-
