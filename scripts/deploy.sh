@@ -8,6 +8,7 @@ fi
 
 readonly DOCKER_NAME=micropost/backend
 readonly AWS_ACCOUNT_NUMBER=$(aws sts get-caller-identity --output text --query 'Account')
+readonly IMAGE_URL=${AWS_ACCOUNT_NUMBER}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${DOCKER_NAME}
 
 # Build
 mvn clean package -DskipTests=true -Dmaven.javadoc.skip=true
@@ -19,9 +20,8 @@ aws ecr describe-repositories --repository-names ${DOCKER_NAME} || \
 # Push to docker repository
 eval $(aws ecr get-login)
 docker build -t ${DOCKER_NAME} .
-docker tag ${DOCKER_NAME}:latest ${AWS_ACCOUNT_NUMBER}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${DOCKER_NAME}:latest
-docker push ${AWS_ACCOUNT_NUMBER}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${DOCKER_NAME}:latest
+docker tag ${DOCKER_NAME}:latest ${IMAGE_URL}:latest
+docker push ${IMAGE_URL}:latest
 
-# Notify to deploy
-#aws sns publish --topic-arn "arn:aws:sns:${AWS_DEFAULT_REGION}:${AWS_ACCOUNT_NUMBER}:backend_app_updated" \
-#   --message "${ENV}: ${TRAVIS_COMMIT}"
+# Deploy
+./scripts/ecs-deploy -c micropost -n backend -i ${IMAGE_URL}:latest
