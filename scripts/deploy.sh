@@ -19,7 +19,7 @@ aws ecr describe-repositories --repository-names ${DOCKER_NAME} > /dev/null 2>&1
 
 # Push to docker repository
 eval $(aws ecr get-login)
-docker build -t ${DOCKER_NAME} .
+docker build --build-arg JASYPT_ENCRYPTOR_PASSWORD=${JASYPT_ENCRYPTOR_PASSWORD} -t ${DOCKER_NAME} .
 docker tag ${DOCKER_NAME}:latest ${IMAGE_URL}:latest
 docker push ${IMAGE_URL}:latest
 
