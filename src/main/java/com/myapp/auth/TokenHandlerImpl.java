@@ -28,6 +28,7 @@ public final class TokenHandlerImpl implements TokenHandler {
     @Autowired
     public TokenHandlerImpl(@Value("${app.jwt.secret}") String secret,
                             UserRepository userRepository) {
+        logger.debug("----------- secret: " + secret);
         this.secret = secret;
         this.userRepository = userRepository;
     }
