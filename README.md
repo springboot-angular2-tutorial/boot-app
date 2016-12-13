@@ -5,7 +5,7 @@
 
 This repository is an example application for Spring Boot and Angular2 tutorial.
 
-[Demo](https://micropost.hana053.com/).
+[Demo](https://micropost.hana053.com/)
 
 * JWT
 * [Querydsl](http://www.querydsl.com/)
@@ -32,26 +32,27 @@ Testing.
 mvn test
 ```
 
-API documentation
+API documentation.
 
 ```
 mvn spring-boot:run
 open http://localhost:8080/swagger-ui.html
 ```
 
-### Important note
+## Frequently asked questions
 
-Before you open this project from Intellij IDEA, you need to build project once. Or else, generated source by annotation processor won't be recognized correctly by IDEA.
-
+* Build becomes an error on IDE with error message "QUser, QRelationship and etc can't be found".
+  * Before you open this project from your IDE, you need to build project once with mvn command. Or else, generated source by annotation processor won't be recognized correctly.
 ```
 # It will generate target directory
 mvn clean package -DskipTests=true -Dmaven.javadoc.skip=true
-# After that, open this project from Intellij IDEA.
+# After that, open this project from Intellij IDEA or Eclipse.
 ```
 
 ## Docker Support
 
 Dev
+
 ```bash
 mvn clean package -DskipTests=true -Dmaven.javadoc.skip=true
 docker build -t IMAGE .
@@ -59,6 +60,7 @@ docker run -p 8080:8080 IMAGE
 ```
 
 Prod
+
 ```bash
 mvn clean package -DskipTests=true -Dmaven.javadoc.skip=true
 docker build --build-arg JASYPT_ENCRYPTOR_PASSWORD=secret -t IMAGE .
@@ -77,7 +79,6 @@ Under construction...
 
 * [Angular2 app](https://github.com/springboot-angular2-tutorial/angular2-app)
 * [Android app](https://github.com/springboot-angular2-tutorial/android-app)
-* [Server provisioning by Ansible and Packer](https://github.com/springboot-angular2-tutorial/micropost-provisionings)
 * [Infrastructure by Terraform](https://github.com/springboot-angular2-tutorial/micropost-formation)
 * [Lambda functions by Serverless](https://github.com/springboot-angular2-tutorial/micropost-functions)
 
