@@ -79,19 +79,19 @@
         <dependency>
             <groupId>com.github.ulisesbocchio</groupId>
             <artifactId>jasypt-spring-boot-starter</artifactId>
-            <version>1.9</version>
+            <version>1.11</version>
         </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.16.10</version>
+            <version>1.16.12</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.newrelic.agent.java</groupId>
             <artifactId>newrelic-agent</artifactId>
-            <version>3.32.0</version>
+            <version>3.34.0</version>
             <scope>provided</scope>
         </dependency>
 
