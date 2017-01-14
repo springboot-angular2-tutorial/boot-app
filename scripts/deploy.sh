@@ -17,6 +17,11 @@ mvn clean package -DskipTests=true -Dmaven.javadoc.skip=true
 aws ecr describe-repositories --repository-names ${DOCKER_NAME} > /dev/null 2>&1 || \
   aws ecr create-repository --repository-name ${DOCKER_NAME}
 
+# Download newrelic.jar
+wget https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip
+unzip newrelic-java.zip
+cp newrelic/newrelic.jar docker
+
 # Push to docker repository
 eval $(aws ecr get-login)
 docker build --build-arg JASYPT_ENCRYPTOR_PASSWORD=${JASYPT_ENCRYPTOR_PASSWORD} -t ${DOCKER_NAME} .
