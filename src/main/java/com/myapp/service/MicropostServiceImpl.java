@@ -13,6 +13,7 @@ import com.myapp.service.exceptions.NotPermittedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,6 +22,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class MicropostServiceImpl implements MicropostService {
 
     private final MicropostRepository micropostRepository;
