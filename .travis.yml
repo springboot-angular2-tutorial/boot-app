@@ -5,10 +5,6 @@ jdk:
 - oraclejdk8
 services:
 - docker
-cache:
-  directories:
-  - $HOME/.m2
-  - $HOME/.cache/pip
 
 install:
   # install aws cli
@@ -28,3 +24,12 @@ deploy:
     skip_cleanup: true
     on:
       branch: deploy/*
+
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+    - $HOME/.cache/pip
