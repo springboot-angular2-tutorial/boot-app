@@ -16,7 +16,7 @@ install:
   - pip install awscli
   - aws --version
 
-script: mvn clean test jacoco:report coveralls:report -Dspring.profiles.active=test
+script: ./gradlew clean build jacocoTestReport coveralls
 
 before_deploy:
   # Parse branch name and determine an environment to deploy
