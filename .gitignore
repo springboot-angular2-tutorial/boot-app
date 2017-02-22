@@ -20,3 +20,6 @@ db/**/*.db
 .deploy
 
 .envrc
+generated/
+build/
+.gradle/

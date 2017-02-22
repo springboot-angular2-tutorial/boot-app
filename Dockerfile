@@ -6,7 +6,7 @@ VOLUME /tmp
 
 WORKDIR /app
 
-COPY target/springboot-angular2-tutorial-0.1.0.jar app.jar
+COPY build/libs/springboot-angular2-tutorial-0.0.1.jar app.jar
 COPY docker/newrelic.jar .
 COPY docker/newrelic.yml .
 

@@ -16,7 +16,7 @@ This repository is an example application for Spring Boot and Angular2 tutorial.
 Run Spring Boot.
 
 ```
-mvn spring-boot:run
+./gradlew bootRun
 ```
 
 Serve frontend app.
@@ -29,46 +29,46 @@ git clone https://github.com/springboot-angular2-tutorial/angular2-app.git
 Testing.
 
 ```
-mvn test
+./gradlew test
 ```
 
 API documentation.
 
 ```
-mvn spring-boot:run
+./gradlew bootRun
 open http://localhost:8080/swagger-ui.html
 ```
 
 ## Frequently asked questions
 
-* Build becomes an error on IDE with error message "QUser, QRelationship and etc can't be found".
-  * Before you open this project from your IDE, you need to build project once with mvn command. Or else, generated source by annotation processor won't be recognized correctly.
-```
-# It will generate target directory
-mvn clean package -DskipTests=true -Dmaven.javadoc.skip=true
-# After that, open this project from Intellij IDEA or Eclipse.
-```
+* Q) Build becomes an error on IntelliJ IDEA with error message "QUser, QRelationship and etc can't be found".
+* A) You must configure setting for Annotation Processors.
+  1. Go to Preferences -> Build, Execution, Deployment -> Annotation Processors
+  2. Check Enable annotation processing checkbox
+  3. In "Store generated sources relative to:" select Module content root.
+  4. Finally, Build -> Build Project
+  
 
 ## Docker Support
 
 Dev
 
 ```bash
-mvn clean package -DskipTests=true -Dmaven.javadoc.skip=true
-docker build -t IMAGE .
-docker run -p 8080:8080 IMAGE
+./gradlew clean build -x test
+docker build -t YOUR_IMAGE_NAME .
+docker run -p 8080:8080 YOUR_IMAGE_NAME
 ```
 
 Prod
 
 ```bash
-mvn clean package -DskipTests=true -Dmaven.javadoc.skip=true
-docker build --build-arg JASYPT_ENCRYPTOR_PASSWORD=secret -t IMAGE .
+./gradlew clean build -x test
+docker build --build-arg JASYPT_ENCRYPTOR_PASSWORD=secret -t YOUR_IMAGE_NAME .
 docker run -p 8080:8080 \
   -e "SPRING_PROFILES_ACTIVE=prod" \
   -e "MYSQL_ENDPOINT=dbhost:3306" \
   -e "NEW_RELIC_LICENSE_KEY=newrelic licence key" \
-  IMAGE
+  YOUR_IMAGE_NAME
 ```
 
 ## Tutorial

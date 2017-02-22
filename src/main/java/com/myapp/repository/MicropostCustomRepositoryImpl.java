@@ -1,6 +1,8 @@
 package com.myapp.repository;
 
 import com.myapp.domain.*;
+import com.myapp.domain.QMicropost;
+import com.myapp.domain.QRelationship;
 import com.myapp.dto.PageParams;
 import com.myapp.repository.helper.UserStatsQueryHelper;
 import com.querydsl.core.types.ConstructorExpression;
