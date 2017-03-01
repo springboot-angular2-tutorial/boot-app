@@ -52,6 +52,9 @@ After you migrated DB.
 * Q) IntelliJ IDEA is very slow when you use jOOQ with Kotlin.
 * A) Refer [this ticket](https://youtrack.jetbrains.com/issue/KT-10978). In my case, [tuning memory config](https://youtrack.jetbrains.com/issue/KT-10978#comment=27-1519260) of IntelliJ IDEA worked.
 
+* Q) How can I run or debug app from IntelliJ IDEA?
+* A) Use IntelliJ IDEA 2017.1 and run or debug Application.kt.
+
 ## Docker Support
 
 Dev
