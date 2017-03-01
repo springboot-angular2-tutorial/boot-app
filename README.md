@@ -7,16 +7,18 @@ This repository is an example application for Spring Boot and Angular2 tutorial.
 
 [Demo](https://micropost.hana053.com/)
 
+* [Spring Boot](https://projects.spring.io/spring-boot/)
+* [Kotlin](https://kotlinlang.org/)
+* [jOOQ](https://www.jooq.org/)
+* [Flyway](https://flywaydb.org/)
 * JWT
-* [Querydsl](http://www.querydsl.com/)
-* [Spock](http://spockframework.org/)
 
 ## Getting Started
 
 Run Spring Boot.
 
 ```
-./gradlew bootRun
+./gradlew jooqGenerate bootRun
 ```
 
 Serve frontend app.
@@ -29,6 +31,7 @@ git clone https://github.com/springboot-angular2-tutorial/angular2-app.git
 Testing.
 
 ```
+./gradlew jooqGenerate # If you have not generated jOOQ code yet.
 ./gradlew test
 ```
 
@@ -39,22 +42,22 @@ API documentation.
 open http://localhost:8080/swagger-ui.html
 ```
 
+After you migrated DB.
+```
+./gradlew jooqGenerate # It will generate jOOQ code for your new schema.
+```
+
 ## Frequently asked questions
 
-* Q) Build becomes an error on IntelliJ IDEA with error message "QUser, QRelationship and etc can't be found".
-* A) You must configure setting for Annotation Processors.
-  1. Go to Preferences -> Build, Execution, Deployment -> Annotation Processors
-  2. Check Enable annotation processing checkbox
-  3. In "Store generated sources relative to:" select Module content root.
-  4. Finally, Build -> Build Project
-  
+* Q) IntelliJ IDEA is very slow when you use jOOQ with Kotlin.
+* A) Refer [this ticket](https://youtrack.jetbrains.com/issue/KT-10978). In my case, [tuning memory config](https://youtrack.jetbrains.com/issue/KT-10978#comment=27-1519260) of IntelliJ IDEA worked.
 
 ## Docker Support
 
 Dev
 
 ```bash
-./gradlew clean build -x test
+./gradlew clean jooqGenerate build -x test
 docker build -t YOUR_IMAGE_NAME .
 docker run -p 8080:8080 YOUR_IMAGE_NAME
 ```
@@ -62,7 +65,7 @@ docker run -p 8080:8080 YOUR_IMAGE_NAME
 Prod
 
 ```bash
-./gradlew clean build -x test
+./gradlew clean jooqGenerate build -x test
 docker build --build-arg JASYPT_ENCRYPTOR_PASSWORD=secret -t YOUR_IMAGE_NAME .
 docker run -p 8080:8080 \
   -e "SPRING_PROFILES_ACTIVE=prod" \

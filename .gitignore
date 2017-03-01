@@ -1,25 +1,28 @@
-target
-
-# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm
-*.iml
-
-## Directory-based project format:
-.idea/
-
-# jrebel configuration file
-rebel.xml
-
-# H2 db files
-db/**/*.db
-
-# Elastic Beanstalk Files
-.elasticbeanstalk/*
-!.elasticbeanstalk/*.cfg.yml
-!.elasticbeanstalk/*.global.yml
-
-.deploy
-
-.envrc
+.gradle
+/build/
+!gradle/wrapper/gradle-wrapper.jar
 generated/
+db/
+.envrc
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+nbproject/private/
 build/
-.gradle/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/

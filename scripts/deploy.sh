@@ -11,7 +11,7 @@ readonly AWS_ACCOUNT_NUMBER=$(aws sts get-caller-identity --output text --query 
 readonly IMAGE_URL=${AWS_ACCOUNT_NUMBER}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${DOCKER_NAME}
 
 # Build
-./gradlew build -x test
+./gradlew jooqGenerate build -x test
 
 # Ensure docker repository exists
 aws ecr describe-repositories --repository-names ${DOCKER_NAME} > /dev/null 2>&1 || \

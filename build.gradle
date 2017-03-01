@@ -1,17 +1,29 @@
+import groovy.xml.MarkupBuilder
+import org.jooq.util.GenerationTool
+
+import javax.xml.bind.JAXB
+
 buildscript {
     ext {
+        kotlinVersion = '1.0.6'
         springBootVersion = '1.5.1.RELEASE'
-        querydslVersion = '4.1.4'
+        jooqVersion = '3.9.0'
+        flywayVersion = '4.1.1'
+        h2Version = '1.4.193'
         swaggerVersion = '2.6.1'
-        spockVersion = '1.1-groovy-2.4-rc-3'
     }
     repositories {
         jcenter()
         maven { url "https://plugins.gradle.org/m2/" }
+        maven { url 'http://dl.bintray.com/kotlin/kotlin-eap-1.1' }
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath "org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.8.1"
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}"
+        classpath "org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}"
+        classpath "org.jooq:jooq-codegen:${jooqVersion}"
+        classpath "com.h2database:h2:${h2Version}"
+        classpath "gradle.plugin.com.boxfuse.client:flyway-release:${flywayVersion}"
     }
 }
 
@@ -19,55 +31,48 @@ plugins {
     id 'jacoco'
     id 'com.github.kt3k.coveralls' version '2.8.1'
 }
-
 apply plugin: 'java'
-apply plugin: 'groovy'
-apply plugin: 'idea'
+apply plugin: 'kotlin'
+apply plugin: 'kotlin-spring'
 apply plugin: 'org.springframework.boot'
-apply plugin: "com.github.kt3k.coveralls"
-
-sourceCompatibility = 1.8
+// It's just needed for JOOQ codegen
+apply plugin: "org.flywaydb.flyway"
 
 jar {
     baseName = 'springboot-angular2-tutorial'
     version = '0.0.1'
 }
 
-idea {
-    module {
-        sourceDirs += file('generated/')
-        generatedSourceDirs += file('generated/')
-    }
-}
+sourceCompatibility = 1.8
 
 repositories {
     jcenter()
+    maven { url 'http://dl.bintray.com/kotlin/kotlin-eap-1.1' }
 }
+
 dependencies {
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: springBootVersion
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: springBootVersion
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: springBootVersion
-    compile group: 'org.springframework.boot', name: 'spring-boot-actuator', version: springBootVersion
-    compile group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: springBootVersion
-    compile group: 'org.springframework.boot', name: 'spring-boot-devtools', version: springBootVersion
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-security'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-jooq'
+    compile group: 'org.springframework.boot', name: 'spring-boot-actuator'
+    compile group: 'org.springframework.boot', name: 'spring-boot-devtools'
+    compile group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: kotlinVersion
+    compile group: 'org.jetbrains.kotlin', name: 'kotlin-reflect', version: kotlinVersion
+    compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-kotlin', version: '2.8.6'
+    compile group: 'org.jooq', name: 'jooq', version: jooqVersion
+    compile group: 'org.flywaydb', name: 'flyway-core', version: flywayVersion
+    compile group: 'com.zaxxer', name: 'HikariCP'
     compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.7.0'
-    compile group: 'org.bgee.log4jdbc-log4j2', name: 'log4jdbc-log4j2-jdbc4.1', version: '1.16'
-    compile group: 'org.flywaydb', name: 'flyway-core', version: '3.2.1'
-    compile group: 'com.querydsl', name: 'querydsl-jpa', version: querydslVersion
-    compile group: 'com.querydsl', name: 'querydsl-sql-spring', version: querydslVersion
-    compile "com.querydsl:querydsl-apt:$querydslVersion:jpa"
-    compile group: 'com.github.ulisesbocchio', name: 'jasypt-spring-boot-starter', version: '1.11'
-    compile group: 'com.zaxxer', name: 'HikariCP', version: '2.5.1'
     compile group: 'io.springfox', name: 'springfox-swagger2', version: swaggerVersion
     compile group: 'io.springfox', name: 'springfox-swagger-ui', version: swaggerVersion
-    compileOnly "org.projectlombok:lombok:1.16.14"
+    compile group: 'com.github.ulisesbocchio', name: 'jasypt-spring-boot-starter', version: '1.11'
     runtime group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '1.5.8'
-    runtime group: 'com.h2database', name: 'h2', version: '1.4.193'
-    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: springBootVersion
-    testCompile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.8'
-    testCompile group: 'org.spockframework', name: 'spock-core', version: spockVersion
-    testCompile group: 'org.spockframework', name: 'spock-spring', version: spockVersion
-    testCompile group: 'com.jayway.jsonpath', name: 'json-path', version: '2.2.0'
+    runtime group: 'com.h2database', name: 'h2', version: h2Version
+    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+    testCompile group: 'org.jetbrains.kotlin', name: 'kotlin-test-junit', version: kotlinVersion
+    testCompile group: 'org.assertj', name: 'assertj-core', version: '3.6.2'
+    testCompile group: 'com.nhaarman', name: 'mockito-kotlin', version: '1.1.0'
+    testCompile group: 'com.beust', name: 'klaxon', version: '0.27'
 }
 
 jacocoTestReport {
@@ -76,4 +81,41 @@ jacocoTestReport {
         html.enabled = true
     }
 }
+
+flyway {
+    url = 'jdbc:h2:./db/dev;MODE=MySQL'
+    user = 'sa'
+    password = ''
+}
+
+task jooqGenerate {
+    doLast {
+        def writer = new StringWriter()
+        new MarkupBuilder(writer)
+                .configuration('xmlns': "http://www.jooq.org/xsd/jooq-codegen-${jooqVersion}.xsd") {
+            jdbc {
+                driver 'org.h2.Driver'
+                url 'jdbc:h2:./db/dev;MODE=MySQL'
+                user 'sa'
+                password ''
+            }
+            generator {
+                database {
+                    inputSchema 'public'
+                    outputSchemaToDefault 'true'
+                }
+                generate {
+                }
+                target {
+                    packageName 'com.myapp.generated'
+                    directory 'src/main/java'
+                }
+            }
+        }
+        GenerationTool.generate(
+                JAXB.unmarshal(new StringReader(writer.toString()), org.jooq.util.jaxb.Configuration.class)
+        )
+    }
+}
+jooqGenerate.dependsOn flywayMigrate
 

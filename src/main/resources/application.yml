@@ -3,73 +3,51 @@ spring:
     banner-mode: 'OFF'
   profiles:
     active: dev
+  jooq:
+    sql-dialect: mysql
 security:
   basic:
     enabled: false
-endpoints:
-  enabled: false
-  health.enabled: true
 management:
   context-path: /manage
+
 app.jwt.secret: qwerty
 ---
 spring:
   profiles: dev
   datasource:
-    driverClassName: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-    url: jdbc:log4jdbc:h2:./db/dev;MODE=MySQL;DB_CLOSE_ON_EXIT=FALSE
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:./db/dev;MODE=MySQL
     username: sa
     password:
-  jpa:
-    database: H2
-    hibernate:
-      ddl-auto: update
-  thymeleaf:
-    cache: false
-flyway:
-  enabled: false
 ---
 spring:
   profiles: dev2
   datasource:
+    type: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.mariadb.jdbc.Driver
-    jdbcUrl: jdbc:mysql://localhost:3306/springboot-angular2-tutorial?useSSL=false
+    url: jdbc:mysql://localhost:3306/springboot-angular2-tutorial
     username: root
     password:
-  jpa:
-    database: MYSQL
-    hibernate:
-      ddl-auto: validate
 logging:
   config: classpath:logback-prod.xml
 ---
 spring:
   profiles: test
   datasource:
-    driverClassName: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-    url: jdbc:log4jdbc:h2:mem:test;MODE=MySQL;DB_CLOSE_ON_EXIT=FALSE
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:test;MODE=MySQL;DB_CLOSE_ON_EXIT=FALSE
     username: sa
     password:
-  jpa:
-    database: H2
-    hibernate:
-      ddl-auto: create
-flyway:
-  enabled: false
-server:
-  port: 0
 ---
 spring:
   profiles: stg
   datasource:
+    type: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.mariadb.jdbc.Driver
-    jdbcUrl: jdbc:mysql://${MYSQL_ENDPOINT}/ebdb?useSSL=false
+    url: jdbc:mysql://${MYSQL_ENDPOINT}/ebdb?useSSL=false
     username: micropostuser
     password: ENC(jSxIbUwZQ5KgQJkOLGbYsZV83hH3oI0D)
-  jpa:
-    database: MYSQL
-    hibernate:
-      ddl-auto: validate
 logging:
   config: classpath:logback-prod.xml
 app.jwt.secret: ENC(L4Y4hVbkFgZC3VFVWH28jTiCSSCBAx6xeM/nBSIahjrbc/JggbhTiKr2w9RLu9sx)
@@ -77,14 +55,12 @@ app.jwt.secret: ENC(L4Y4hVbkFgZC3VFVWH28jTiCSSCBAx6xeM/nBSIahjrbc/JggbhTiKr2w9RL
 spring:
   profiles: prod
   datasource:
+    type: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.mariadb.jdbc.Driver
-    jdbcUrl: jdbc:mysql://${MYSQL_ENDPOINT}/ebdb?useSSL=false
+    url: jdbc:mysql://${MYSQL_ENDPOINT}/ebdb?useSSL=false
     username: micropostuser
     password: ENC(eKw2P1jyrqKKs6KVg9Ql9iaJC8ve2kD8)
-  jpa:
-    database: MYSQL
-    hibernate:
-      ddl-auto: validate
 logging:
   config: classpath:logback-prod.xml
 app.jwt.secret: ENC(t0NojUi8WhsSCti12Qj8CgzzrBA1Wt0PC9R1N5KvRltEcegGhxSy1zEmI7OxqzOA)
+
