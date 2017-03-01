@@ -1,0 +1,2 @@
+ALTER TABLE micropost
+  CHANGE created_at created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
