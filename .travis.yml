@@ -12,7 +12,10 @@ install:
   - pip install awscli
   - aws --version
 
-script: ./gradlew clean jooqGenerate build jacocoTestReport coveralls
+script:
+  - pwd
+  - ./gradlew clean jooqGenerate build jacocoTestReport coveralls
+  - ls -R
 
 before_deploy:
   # Parse branch name and determine an environment to deploy
