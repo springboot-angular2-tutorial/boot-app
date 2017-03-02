@@ -13,7 +13,7 @@ install:
   - aws --version
 
 script:
-  - ./gradlew clean jooqGenerate build
+  - ./gradlew clean jooqGenerate build pitest coveralls
 
 before_deploy:
   # Parse branch name and determine an environment to deploy
