@@ -76,6 +76,7 @@ dependencies {
 cobertura {
     coverageFormats = ['html', 'xml']
     coverageExcludes = ['.*com.myapp.generated.*']
+    coverageSourceDirs = sourceSets.main.kotlin.srcDirs
 }
 
 flyway {
