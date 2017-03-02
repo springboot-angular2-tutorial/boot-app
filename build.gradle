@@ -78,6 +78,7 @@ pitest {
     targetClasses = ['com.myapp.*']
     excludedClasses = ['com.myapp.generated.*']
     outputFormats = ['XML', 'HTML']
+    sourceDirs = [sourceSets.main.kotlin.srcDirs]
 }
 
 flyway {
