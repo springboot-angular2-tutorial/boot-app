@@ -3,8 +3,6 @@ dist: trusty
 language: java
 jdk:
 - oraclejdk8
-#- oraclejdk7
-#- openjdk8
 services:
 - docker
 
@@ -15,7 +13,7 @@ install:
   - aws --version
 
 script:
-  - ./gradlew clean jooqGenerate build cobertura coveralls
+  - ./gradlew clean jooqGenerate build
 
 before_deploy:
   # Parse branch name and determine an environment to deploy
