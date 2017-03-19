@@ -1,13 +1,11 @@
-import groovy.xml.MarkupBuilder
 import org.jooq.util.GenerationTool
-
-import javax.xml.bind.JAXB
+import org.jooq.util.jaxb.*
 
 buildscript {
     ext {
         kotlinVersion = '1.1.1'
         springBootVersion = '1.5.2.RELEASE'
-        jooqVersion = '3.9.0'
+        jooqVersion = '3.9.1'
         flywayVersion = '4.1.1'
         h2Version = '1.4.193'
         swaggerVersion = '2.6.1'
@@ -77,31 +75,24 @@ flyway {
 
 task jooqGenerate {
     doLast {
-        def writer = new StringWriter()
-        new MarkupBuilder(writer)
-                .configuration('xmlns': "http://www.jooq.org/xsd/jooq-codegen-${jooqVersion}.xsd") {
-            jdbc {
-                driver 'org.h2.Driver'
-                url 'jdbc:h2:./db/tmp;MODE=MySQL'
-                user 'sa'
-                password ''
-            }
-            generator {
-                database {
-                    inputSchema 'public'
-                    outputSchemaToDefault 'true'
-                }
-                generate {
-                }
-                target {
-                    packageName 'com.myapp.generated'
-                    directory 'src/main/java'
-                }
-            }
-        }
-        GenerationTool.generate(
-                JAXB.unmarshal(new StringReader(writer.toString()), org.jooq.util.jaxb.Configuration.class)
-        )
+        Configuration configuration = new Configuration()
+                .withJdbc(new Jdbc()
+                    .withDriver("org.h2.Driver")
+                    .withUrl("jdbc:h2:./db/tmp;MODE=MySQL")
+                    .withUser("sa")
+                    .withPassword("")
+                )
+                .withGenerator(new Generator()
+                    .withDatabase(new Database()
+                        .withInputSchema("public")
+                        .withOutputSchemaToDefault(true)
+                    )
+                    .withTarget(new Target()
+                        .withPackageName("com.myapp.generated")
+                        .withDirectory("src/main/java")
+                    )
+                )
+        GenerationTool.generate(configuration)
     }
 }
 jooqGenerate.dependsOn flywayMigrate
