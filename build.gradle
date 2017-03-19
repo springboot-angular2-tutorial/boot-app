@@ -5,8 +5,8 @@ import javax.xml.bind.JAXB
 
 buildscript {
     ext {
-        kotlinVersion = '1.1.0'
-        springBootVersion = '1.5.1.RELEASE'
+        kotlinVersion = '1.1.1'
+        springBootVersion = '1.5.2.RELEASE'
         jooqVersion = '3.9.0'
         flywayVersion = '4.1.1'
         h2Version = '1.4.193'
